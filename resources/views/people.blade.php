@@ -54,36 +54,20 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>Trident</td>
-                                    <td>Internet</td>
-                                    <td>Win 95+</td>
-                                    <td> 4</td>
-                                    <td>X</td>
-                                    <td>X</td>
+                                    <td>1</td>
+                                    <td>Guaillas Guaillas</td>
+                                    <td>Pedro Humberto</td>
+                                    <td>1105167694</td>
+                                    <td>0959649714</td>
+                                    <td>peter.tufi@gmail.com</td>
                                 </tr>
                                 <tr>
-                                    <td>Trident</td>
-                                    <td>Internet</td>
-                                    <td>Win 95+</td>
-                                    <td> 4</td>
-                                    <td>X</td>
-                                    <td>X</td>
-                                </tr>
-                                <tr>
-                                    <td>Trident</td>
-                                    <td>Internet</td>
-                                    <td>Win 95+</td>
-                                    <td> 4</td>
-                                    <td>X</td>
-                                    <td>X</td>
-                                </tr>
-                                <tr>
-                                    <td>Trident</td>
-                                    <td>Internet</td>
-                                    <td>Win 95+</td>
-                                    <td> 4</td>
-                                    <td>X</td>
-                                    <td>X</td>
+                                    <td>2</td>
+                                    <td>Yepez</td>
+                                    <td>Adrian</td>
+                                    <td>0605164525</td>
+                                    <td>0990141711</td>
+                                    <td>adrina@gmail.com</td>
                                 </tr>
                                 <tr>
                                     <td>Trident</td>
