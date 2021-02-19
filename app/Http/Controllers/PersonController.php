@@ -14,7 +14,8 @@ class PersonController extends Controller
      */
     public function index()
     {
-        return view('people');
+        $person = Person::all();
+        return view('people', compact('person'));
     }
 
     /**
@@ -35,7 +36,17 @@ class PersonController extends Controller
      */
     public function store(Request $request)
     {
-        //
+      
+        $person = new Person;
+
+        $person->first_name = $request->first_name;
+        $person->last_name = $request->last_name;
+        $person->identification_card = $request->identification_card;
+        $person->phone = $request->phone;
+        $person->email = $request->email;
+
+        $person->save();
+        return redirect()->route('people.index')->with('mensaje', 'Socio Agregado con éxito');
     }
 
     /**
