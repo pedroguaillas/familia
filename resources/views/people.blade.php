@@ -8,6 +8,13 @@
 <!-- <link rel="stylesheet" href="../../plugins/datatables-responsive/css/responsive.bootstrap4.min.css"> -->
 <link href="{{ asset('plugins/datatables-buttons/css/buttons.bootstrap4.min.css') }}" rel="stylesheet">
 <!-- <link rel="stylesheet" href="../../plugins/datatables-buttons/css/buttons.bootstrap4.min.css"> -->
+
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.23/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.2.7/css/responsive.bootstrap4.min.css">
+
+
 @endpush
 
 @section('content')
@@ -16,7 +23,7 @@
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h1 class="m-0">Socios y Deudores</h1>
+
             </div><!-- /.col -->
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
@@ -38,165 +45,71 @@
                 <div class="card">
                     <div class="card-header">
                         <h3 class="card-title">NOMINA DE SOCIOS</h3>
+                    </div><br>
+                    <div class="row">
+                        <div class="col-md-5">
+                        </div>
+                        <div class="col-sm-7 col-md-6">
+
+                            <div class="dt-buttons btn-group flex-wrap">
+                                <button class="btn btn-secondary buttons-copy buttons-html5" tabindex="0" aria-controls="example1" type="button">
+                                    <span>Copy</span>
+                                </button>
+                                <button class="btn btn-secondary buttons-csv buttons-html5" tabindex="0" aria-controls="example1" type="button">
+                                    <span>CSV</span>
+                                </button>
+                                <button class="btn btn-secondary buttons-excel buttons-html5" tabindex="0" aria-controls="example1" type="button">
+                                    <span>Excel</span>
+                                </button>
+                                <button class="btn btn-secondary buttons-pdf buttons-html5" tabindex="0" aria-controls="example1" type="button">
+                                    <span>PDF</span>
+                                </button> <button class="btn btn-secondary buttons-print" tabindex="0" aria-controls="example1" type="button">
+                                    <span>Print</span>
+                                </button>
+                            </div>
+                            <div class="dt-buttons btn-group flex-wrap">
+                                <a href="#" class="create-modal btn btn-success btn-sm">
+                                    <i class="fas fa-plus"></i>
+                                </a>
+                            </div>
+                        </div>
+
                     </div>
                     <!-- /.card-header -->
+
                     <div class="card-body">
-                        <table id="example1" class="table table-bordered table-striped">
+                        <table id="example1" class="table table-striped table-bordered" style="width:100%">
                             <thead>
                                 <tr>
                                     <th>Nº</th>
-                                    <th>APELLIDOS</th>
                                     <th>NOMBRES</th>
+                                    <th>APELLIDOS</th>
                                     <th>Nº CEDULA</th>
                                     <th>TELEFONO</th>
                                     <th>CORREO</th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>
+                                @foreach ($person as $dato)
                                 <tr>
-                                    <td>1</td>
-                                    <td>Guaillas Guaillas</td>
-                                    <td>Pedro Humberto</td>
-                                    <td>1105167694</td>
-                                    <td>0959649714</td>
-                                    <td>peter.tufi@gmail.com</td>
+                                    <input type="hidden" class="serdelete_val" value="{{ $dato->id }}">
+                                    <td>{{$dato['id']}}</td>
+                                    <td>{{$dato['first_name']}}</td>
+                                    <td>{{$dato['last_name']}}</td>
+                                    <td>{{$dato['identification_card']}}</td>
+                                    <td>{{$dato['phone']}}</td>
+                                    <td>{{$dato['email']}}</td>
+                                    <td>
+                                        <a href="#" class="btn btn-warning btn-sm">
+                                            <i class="far fa-edit"></i>
+                                        </a>
+                                        <button type="button" href="#" class="btn btn-danger btn-sm jugadorDelete">
+                                            <i class="far fa-trash-alt"></i>
+                                        </button>
+                                    </td>
                                 </tr>
-                                <tr>
-                                    <td>2</td>
-                                    <td>Yepez</td>
-                                    <td>Adrian</td>
-                                    <td>0605164525</td>
-                                    <td>0990141711</td>
-                                    <td>adrina@gmail.com</td>
-                                </tr>
-                                <tr>
-                                    <td>Trident</td>
-                                    <td>Internet</td>
-                                    <td>Win 95+</td>
-                                    <td> 4</td>
-                                    <td>X</td>
-                                    <td>X</td>
-                                </tr>
-                                <tr>
-                                    <td>Trident</td>
-                                    <td>Internet</td>
-                                    <td>Win 95+</td>
-                                    <td> 4</td>
-                                    <td>X</td>
-                                    <td>X</td>
-                                </tr>
-                                <tr>
-                                    <td>Trident</td>
-                                    <td>Internet</td>
-                                    <td>Win 95+</td>
-                                    <td> 4</td>
-                                    <td>X</td>
-                                    <td>X</td>
-                                </tr>
-                                <tr>
-                                    <td>Trident</td>
-                                    <td>Internet</td>
-                                    <td>Win 95+</td>
-                                    <td> 4</td>
-                                    <td>X</td>
-                                    <td>X</td>
-                                </tr>
-                                <tr>
-                                    <td>Trident</td>
-                                    <td>Internet</td>
-                                    <td>Win 95+</td>
-                                    <td> 4</td>
-                                    <td>X</td>
-                                    <td>X</td>
-                                </tr>
-                                <tr>
-                                    <td>Trident</td>
-                                    <td>Internet</td>
-                                    <td>Win 95+</td>
-                                    <td> 4</td>
-                                    <td>X</td>
-                                    <td>X</td>
-                                </tr>
-                                <tr>
-                                    <td>Trident</td>
-                                    <td>Internet</td>
-                                    <td>Win 95+</td>
-                                    <td> 4</td>
-                                    <td>X</td>
-                                    <td>X</td>
-                                </tr>
-                                <tr>
-                                    <td>Trident</td>
-                                    <td>Internet</td>
-                                    <td>Win 95+</td>
-                                    <td> 4</td>
-                                    <td>X</td>
-                                    <td>X</td>
-                                </tr>
-                                <tr>
-                                    <td>Trident</td>
-                                    <td>Internet</td>
-                                    <td>Win 95+</td>
-                                    <td> 4</td>
-                                    <td>X</td>
-                                    <td>X</td>
-                                </tr>
-                                <tr>
-                                    <td>Trident</td>
-                                    <td>Internet</td>
-                                    <td>Win 95+</td>
-                                    <td> 4</td>
-                                    <td>X</td>
-                                    <td>X</td>
-                                </tr>
-                                <tr>
-                                    <td>Trident</td>
-                                    <td>Internet</td>
-                                    <td>Win 95+</td>
-                                    <td> 4</td>
-                                    <td>X</td>
-                                    <td>X</td>
-                                </tr>
-                                <tr>
-                                    <td>Trident</td>
-                                    <td>Internet</td>
-                                    <td>Win 95+</td>
-                                    <td> 4</td>
-                                    <td>X</td>
-                                    <td>X</td>
-                                </tr>
-                                <tr>
-                                    <td>Trident</td>
-                                    <td>Internet</td>
-                                    <td>Win 95+</td>
-                                    <td> 4</td>
-                                    <td>X</td>
-                                    <td>X</td>
-                                </tr>
-                                <tr>
-                                    <td>Trident</td>
-                                    <td>Internet</td>
-                                    <td>Win 95+</td>
-                                    <td> 4</td>
-                                    <td>X</td>
-                                    <td>X</td>
-                                </tr>
-                                <tr>
-                                    <td>Trident</td>
-                                    <td>Internet</td>
-                                    <td>Win 95+</td>
-                                    <td> 4</td>
-                                    <td>X</td>
-                                    <td>X</td>
-                                </tr>
-                                <tr>
-                                    <td>Trident</td>
-                                    <td>Internet</td>
-                                    <td>Win 95+</td>
-                                    <td> 4</td>
-                                    <td>X</td>
-                                    <td>X</td>
-                                </tr>
+                                @endforeach
                             </tbody>
                         </table>
                     </div>
@@ -210,26 +123,167 @@
     <!-- /.container-fluid -->
 </div>
 <!-- /.content -->
+
+<div id="create" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title"></h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" role="form" method="POST" enctype="multipart/form-data" action="">
+                    {{ csrf_field() }}
+
+                    <div class="form-group row add">
+                        <label class="control-label col-sm-2" for="first_name"> Nombres </label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="first_name" name="first_name" placeholder="Ingrese nombres" onkeypress="return soloLetras(event)" required>
+
+                        </div>
+                    </div>
+
+                    <div class="form-group row add">
+                        <label class="control-label col-sm-2" for="last_name "> Apellidos </label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="last_name" name="last_name" placeholder="Ingrese apellidos" onkeypress="return soloLetras(event);" required>
+
+                        </div>
+                    </div>
+
+                    <div class="form-group row add">
+                        <label class="control-label col-sm-2" for="identification_card">C.I.</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="identification_card" name="identification_card" placeholder="Cédula de identidad" onkeypress="return soloNumeros(event)" maxlength="10" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group row add">
+                        <label class="control-label col-sm-2" for="phone">Teléfono</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="phone" name="phone" placeholder="Ingrese numero telefonico" onkeypress="return soloNumeros(event)" maxlength="10" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group row add">
+                        <label class="control-label col-sm-2" for="email">Correo</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="email" name="email" placeholder="Dirección correo" required>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button class="btn btn-success" type="submit" id="add">
+                            <span class="glyphicon glyphicon-plus"></span> Guardar
+                        </button>
+                        <button class="btn btn-warning" type="button" data-dismiss="modal">
+                            <span class="glyphicon glyphicon-remove"></span> Cancelar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 @endsection
+
 @push('scripts')
 <!-- Page specific script -->
+
+<script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.23/js/dataTables.bootstrap4.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.2.7/js/dataTables.responsive.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.2.7/js/responsive.bootstrap4.min.js"></script>
+<script src="https://unpkg.com/ionicons@5.4.0/dist/ionicons.js"></script>
+
 <script>
     $(function() {
-        $("#example1").DataTable({
-            "responsive": true,
-            "lengthChange": false,
-            "autoWidth": false,
-            "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
-        }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
-        $('#example2').DataTable({
-            "paging": true,
-            "lengthChange": false,
-            "searching": false,
-            "ordering": true,
-            "info": true,
-            "autoWidth": false,
-            "responsive": true,
+        $('#example1').DataTable({
+
+            responsive: true,
+            autoWidth: false,
+            "language": {
+                "lengthMenu": "Mostrar _MENU_ Entradas",
+                "zeroRecords": "Sin resultados encontrados",
+                "info": "Mostrando _START_ a _END_ de _TOTAL_ Entradas",
+                "infoEmpty": "Mostrando 0 to 0 of 0 Entradas",
+                "infoFiltered": "(Filtrado de _MAX_ total entradas)",
+                "search": "Buscar:",
+                "paginate": {
+                    "first": "Primero",
+                    "last": "Ultimo",
+                    "next": "Siguiente",
+                    "previous": "Anterior"
+                },
+                buttons: [
+                    'copy', 'csv', 'excel', 'pdf', 'print'
+                ]
+            }
         });
+
+    });
+
+    //FUNCION QUE MUESTRA EL MODAL DE INGRESO 
+    $(document).on('click', '.create-modal', function() {
+        $('#create').modal('show');
+        $('.form-horizontal').show();
+        $('.modal-title').text('Registrar Nuevo Socio');
     });
 </script>
+
+<script>
+    function soloLetras(e) {
+        var key = e.keyCode || e.which,
+            tecla = String.fromCharCode(key).toLowerCase(),
+            letras = " áéíóúabcdefghijklmnñopqrstuvwxyz",
+            especiales = [8, 37, 39, 46],
+            tecla_especial = false;
+
+        for (var i in especiales) {
+            if (key == especiales[i]) {
+                tecla_especial = true;
+                break;
+            }
+        }
+
+        if (letras.indexOf(tecla) == -1 && !tecla_especial) {
+            return false;
+        }
+    }
+
+    function soloNumeros(e) {
+        var key = e.keyCode || e.which,
+            tecla = String.fromCharCode(key).toLowerCase(),
+            letras = "0123456789",
+            especiales = [8, 37, 39, 46],
+            tecla_especial = false;
+
+        for (var i in especiales) {
+            if (key == especiales[i]) {
+                tecla_especial = true;
+                break;
+            }
+        }
+
+        if (letras.indexOf(tecla) == -1 && !tecla_especial) {
+            return false;
+        }
+    }
+</script>
+
+<style>
+    .modal-header {
+        background-color: #57B9DF;
+        color: white;
+    }
+
+    th {
+        background-color: #57B9DF;
+
+    }
+
+    .text-center {
+        background-color: white;
+    }
+</style>
 @endpush
