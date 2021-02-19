@@ -46,7 +46,7 @@ class PersonController extends Controller
         $person->email = $request->email;
 
         $person->save();
-        return redirect()->route('people.index')->with('mensaje', 'Campeonato Agregado con éxito');
+        return redirect()->route('people.index')->with('mensaje', 'Socio Agregado con éxito');
     }
 
     /**
