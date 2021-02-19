@@ -91,25 +91,6 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($person as $dato)
-                                <tr>
-                                    <input type="hidden" class="serdelete_val" value="{{ $dato->id }}">
-                                    <td>{{$dato['id']}}</td>
-                                    <td>{{$dato['first_name']}}</td>
-                                    <td>{{$dato['last_name']}}</td>
-                                    <td>{{$dato['identification_card']}}</td>
-                                    <td>{{$dato['phone']}}</td>
-                                    <td>{{$dato['email']}}</td>
-                                    <td>
-                                        <a href="#" class="btn btn-warning btn-sm">
-                                            <i class="far fa-edit"></i>
-                                        </a>
-                                        <button type="button" href="#" class="btn btn-danger btn-sm jugadorDelete">
-                                            <i class="far fa-trash-alt"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                @endforeach
                             </tbody>
                         </table>
                     </div>
