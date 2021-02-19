@@ -91,6 +91,7 @@
                                 </tr>
                             </thead>
                             <tbody>
+<<<<<<< HEAD
                                 @foreach ($person as $dato)
                                 <tr>
                                     <input type="hidden" class="serdelete_val" value="{{ $dato->id }}">
@@ -110,6 +111,8 @@
                                     </td>
                                 </tr>
                                 @endforeach
+=======
+>>>>>>> 3dea230fccfb2e4c836b8f7d91d15c5572626d76
                             </tbody>
                         </table>
                     </div>
