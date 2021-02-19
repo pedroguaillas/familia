@@ -46,31 +46,35 @@
                     <div class="card-header">
                         <h3 class="card-title">NOMINA DE SOCIOS</h3>
                     </div><br>
-                    <div class="col-sm-12 col-md-6">
-                        <div class="dt-buttons btn-group flex-wrap">
-                            <button class="btn btn-secondary buttons-copy buttons-html5" tabindex="0" aria-controls="example1" type="button">
-                                <span>Copy</span>
-                            </button>
-                            <button class="btn btn-secondary buttons-csv buttons-html5" tabindex="0" aria-controls="example1" type="button">
-                                <span>CSV</span>
-                            </button>
-                            <button class="btn btn-secondary buttons-excel buttons-html5" tabindex="0" aria-controls="example1" type="button">
-                                <span>Excel</span>
-                            </button>
-                            <button class="btn btn-secondary buttons-pdf buttons-html5" tabindex="0" aria-controls="example1" type="button">
-                                <span>PDF</span>
-                            </button> <button class="btn btn-secondary buttons-print" tabindex="0" aria-controls="example1" type="button">
-                                <span>Print</span>
-                            </button>
+                    <div class="row">
+                        <div class="col-md-5">
+                        </div>
+                        <div class="col-sm-7 col-md-6">
 
+                            <div class="dt-buttons btn-group flex-wrap">
+                                <button class="btn btn-secondary buttons-copy buttons-html5" tabindex="0" aria-controls="example1" type="button">
+                                    <span>Copy</span>
+                                </button>
+                                <button class="btn btn-secondary buttons-csv buttons-html5" tabindex="0" aria-controls="example1" type="button">
+                                    <span>CSV</span>
+                                </button>
+                                <button class="btn btn-secondary buttons-excel buttons-html5" tabindex="0" aria-controls="example1" type="button">
+                                    <span>Excel</span>
+                                </button>
+                                <button class="btn btn-secondary buttons-pdf buttons-html5" tabindex="0" aria-controls="example1" type="button">
+                                    <span>PDF</span>
+                                </button> <button class="btn btn-secondary buttons-print" tabindex="0" aria-controls="example1" type="button">
+                                    <span>Print</span>
+                                </button>
+                            </div>
+                            <div class="dt-buttons btn-group flex-wrap">
+                                <a href="#" class="create-modal btn btn-success btn-sm">
+                                    <i class="fas fa-plus"></i>
+                                </a>
+                            </div>
                         </div>
-                        <div class="dt-buttons btn-group flex-wrap">
-                            <a href="#" class="create-modal btn btn-success btn-sm">
-                                <i class="fas fa-plus"></i>
-                            </a>
-                        </div>
+
                     </div>
-
                     <!-- /.card-header -->
 
                     <div class="card-body">
@@ -87,60 +91,25 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                @foreach ($person as $dato)
                                 <tr>
-                                    <td>Trident</td>
-                                    <td>Internet</td>
-                                    <td>Win 95+</td>
-                                    <td> 4</td>
-                                    <td>X</td>
-                                    <td>X</td>
+                                    <input type="hidden" class="serdelete_val" value="{{ $dato->id }}">
+                                    <td>{{$dato['id']}}</td>
+                                    <td>{{$dato['first_name']}}</td>
+                                    <td>{{$dato['last_name']}}</td>
+                                    <td>{{$dato['identification_card']}}</td>
+                                    <td>{{$dato['phone']}}</td>
+                                    <td>{{$dato['email']}}</td>
                                     <td>
                                         <a href="#" class="btn btn-warning btn-sm">
                                             <i class="far fa-edit"></i>
                                         </a>
                                         <button type="button" href="#" class="btn btn-danger btn-sm jugadorDelete">
-                                        <i class="far fa-trash-alt"></i>
+                                            <i class="far fa-trash-alt"></i>
                                         </button>
                                     </td>
                                 </tr>
-                                <tr>
-                                    <td>Trident</td>
-                                    <td>Internet</td>
-                                    <td>Win 95+</td>
-                                    <td> 4</td>
-                                    <td>X</td>
-                                    <td>X</td>
-                                    <td>edit</td>
-                                </tr>
-
-                                <tr>
-                                    <td>Trident</td>
-                                    <td>Internet</td>
-                                    <td>Win 95+</td>
-                                    <td> 4</td>
-                                    <td>X</td>
-                                    <td>X</td>
-                                    <td>edit</td>
-                                </tr>
-
-                                <tr>
-                                    <td>Trident</td>
-                                    <td>Internet</td>
-                                    <td>Win 95+</td>
-                                    <td> 4</td>
-                                    <td>X</td>
-                                    <td>X</td>
-                                    <td>edit</td>
-                                </tr>
-                                <tr>
-                                    <td>Trident</td>
-                                    <td>Internet</td>
-                                    <td>Win 95+</td>
-                                    <td> 4</td>
-                                    <td>X</td>
-                                    <td>X</td>
-                                    <td>edit</td>
-                                </tr>
+                                @endforeach
                             </tbody>
                         </table>
                     </div>
@@ -166,39 +135,39 @@
                     {{ csrf_field() }}
 
                     <div class="form-group row add">
-                        <label class="control-label col-sm-2" for="firstNamePerson"> Nombres </label>
+                        <label class="control-label col-sm-2" for="first_name"> Nombres </label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" id="firstNamePerson" name="firstNamePerson" placeholder="Ingrese nombres" onkeypress="return soloLetras(event)" required>
+                            <input type="text" class="form-control" id="first_name" name="first_name" placeholder="Ingrese nombres" onkeypress="return soloLetras(event)" required>
 
                         </div>
                     </div>
 
                     <div class="form-group row add">
-                        <label class="control-label col-sm-2" for="lastNamePerson "> Apellidos </label>
+                        <label class="control-label col-sm-2" for="last_name "> Apellidos </label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" id="lastNamePerson" name="lastNamePerson" placeholder="Ingrese apellidos" onkeypress="return soloLetras(event);" required>
+                            <input type="text" class="form-control" id="last_name" name="last_name" placeholder="Ingrese apellidos" onkeypress="return soloLetras(event);" required>
 
                         </div>
                     </div>
 
                     <div class="form-group row add">
-                        <label class="control-label col-sm-2" for="idPerson">C.I.</label>
+                        <label class="control-label col-sm-2" for="identification_card">C.I.</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" id="idPerson" name="idPerson" placeholder="Cédula de identidad" onkeypress="return soloNumeros(event)" maxlength="10" required>
+                            <input type="text" class="form-control" id="identification_card" name="identification_card" placeholder="Cédula de identidad" onkeypress="return soloNumeros(event)" maxlength="10" required>
                         </div>
                     </div>
 
                     <div class="form-group row add">
-                        <label class="control-label col-sm-2" for="phonePerson">Teléfono</label>
+                        <label class="control-label col-sm-2" for="phone">Teléfono</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" id="phonePerson" name="phonePerson" placeholder="Cédula de identidad" onkeypress="return soloNumeros(event)" maxlength="10" required>
+                            <input type="text" class="form-control" id="phone" name="phone" placeholder="Ingrese numero telefonico" onkeypress="return soloNumeros(event)" maxlength="10" required>
                         </div>
                     </div>
 
                     <div class="form-group row add">
-                        <label class="control-label col-sm-2" for="emailPerson">Correo</label>
+                        <label class="control-label col-sm-2" for="email">Correo</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" id="emailPerson" name="emailPerson" placeholder="Dirección correo" required>
+                            <input type="text" class="form-control" id="email" name="email" placeholder="Dirección correo" required>
                         </div>
                     </div>
 
