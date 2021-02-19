@@ -199,6 +199,7 @@
 <script>
     $(function() {
         $('#example1').DataTable({
+
             responsive: true,
             autoWidth: false,
             "language": {
@@ -226,7 +227,7 @@
     $(document).on('click', '.create-modal', function() {
         $('#create').modal('show');
         $('.form-horizontal').show();
-        $('.modal-title').text('Registrar Socio');
+        $('.modal-title').text('Registrar Nuevo Socio');
     });
 </script>
 
