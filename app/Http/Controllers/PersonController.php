@@ -109,6 +109,6 @@ class PersonController extends Controller
     {
         $registro = Person::findOrFail($id);
         $registro->delete();
-        return response()->json(['status' => 'Registro eliminado']);
+        return response()->json(['status' => 'Registro eliminado.']);
     }
 }
