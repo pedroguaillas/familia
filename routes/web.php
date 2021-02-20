@@ -24,4 +24,6 @@ Route::resource('contributions', 'ContributionController');
 
 Route::resource('loans', 'LoanController');
 
+//PERSON ROUTES
 Route::resource('people', 'PersonController');
+Route::post('/people.delete/{id}', 'PersonController@delete');
