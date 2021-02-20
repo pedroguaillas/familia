@@ -66,9 +66,10 @@ class PersonController extends Controller
      * @param  \App\Models\Person  $person
      * @return \Illuminate\Http\Response
      */
-    public function edit(Person $person)
+    public function edit($id)
     {
-        //
+        $person = Person::findOrFail($id);
+        return view('editPeople', compact('person'));
     }
 
     /**
@@ -78,9 +79,19 @@ class PersonController extends Controller
      * @param  \App\Models\Person  $person
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Person $person)
+    public function update(Request $request, $id)
     {
-        //
+        $dato = Person::findOrFail($id);
+
+  
+        $dato->first_name = $request->first_name;
+        $dato->last_name = $request->last_name;
+        $dato->identification_card = $request->identification_card;
+        $dato->phone = $request->phone;
+        $dato->email = $request->email;
+
+        $dato->save();
+        return redirect()->route('people.index')->with('mensaje', 'Datos del socio actulizado');
     }
 
     /**
@@ -92,5 +103,12 @@ class PersonController extends Controller
     public function destroy(Person $person)
     {
         //
+    }
+
+    public function delete($id)
+    {
+        $registro = Person::findOrFail($id);
+        $registro->delete();
+        return response()->json(['status' => 'Registro eliminado']);
     }
 }
