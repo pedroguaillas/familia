@@ -46,7 +46,7 @@ class PersonController extends Controller
         $person->email = $request->email;
 
         $person->save();
-        return redirect()->route('people.index')->with('mensaje', 'Socio Agregado con éxito');
+        return redirect()->route('people.index')->with('mensaje', 'Socio Agregado con éxito.');
     }
 
     /**
@@ -91,7 +91,7 @@ class PersonController extends Controller
         $dato->email = $request->email;
 
         $dato->save();
-        return redirect()->route('people.index')->with('mensaje', 'Datos del socio actulizado');
+        return redirect()->route('people.index')->with('mensaje', 'Datos del socio actulizado.');
     }
 
     /**
