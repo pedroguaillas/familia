@@ -27,3 +27,4 @@ Route::resource('loans', 'LoanController');
 //PERSON ROUTES
 Route::resource('people', 'PersonController');
 Route::post('/people.delete/{id}', 'PersonController@delete');
+Route::get('peopleReport', 'PersonController@personReport')->name('reporte_socios');

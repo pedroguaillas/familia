@@ -16,17 +16,9 @@
     <!-- <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css"> -->
     <!-- Theme style -->
     <link href="{{ asset('dist/css/adminlte.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('dist/css/styles.css') }}" rel="stylesheet">
     <!-- <link rel="stylesheet" href="dist/css/adminlte.min.css"> -->
 </head>
-<!--
-`body` tag options:
-
-  Apply one or more of the following classes to to the body tag
-  to get the desired effect
-
-  * sidebar-collapse
-  * sidebar-mini
--->
 
 <body class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed">
     <div class="wrapper">
@@ -154,9 +146,8 @@
     <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
     <script src="{{ asset('dist/js/pages/dashboard3.js') }}"></script>
     <!-- <script src="dist/js/pages/dashboard3.js"></script> -->
-
+    <script src="{{ asset('dist/js/js.js') }}"></script>
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
     @stack('scripts')
 </body>
-
 </html>
