@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Person;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade as PDF;
 
 class PersonController extends Controller
 {
@@ -105,6 +106,14 @@ class PersonController extends Controller
         //
     }
 
+
+    public function personReport()
+    {
+        $personReport = Person::all();
+        $pdf = PDF::loadView('peopleReport',  compact('personReport'));
+
+        return $pdf->stream('reporte_socios.pdf');
+    }
     public function delete($id)
     {
         $registro = Person::findOrFail($id);

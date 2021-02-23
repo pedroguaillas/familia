@@ -1,0 +1,14 @@
+
+/* STYLE FOR MODAL DATATABLE */
+    .modal-header {
+        background-color: #57B9DF;
+        color: white;
+    }
+
+    th {
+        background-color: #57B9DF;
+    }
+
+    .text-center {
+        background-color: white;
+    }

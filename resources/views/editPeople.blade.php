@@ -48,42 +48,39 @@
 
                      <div class="row">
 
-                        <div class="col-md-4"></div>
+                        <div class="col-md-2"></div>
 
                         <div class="col-md-4">
-                           <div class="form-group row add ">
+
+                           <div class="form-group">
                               <label for="identification_card"> Cédula </label>
                               <input type="text" class="form-control" name="identification_card" value="{{$person['identification_card']}}">
                            </div>
-
-
-
-                           <div class="form-group row add ">
+                           <div class="form-group">
                               <label for="first_name"> Nombre </label>
                               <input type="text" class="form-control" name="first_name" value="{{$person['first_name']}}">
                            </div>
-
-
-
-                           <div class="form-group row add ">
+                           <div class="form-group">
                               <label for="last_name"> Apellido </label>
                               <input type="text" class="form-control" name="last_name" value="{{$person['last_name']}}">
                            </div>
-
-
-                           <div class="form-group row add ">
+                        </div>
+                        <div class="col-md-4">
+                           <div class="form-group">
                               <label for="phone"> Teléfono </label>
                               <input type="text" class="form-control" name="phone" value="{{$person['phone']}}">
                            </div>
-
-
-
-                           <div class="form-group row add ">
+                           <div class="form-group">
                               <label for="email"> Correo electrónico </label>
                               <input type="text" class="form-control" name="email" value="{{$person['email']}}">
                            </div>
-
-
+                        </div>
+                     </div>
+                     <br>
+                     <div class="row">
+                        <div class="col-md-4">
+                        </div>
+                        <div class="col-md-4">
                            <div class="container-fluid">
                               <button class="btn btn-success" type="submit">
                                  <i class="far fa-check-square"></i> Guardar
@@ -94,9 +91,7 @@
                            </div>
                         </div>
                      </div>
-
                   </form>
-
                </div>
                <!-- /.card-body -->
             </div>
@@ -107,16 +102,13 @@
    </div>
    <!-- /.container-fluid -->
 </div>
-
 @endsection
 
 @push('scripts')
 <!-- Page specific script -->
-
 <script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.10.23/js/dataTables.bootstrap4.min.js"></script>
 <script src="https://cdn.datatables.net/responsive/2.2.7/js/dataTables.responsive.min.js"></script>
 <script src="https://cdn.datatables.net/responsive/2.2.7/js/responsive.bootstrap4.min.js"></script>
 <script src="https://unpkg.com/ionicons@5.4.0/dist/ionicons.js"></script>
-
 @endpush
