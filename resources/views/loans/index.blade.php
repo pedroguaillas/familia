@@ -39,13 +39,12 @@
                     </button>
                 </div>
                 <div class="dt-buttons btn-group flex-wrap">
-                    <a href="#" class="create-modal btn btn-success btn-lg">
+                    <a href="{{ route('loans.create') }}" class="btn btn-success btn-lg">
                         <i class="fas fa-plus"></i>
                     </a>
                 </div>
             </div>
         </div>
-
         <!-- /.row -->
     </div><!-- /.container-fluid -->
 </div>
@@ -67,24 +66,25 @@
                                 <tr>
                                     <th>Nº</th>
                                     <th>DEUDOR</th>
-                                    <th>INTERES</th>
                                     <th>MONTO</th>
-                                    <th>FECHA</th>
+                                    <th>INTERES</th>
                                     <th>PAGADO</th>
                                     <th>SALDO</th>
+                                    <th>FECHA</th>
                                     <th></th>
                                 </tr>
                             </thead>
                             <tbody>
+                                @foreach ($loans as $loan)
                                 <tr>
                                     <!-- <input type="hidden" class="serdelete_val" value="1"> -->
-                                    <td>1</td>
-                                    <td>ANDERSON GOMEZ</td>
-                                    <td>2%</td>
-                                    <td>$1300</td>
-                                    <td>12/03/2020</td>
+                                    <td>{{$loan['id']}}</td>
+                                    <td>{{$loan['first_name'].' '. $loan['last_name']}}</td>
+                                    <td>{{'$'. number_format($loan['amount'], 2, ',', '.')}}</td>
+                                    <td>{{$loan['interest_percentage']. '%'}}</td>
                                     <td>$500</td>
                                     <td>$800</td>
+                                    <td>{{substr($loan['date'], 0, 10)}}</td>
                                     <td>
                                         <a href="#" class="btn btn-warning btn-sm">
                                             <i class="far fa-edit"></i>
@@ -94,6 +94,7 @@
                                         </button>
                                     </td>
                                 </tr>
+                                @endforeach
                             </tbody>
                         </table>
                     </div>
@@ -107,60 +108,6 @@
     <!-- /.container-fluid -->
 </div>
 <!-- /.content -->
-
-<div id="create" class="modal fade" role="dialog">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title"></h4>
-            </div>
-            <div class="modal-body">
-                <form class="form-horizontal" role="form" method="POST" enctype="multipart/form-data" action="">
-                    {{ csrf_field() }}
-                    <div class="form-group row add">
-                        <label class="control-label col-sm-2" for="first_name"> Nombres </label>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" id="first_name" name="first_name" placeholder="Ingrese nombres" onkeypress="return soloLetras(event)" required>
-                        </div>
-                    </div>
-                    <div class="form-group row add">
-                        <label class="control-label col-sm-2" for="last_name "> Apellidos </label>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" id="last_name" name="last_name" placeholder="Ingrese apellidos" onkeypress="return soloLetras(event);" required>
-                        </div>
-                    </div>
-                    <div class="form-group row add">
-                        <label class="control-label col-sm-2" for="identification_card">C.I.</label>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" id="identification_card" name="identification_card" placeholder="Cédula de identidad" onkeypress="return soloNumeros(event)" maxlength="10" required>
-                        </div>
-                    </div>
-                    <div class="form-group row add">
-                        <label class="control-label col-sm-2" for="phone">Teléfono</label>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" id="phone" name="phone" placeholder="Ingrese numero telefonico" onkeypress="return soloNumeros(event)" maxlength="10" required>
-                        </div>
-                    </div>
-                    <div class="form-group row add">
-                        <label class="control-label col-sm-2" for="email">Correo</label>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" id="email" name="email" placeholder="Dirección correo" required>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button class="btn btn-success" type="submit" id="add">
-                            <span class="glyphicon glyphicon-plus"></span> Guardar
-                        </button>
-                        <button class="btn btn-warning" type="button" data-dismiss="modal">
-                            <span class="glyphicon glyphicon-remove"></span> Cancelar
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
 @endsection
 
 @push('scripts')
@@ -170,8 +117,7 @@
 <script src="https://cdn.datatables.net/1.10.23/js/dataTables.bootstrap4.min.js"></script>
 <script src="https://cdn.datatables.net/responsive/2.2.7/js/dataTables.responsive.min.js"></script>
 <script src="https://cdn.datatables.net/responsive/2.2.7/js/responsive.bootstrap4.min.js"></script>
-<script src="https://unpkg.com/ionicons@5.4.0/dist/ionicons.js"></script>
-
+<!-- <script src="https://unpkg.com/ionicons@5.4.0/dist/ionicons.js"></script> -->
 
 <script>
     $(document).ready(function() {
@@ -230,7 +176,7 @@
                 "lengthMenu": "Mostrar _MENU_ Entradas",
                 "zeroRecords": "Sin resultados encontrados",
                 "info": "Mostrando _START_ a _END_ de _TOTAL_ Entradas",
-                "infoEmpty": "Mostrando 0 to 0 of 0 Entradas",
+                "infoEmpty": "Mostrando 0 a 0 de 0 Entradas",
                 "infoFiltered": "(Filtrado de _MAX_ total entradas)",
                 "search": "Buscar:",
                 "paginate": {
@@ -242,16 +188,7 @@
             }
         });
     });
-
-    //FUNCION QUE MUESTRA EL MODAL DE INGRESO 
-    $(document).on('click', '.create-modal', function() {
-        $('#create').modal('show');
-        $('.form-horizontal').show();
-        $('.modal-title').text('Registrar Nuevo Socio');
-    });
 </script>
-
-
 
 <script>
     function soloLetras(e) {

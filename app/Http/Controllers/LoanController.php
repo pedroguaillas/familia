@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Loan;
+use App\Person;
 use Illuminate\Http\Request;
 
 class LoanController extends Controller
@@ -14,7 +15,11 @@ class LoanController extends Controller
      */
     public function index()
     {
-        return view('loans');
+        $loans = Loan::select('loans.*', 'people.first_name', 'people.last_name')
+            ->join('people', 'people.id', 'loans.person_id')
+            ->where('loans.state', 'activo')->get();
+
+        return view('loans.index', compact('loans'));
     }
 
     /**
@@ -24,7 +29,8 @@ class LoanController extends Controller
      */
     public function create()
     {
-        //
+        $people = Person::all();
+        return view('loans.create', compact('people'));
     }
 
     /**
@@ -35,7 +41,8 @@ class LoanController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        Loan::create($request->all());
+        return $this->index();
     }
 
     /**
