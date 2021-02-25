@@ -8,13 +8,10 @@
 <!-- <link rel="stylesheet" href="../../plugins/datatables-responsive/css/responsive.bootstrap4.min.css"> -->
 <link href="{{ asset('plugins/datatables-buttons/css/buttons.bootstrap4.min.css') }}" rel="stylesheet">
 <!-- <link rel="stylesheet" href="../../plugins/datatables-buttons/css/buttons.bootstrap4.min.css"> -->
-
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.css">
 <link rel="stylesheet" href="https://cdn.datatables.net/1.10.23/css/dataTables.bootstrap4.min.css">
 <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.2.7/css/responsive.bootstrap4.min.css">
-
-
 @endpush
 
 @section('content')
@@ -26,30 +23,7 @@
     </div>
     @endif
 </div>
-<!-- Content Header (Page header) -->
-<div class="content-header">
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-md-5">
-            </div>
-            <div class="col-sm-7 col-md-6">
-                <div class="dt-buttons btn-group flex-wrap">
-                    <button class="btn btn-secondary buttons-pdf buttons-html5" tabindex="0" aria-controls="example1" type="button">
-                        <span>PDF</span>
-                    </button>
-                </div>
-                <div class="dt-buttons btn-group flex-wrap">
-                    <a href="{{ route('loans.create') }}" class="btn btn-success btn-lg">
-                        <i class="fas fa-plus"></i>
-                    </a>
-                </div>
-            </div>
-        </div>
-        <!-- /.row -->
-    </div><!-- /.container-fluid -->
-</div>
-<!-- /.content-header -->
-<!-- Main content -->
+</br>
 <div class="content">
     <div class="container-fluid">
         <div class="row">
@@ -59,6 +33,18 @@
                 <div class="card">
                     <div class="card-header">
                         <h3 class="card-title">PRESTAMOS</h3>
+                        <div class="card-tools">
+                            <div class="dt-buttons btn-group flex-wrap">
+                                <button class="btn btn-secondary buttons-pdf buttons-html5" tabindex="0" aria-controls="example1" type="button">
+                                    <span>PDF</span>
+                                </button>
+                            </div>
+                            <div class="dt-buttons btn-group flex-wrap">
+                                <a href="{{ route('loans.create') }}" class="btn btn-success">
+                                    <i class="fas fa-plus"></i>
+                                </a>
+                            </div>
+                        </div>
                     </div>
                     <div class="card-body">
                         <table id="example1" class="table table-striped table-bordered" style="width:100%">
@@ -86,12 +72,27 @@
                                     <td>$800</td>
                                     <td>{{substr($loan['date'], 0, 10)}}</td>
                                     <td>
-                                        <a href="#" class="btn btn-warning btn-sm">
-                                            <i class="far fa-edit"></i>
-                                        </a>
-                                        <button class="btn btn-danger btn-sm personDelete">
-                                            <i class="far fa-trash-alt"></i>
-                                        </button>
+                                        <ul class="navbar-nav ml-auto">
+                                            <li class="nav-item dropdown">
+                                                <a class="nav-link" data-toggle="dropdown" href="#">
+                                                    <i class="fa fa-angle-down"></i>
+                                                </a>
+                                                <div class="dropdown-menu dropdown-menu-md dropdown-menu-right">
+                                                    <a href="{{ route('prestamos.pagos', $loan['id']) }}" class="dropdown-item">
+                                                        <i class="fa fa-money-bill"></i> Pagos
+                                                    </a>
+                                                    <a href="{{ route('prestamo.imprimir')}}" class="dropdown-item" target="_blank">
+                                                        <i class="far fa-file"></i> Imprimir
+                                                    </a>
+                                                    <a href="#" class="dropdown-item">
+                                                        <i class="far fa-edit"></i> Editar
+                                                    </a>
+                                                    <a href="#" class="dropdown-item">
+                                                        <i class="far fa-trash-alt"></i> Anular
+                                                    </a>
+                                                </div>
+                                            </li>
+                                        </ul>
                                     </td>
                                 </tr>
                                 @endforeach
@@ -112,134 +113,8 @@
 
 @push('scripts')
 <!-- Page specific script -->
-
 <script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.10.23/js/dataTables.bootstrap4.min.js"></script>
 <script src="https://cdn.datatables.net/responsive/2.2.7/js/dataTables.responsive.min.js"></script>
 <script src="https://cdn.datatables.net/responsive/2.2.7/js/responsive.bootstrap4.min.js"></script>
-<!-- <script src="https://unpkg.com/ionicons@5.4.0/dist/ionicons.js"></script> -->
-
-<script>
-    $(document).ready(function() {
-
-        $.ajaxSetup({
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-        });
-
-        $('.personDelete').click(function(e) {
-            e.preventDefault();
-            var csrf_token = $('meta[name="csrf-token"]').attr('content');
-            var delete_id = $(this).closest("tr").find('.serdelete_val').val();
-            swal({
-                    title: "¿Esta seguro?",
-                    text: "Eliminar Socio",
-                    icon: "warning",
-                    buttons: ["Cancelar", "Ok"],
-                    dangerMode: true,
-                })
-                .then((willDelete) => {
-                    if (willDelete) {
-
-                        var data = {
-                            "_token": $('input[name="csrf-token"]').val(),
-                            "id": delete_id,
-                        };
-
-                        $.ajax({
-                            type: "POST",
-                            url: '/people.delete/' + delete_id,
-                            data: data,
-                            success: function(response) {
-                                swal(response.status, {
-                                        icon: "success",
-                                    })
-                                    .then((result) => {
-                                        location.reload();
-                                    });
-                            }
-                        });
-                    }
-                });
-        });
-    });
-</script>
-
-<script>
-    $(function() {
-        $('#example1').DataTable({
-
-            responsive: true,
-            autoWidth: false,
-            "language": {
-                "lengthMenu": "Mostrar _MENU_ Entradas",
-                "zeroRecords": "Sin resultados encontrados",
-                "info": "Mostrando _START_ a _END_ de _TOTAL_ Entradas",
-                "infoEmpty": "Mostrando 0 a 0 de 0 Entradas",
-                "infoFiltered": "(Filtrado de _MAX_ total entradas)",
-                "search": "Buscar:",
-                "paginate": {
-                    "first": "Primero",
-                    "last": "Ultimo",
-                    "next": "Siguiente",
-                    "previous": "Anterior"
-                }
-            }
-        });
-    });
-</script>
-
-<script>
-    function soloLetras(e) {
-        var key = e.keyCode || e.which,
-            tecla = String.fromCharCode(key).toLowerCase(),
-            letras = " áéíóúabcdefghijklmnñopqrstuvwxyz",
-            especiales = [8, 37, 39, 46],
-            tecla_especial = false;
-
-        for (var i in especiales) {
-            if (key == especiales[i]) {
-                tecla_especial = true;
-                break;
-            }
-        }
-
-        if (letras.indexOf(tecla) == -1 && !tecla_especial) {
-            return false;
-        }
-    }
-
-    function soloNumeros(e) {
-        var key = e.keyCode || e.which,
-            tecla = String.fromCharCode(key).toLowerCase(),
-            letras = "0123456789",
-            especiales = [8, 37, 39, 46],
-            tecla_especial = false;
-
-        for (var i in especiales) {
-            if (key == especiales[i]) {
-                tecla_especial = true;
-                break;
-            }
-        }
-        if (letras.indexOf(tecla) == -1 && !tecla_especial) {
-            return false;
-        }
-    }
-</script>
 @endpush
-<style>
-    .modal-header {
-        background-color: #57B9DF;
-        color: white;
-    }
-
-    th {
-        background-color: #57B9DF;
-    }
-
-    .text-center {
-        background-color: white;
-    }
-</style>

@@ -139,7 +139,7 @@
                         </thead>
                         <tbody id="tbody-rows-modal">
                             @foreach ($people as $person)
-                            <tr>
+                            <tr onclick='select_person({{$person['id']}})'>
                                 <td>{{$person['identification_card']}}</td>
                                 <td>{{$person['first_name']}}</td>
                                 <td>{{$person['last_name']}}</td>
@@ -159,7 +159,7 @@
 
 <script>
     // Var global people
-    const people = "{{$people}}";
+    // const people = "{{$people}}";
 
     //FUNCION QUE MUESTRA EL MODAL PARA SELECCIONAR SOLICITANTE 
     $(document).on('click', '#select-person-modal', function() {

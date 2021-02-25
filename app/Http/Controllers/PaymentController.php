@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Loan;
 use App\Payment;
+use App\Person;
 use Illuminate\Http\Request;
 
 class PaymentController extends Controller
@@ -15,6 +17,18 @@ class PaymentController extends Controller
     public function index()
     {
         //
+    }
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index2($id)
+    {
+        $loan = Loan::findOrFail($id);
+        $person = $loan->person;
+
+        return view('payments.index', compact('person'));
     }
 
     /**
