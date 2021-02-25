@@ -23,6 +23,10 @@ Route::get('/home', 'HomeController@index')->name('home');
 Route::resource('contributions', 'ContributionController');
 
 Route::resource('loans', 'LoanController');
+Route::get('prestamo/imprimir', 'LoanController@showPdf')->name('prestamo.imprimir');
+
+Route::resource('payments', 'PaymentController');
+Route::get('prestamos/pagos/{id}', 'PaymentController@index2')->name('prestamos.pagos');
 
 //PERSON ROUTES
 Route::resource('people', 'PersonController');

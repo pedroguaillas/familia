@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Loan;
 use App\Person;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade as PDF;
 
 class LoanController extends Controller
 {
@@ -42,7 +43,8 @@ class LoanController extends Controller
     public function store(Request $request)
     {
         Loan::create($request->all());
-        return $this->index();
+        return redirect()->route('loans.index')->with('mensaje', 'Se registro un nuevo prestamo');
+        // return $this->index();
     }
 
     /**
@@ -54,6 +56,13 @@ class LoanController extends Controller
     public function show(Loan $loan)
     {
         //
+    }
+
+    public function showPdf()
+    {
+        $pdf = PDF::loadView('loans.print_unit');
+
+        return $pdf->stream('prestamo.pdf');
     }
 
     /**
