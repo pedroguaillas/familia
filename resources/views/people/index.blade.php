@@ -23,29 +23,7 @@
     </div>
     @endif
 </div>
-<!-- Content Header (Page header) -->
-<div class="content-header">
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-md-5">
-            </div>
-            <div class="col-sm-7 col-md-6">
-                <div class="dt-buttons btn-group flex-wrap">
-                    <a class="btn btn-secondary btn-lg" href="{{ route('reporte_socios')}}" target="_blank">
-                    <i class="far fa-file-pdf"></i>
-                    </a>
-                </div>
-                <div class="dt-buttons btn-group flex-wrap">
-                    <a href="#" class="create-modal btn btn-success btn-lg">
-                        <i class="fas fa-plus"></i>
-                    </a>
-                </div>
-            </div>
-        </div>
-        <!-- /.row -->
-    </div><!-- /.container-fluid -->
-</div>
-<!-- /.content-header -->
+<br>
 <!-- Main content -->
 <div class="content">
     <div class="container-fluid">
@@ -56,28 +34,59 @@
                 <div class="card">
                     <div class="card-header">
                         <h3 class="card-title">SOCIOS Y DEUDORES</h3>
+                        <div class="card-tools">
+                            <div class="dt-buttons btn-group flex-wrap">
+                                <ul class="navbar-nav ml-auto">
+                                    <li class="nav-item dropdown">
+                                        <a class="btn btn-secondary btn-sm" data-toggle="dropdown" href="#">
+                                            <i class="far fa-file-pdf"></i>
+                                        </a>
+                                        <div class="dropdown-menu dropdown-menu-md dropdown-menu-right">
+                                            <a href="{{ route('personas.reporte', 'socio')}}" class="dropdown-item" target="_blank">
+                                                <i class="fa fa-money-bill"></i> Socios
+                                            </a>
+                                            <a href="{{ route('personas.reporte', 'particular')}}" class="dropdown-item" target="_blank">
+                                                <i class="far fa-file"></i> Particulares
+                                            </a>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="dt-buttons btn-group flex-wrap">
+                                <a href="#" class="create-modal btn btn-success btn-sm">
+                                    <i class="fas fa-plus"></i>
+                                </a>
+                            </div>
+
+                        </div>
                     </div>
                     <div class="card-body">
                         <table id="example1" class="table table-striped table-bordered" style="width:100%">
                             <thead>
                                 <tr>
-                                    <th>Nº</th>
+                                    <th>CEDULA</th>
                                     <th>NOMBRES</th>
                                     <th>APELLIDOS</th>
-                                    <th>Nº CEDULA</th>
+                                    <th>TIPO</th>
                                     <th>TELEFONO</th>
                                     <th>CORREO</th>
                                     <th></th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($person as $dato)
+                                @foreach ($people as $dato)
                                 <tr>
                                     <input type="hidden" class="serdelete_val" value="{{ $dato->id }}">
-                                    <td>{{$dato['id']}}</td>
+                                    <td>{{$dato['identification_card']}}</td>
                                     <td>{{$dato['first_name']}}</td>
                                     <td>{{$dato['last_name']}}</td>
-                                    <td>{{$dato['identification_card']}}</td>
+                                    <td>
+                                        @if($dato['type'] === 'socio' )
+                                        <span class="badge bg-success" style="font-size:0.9em">{{$dato['type']}}</span>
+                                        @else
+                                        {{$dato['type']}}
+                                        @endif
+                                    </td>
                                     <td>{{$dato['phone']}}</td>
                                     <td>{{$dato['email']}}</td>
                                     <td>
@@ -102,52 +111,65 @@
     </div>
     <!-- /.container-fluid -->
 </div>
-<!-- /.content -->
+<!-- /.MODAL ADD -->
 <div id="create" class="modal fade" role="dialog">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title"></h4>
+                <h4 class="modal-title" style="margin: auto;"></h4>
             </div>
             <div class="modal-body">
                 <form class="form-horizontal" role="form" method="POST" enctype="multipart/form-data" action="">
                     {{ csrf_field() }}
                     <div class="form-group row add">
+                        <label class="control-label col-sm-2" for="identification_card">Cédula</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control form-control-sm" id="identification_card" name="identification_card" onkeypress="return soloNumeros(event)" maxlength="10" required>
+                        </div>
+                    </div>
+                    <div class="form-group row add">
                         <label class="control-label col-sm-2" for="first_name"> Nombres </label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" id="first_name" name="first_name" placeholder="Ingrese nombres" onkeypress="return soloLetras(event)" required>
+                            <input type="text" class="form-control form-control-sm" id="first_name" name="first_name" onkeypress="return soloLetras(event)" required>
                         </div>
                     </div>
                     <div class="form-group row add">
                         <label class="control-label col-sm-2" for="last_name "> Apellidos </label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" id="last_name" name="last_name" placeholder="Ingrese apellidos" onkeypress="return soloLetras(event);" required>
+                            <input type="text" class="form-control form-control-sm" id="last_name" name="last_name" onkeypress="return soloLetras(event);" required>
                         </div>
                     </div>
                     <div class="form-group row add">
-                        <label class="control-label col-sm-2" for="identification_card">NºCédula</label>
+                        <label class="control-label col-sm-2" for="interest_percentage">Tipo</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" id="identification_card" name="identification_card" placeholder="Cédula de identidad" onkeypress="return soloNumeros(event)" maxlength="10" required>
+                            <select class="custom-select form-control form-control-sm" id="type" name="type" required>
+                                <option>Seleccione</option>
+                                <option value="socio">Socio</option>
+                                <option value="particular">Particular</option>
+
+                            </select>
                         </div>
                     </div>
+
                     <div class="form-group row add">
                         <label class="control-label col-sm-2" for="phone">Teléfono</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" id="phone" name="phone" placeholder="Ingrese numero telefonico" onkeypress="return soloNumeros(event)" maxlength="10" required>
+                            <input type="text" class="form-control form-control-sm" id="phone" name="phone" onkeypress="return soloNumeros(event)" maxlength="10">
                         </div>
                     </div>
+
                     <div class="form-group row add">
                         <label class="control-label col-sm-2" for="email">Correo</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" id="email" name="email" placeholder="Dirección correo" required>
+                            <input type="text" class="form-control form-control-sm" id="email" name="email">
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button class="btn btn-success" type="submit" id="add">
-                            <span class="glyphicon glyphicon-plus"></span> Guardar
+                            Guardar
                         </button>
                         <button class="btn btn-warning" type="button" data-dismiss="modal">
-                            <span class="glyphicon glyphicon-remove"></span> Cancelar
+                            Cancelar
                         </button>
                     </div>
                 </form>

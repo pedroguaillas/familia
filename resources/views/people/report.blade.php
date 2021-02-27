@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Personal</title>
 </head>
 
 <body>
@@ -16,8 +16,7 @@
         </a>
         <nav>
             <ul>
-                <h4><b><i>CAJA FAMILIAR</i></b></h4>
-
+                <h4>CAJA FAMILIAR</h4>
             </ul>
         </nav>
     </header><br>
@@ -30,29 +29,28 @@
                     <!-- card -->
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-title">SOCIOS Y DEUDORES</h3>
+                            <h3 class="card-title"> {{ strtoupper( $people[0]->type) }} </h3>
                         </div>
                         <div class="card-body">
                             <table id="example1" class="table table-striped table-bordered" style="width:100%">
                                 <thead>
                                     <tr>
-                                        <th>Nº</th>
+                                        <th>CEDULA</th>
                                         <th>NOMBRES</th>
                                         <th>APELLIDOS</th>
-                                        <th>Nº CEDULA</th>
+                                        <th>TIPO</th>
                                         <th>TELEFONO</th>
                                         <th>CORREO</th>
-
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($personReport as $dato)
+                                    @foreach ($people as $dato)
                                     <tr>
                                         <input type="hidden" class="serdelete_val" value="{{ $dato->id }}">
-                                        <td>{{$dato['id']}}</td>
+                                        <td>{{$dato['identification_card']}}</td>
                                         <td>{{$dato['first_name']}}</td>
                                         <td>{{$dato['last_name']}}</td>
-                                        <td>{{$dato['identification_card']}}</td>
+                                        <td>{{$dato['type']}}</td>
                                         <td>{{$dato['phone']}}</td>
                                         <td>{{$dato['email']}}</td>
 
@@ -84,6 +82,7 @@
         padding: 0;
         font-size: 1em;
         line-height: 1.5em;
+        font-family: sans-serif;
     }
 
     #main-header {
@@ -144,6 +143,7 @@
         table-layout: fixed;
         width: 100%;
         border-collapse: collapse;
+
     }
 
     th,

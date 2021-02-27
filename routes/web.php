@@ -25,10 +25,11 @@ Route::resource('contributions', 'ContributionController');
 Route::resource('loans', 'LoanController');
 Route::get('prestamo/imprimir', 'LoanController@showPdf')->name('prestamo.imprimir');
 
+//PAYMENT ROUTES 
 Route::resource('payments', 'PaymentController');
 Route::get('prestamos/pagos/{id}', 'PaymentController@index2')->name('prestamos.pagos');
 
 //PERSON ROUTES
 Route::resource('people', 'PersonController');
 Route::post('/people.delete/{id}', 'PersonController@delete');
-Route::get('peopleReport', 'PersonController@personReport')->name('reporte_socios');
+Route::get('personas/reporte/{type}', 'PersonController@report')->name('personas.reporte');
