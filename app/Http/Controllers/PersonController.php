@@ -15,8 +15,8 @@ class PersonController extends Controller
      */
     public function index()
     {
-        $person = Person::all();
-        return view('people', compact('person'));
+        $people = Person::all();
+        return view('people.index', compact('people'));
     }
 
     /**
@@ -37,17 +37,15 @@ class PersonController extends Controller
      */
     public function store(Request $request)
     {
-      
-        $person = new Person;
-
-        $person->first_name = $request->first_name;
-        $person->last_name = $request->last_name;
-        $person->identification_card = $request->identification_card;
-        $person->phone = $request->phone;
-        $person->email = $request->email;
-
-        $person->save();
-        return redirect()->route('people.index')->with('mensaje', 'Socio Agregado con éxito.');
+        try {
+            $person =  Person::create($request->all());
+            return redirect()->route('people.index')->with('mensaje', (($request->type === 'socio') ? 'Socio' : 'Persona particular') . ' agregado con éxito.');
+        } catch (\Illuminate\Database\QueryException $e) {
+            $errorcode = $e->errorInfo[1];
+            if ($errorcode === 1062) {
+                return redirect()->route('people.index')->with('mensaje', 'Ya se ha registrado una persona con la cédula ' . $request->identification_card);
+            }
+        }
     }
 
     /**
@@ -70,7 +68,7 @@ class PersonController extends Controller
     public function edit($id)
     {
         $person = Person::findOrFail($id);
-        return view('editPeople', compact('person'));
+        return view('people.editPeople', compact('person'));
     }
 
     /**
@@ -84,7 +82,7 @@ class PersonController extends Controller
     {
         $dato = Person::findOrFail($id);
 
-  
+
         $dato->first_name = $request->first_name;
         $dato->last_name = $request->last_name;
         $dato->identification_card = $request->identification_card;
@@ -107,13 +105,14 @@ class PersonController extends Controller
     }
 
 
-    public function personReport()
+    public function report($type)
     {
-        $personReport = Person::all();
-        $pdf = PDF::loadView('peopleReport',  compact('personReport'));
+        $people = Person::where('type', $type)->get();
 
+        $pdf = PDF::loadView('people.report',  compact('people'));
         return $pdf->stream('reporte_socios.pdf');
     }
+
     public function delete($id)
     {
         $registro = Person::findOrFail($id);
