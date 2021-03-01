@@ -133,7 +133,7 @@
                     <table class="table table-head-fixed text-nowrap">
                         <thead>
                             <tr>
-                                <th>Cedula</th>
+                                <th>Cédula</th>
                                 <th>Nombres</th>
                                 <th>Apellidos</th>
                                 <th>Tipo</th>
@@ -190,7 +190,9 @@
             html += '<td>' + person.identification_card + '</td>'
             html += '<td>' + person.first_name + '</td>'
             html += '<td>' + person.last_name + '</td>'
-            html += '<td>' + person.type + '</td>'
+            html += '<td>'
+            html += '<span class="badge ' + (person.type === 'socio' ? 'bg-success' : 'bg-warning') + '" style="font-size:0.9em">' + person.type + '</span>'
+            html += '</td>'
             html += "</tr>"
         })
         $('#tbody-rows-modal').html(html)
