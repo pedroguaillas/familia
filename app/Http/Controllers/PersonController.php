@@ -19,6 +19,12 @@ class PersonController extends Controller
         return view('people', compact('person'));
     }
 
+    public function indexJson()
+    {
+        $people = Person::where('state', 'activo')->get();
+        return response()->json(['people' => $people]);
+    }
+
     /**
      * Show the form for creating a new resource.
      *
@@ -37,7 +43,7 @@ class PersonController extends Controller
      */
     public function store(Request $request)
     {
-      
+
         $person = new Person;
 
         $person->first_name = $request->first_name;
@@ -84,7 +90,7 @@ class PersonController extends Controller
     {
         $dato = Person::findOrFail($id);
 
-  
+
         $dato->first_name = $request->first_name;
         $dato->last_name = $request->last_name;
         $dato->identification_card = $request->identification_card;

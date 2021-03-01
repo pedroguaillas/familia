@@ -39,18 +39,18 @@
                                     <th>Nº</th>
                                     <th>Capital</th>
                                     <th>Interes</th>
-                                    <th>Mora</th>
+                                    <!-- <th>Mora</th> -->
                                     <th>FECHA</th>
                                     <th></th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>Nº</td>
-                                    <td>Capital</td>
-                                    <td>Interes</td>
-                                    <td>Mora</td>
-                                    <td>FECHA</td>
+                                    <td>1</td>
+                                    <td>$100</td>
+                                    <td>$50</td>
+                                    <!-- <td>Mora</td> -->
+                                    <td>2021-02-02</td>
                                     <td></td>
                                 </tr>
                             </tbody>
