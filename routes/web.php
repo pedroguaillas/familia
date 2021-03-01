@@ -31,5 +31,6 @@ Route::get('prestamos/pagos/{id}', 'PaymentController@index2')->name('prestamos.
 
 //PERSON ROUTES
 Route::resource('people', 'PersonController');
+Route::get('people/index/json', 'PersonController@indexJson')->name('people.index.json');
 Route::post('/people.delete/{id}', 'PersonController@delete');
 Route::get('personas/reporte/{type}', 'PersonController@report')->name('personas.reporte');

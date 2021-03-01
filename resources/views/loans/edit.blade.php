@@ -33,7 +33,7 @@
                     </div>
                     <div class="card-body">
                         <div class="input-group">
-                            <input type="text" id="name_person_loan" class="form-control">
+                            <input type="text" value="{{$person->first_name .' ' .$person->last_name}}" id="name_person_loan" class="form-control">
                             <span class="input-group-append">
                                 <button title="Buscar" type="button" onclick="selectPersonApplicant()" class="btn btn-secondary btn-flat">
                                     <i class="fas fa-search"></i>
@@ -44,13 +44,13 @@
                     <!-- /.card-body -->
                 </div>
                 <!-- /.card -->
-                <div id="card-guarantor" class="card card-primary" hidden>
+                <div id="card-guarantor" class="card card-primary" {{ $guarantor !== null ? null : 'hidden'}}>
                     <div class="card-header">
                         <h3 class="card-title">Garante de Préstamo</h3>
                     </div>
                     <div class="card-body">
                         <div class="input-group">
-                            <input type="text" id="name_guarantor_loan" class="form-control">
+                            <input type="text" value="{{$guarantor!==null?$person->first_name .' ' .$person->last_name:null}}" id="name_guarantor_loan" class="form-control">
                             <span class="input-group-append">
                                 <button title="Buscar" type="button" onclick="selectGuarantorApplicant()" class="btn btn-secondary btn-flat">
                                     <i class="fas fa-search"></i>
@@ -72,14 +72,15 @@
                         <h3 class="card-title">Monto y Porcentaje</h3>
                     </div>
                     <div class="card-body">
-                        <form class="form-horizontal" role="form" method="POST" action="{{ route('loans.store') }}">
+                        <form class="form-horizontal" role="form" method="POST" action="{{ route('loans.update', $loan->id) }}">
                             {{ csrf_field() }}
-                            <input type="hidden" id="person_id" name="person_id" required>
-                            <input type="hidden" id="guarantor_id" name="guarantor_id" required>
+                            @method('PUT')
+                            <input value="{{$loan->amount}}" type="hidden" id="person_id" name="person_id" required>
+                            <input value="{{$loan->amount}}" type="hidden" id="guarantor_id" name="guarantor_id" required>
                             <div class="form-group row add">
                                 <label class="control-label col-sm-2" for="amount ">Monto</label>
                                 <div class="col-sm-10">
-                                    <input type="number" onkeyup="keypressAmount(this)" max="10000" class="form-control" id="amount" name="amount" required>
+                                    <input type="number" onkeyup="keypressAmount(this)" value="{{$loan->amount}}" max="10000" class="form-control" id="amount" name="amount" required>
                                 </div>
                             </div>
                             <div class="form-group row add">
@@ -87,16 +88,16 @@
                                 <div class="col-sm-10">
                                     <select class="custom-select form-control" id="interest_percentage" name="interest_percentage" required>
                                         <option>Seleccione</option>
-                                        <option value="0.9">0.9%</option>
-                                        <option value="1">1%</option>
-                                        <option value="2">2%</option>
+                                        <option value="0.9" {{ $loan['interest_percentage'] === '0.9' ? 'selected' : null }}>0.9%</option>
+                                        <option value="1" {{ $loan['interest_percentage'] === '1' ? 'selected' : null }}>1%</option>
+                                        <option value="2" {{ $loan['interest_percentage'] === '2' ? 'selected' : null }}>2%</option>
                                     </select>
                                 </div>
                             </div>
                             <div class="form-group row add">
                                 <label class="control-label col-sm-2" for="date">Fecha</label>
                                 <div class="col-sm-10">
-                                    <input type="date" value="{{date('Y-m-d')}}" class="form-control" id="date-loans" name="date" required>
+                                    <input type="date" value="{{substr($loan->date, 0, 10)}}" class="form-control" id="date-loans" name="date" required>
                                 </div>
                             </div>
                             <button class="btn btn-success" type="submit">

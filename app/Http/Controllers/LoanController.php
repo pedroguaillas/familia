@@ -30,7 +30,7 @@ class LoanController extends Controller
      */
     public function create()
     {
-        $people = Person::all();
+        $people = Person::where('state', 'activo')->get();
         return view('loans.create', compact('people'));
     }
 
@@ -43,8 +43,7 @@ class LoanController extends Controller
     public function store(Request $request)
     {
         Loan::create($request->all());
-        return redirect()->route('loans.index')->with('mensaje', 'Se registro un nuevo prestamo');
-        // return $this->index();
+        return redirect()->route('loans.index')->with('success', 'Se registro un nuevo prestamo');
     }
 
     /**
@@ -73,7 +72,9 @@ class LoanController extends Controller
      */
     public function edit(Loan $loan)
     {
-        //
+        $person = Person::where('id', $loan->person_id)->get()->first();
+        $guarantor = Person::where('id', $loan->guarantor_id)->get()->first();
+        return view('loans.edit', compact('loan', 'person', 'guarantor'));
     }
 
     /**
@@ -85,7 +86,15 @@ class LoanController extends Controller
      */
     public function update(Request $request, Loan $loan)
     {
-        //
+        // $request->validate([
+        //     'name' => 'required',
+        //     'introduction' => 'required',
+        //     'location' => 'required',
+        //     'cost' => 'required'
+        // ]);
+        $loan->update($request->all());
+
+        return redirect()->route('loans.index')->with('success', 'Se actualizo un registro con exito');
     }
 
     /**
@@ -96,6 +105,10 @@ class LoanController extends Controller
      */
     public function destroy(Loan $loan)
     {
-        //
+        $loan->update([
+            ['state' => 'inactivo']
+        ]);
+
+        return redirect()->route('loans.index')->with('danger', 'Se elimino un prestamo');
     }
 }
