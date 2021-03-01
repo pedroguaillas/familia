@@ -15,14 +15,21 @@
 @endpush
 
 @section('content')
+@if('session'('success'))
 <div class="col-12">
-    @if('session'('mensaje'))
     <div class="alert alert-info">
-        {{session('mensaje')}}
+        {{session('success')}}
         <button type="button" class="close" data-dismiss="alert" aria-label="close"><span aria-hidden="true">&times;</span></button>
     </div>
-    @endif
 </div>
+@elseif('session'('danger'))
+<div class="col-12">
+    <div class="alert alert-danger">
+        {{session('danger')}}
+        <button type="button" class="close" data-dismiss="alert" aria-label="close"><span aria-hidden="true">&times;</span></button>
+    </div>
+</div>
+@endif
 </br>
 <div class="content">
     <div class="container-fluid">
@@ -84,12 +91,16 @@
                                                     <a href="{{ route('prestamo.imprimir')}}" class="dropdown-item" target="_blank">
                                                         <i class="far fa-file"></i> Imprimir
                                                     </a>
-                                                    <a href="#" class="dropdown-item">
+                                                    <a href="{{ route('loans.edit', $loan['id']) }}" class="dropdown-item">
                                                         <i class="far fa-edit"></i> Editar
                                                     </a>
-                                                    <a href="#" class="dropdown-item">
-                                                        <i class="far fa-trash-alt"></i> Anular
-                                                    </a>
+                                                    <form action="{{ route('loans.destroy', $loan['id']) }}" method="POST">
+                                                        {{ csrf_field() }}
+                                                        @method('DELETE')
+                                                        <button type="submit" title="delete" class="dropdown-item" style="border: none; background-color:transparent;">
+                                                            <i class="fas fa-trash"></i> Anular
+                                                        </button>
+                                                    </form>
                                                 </div>
                                             </li>
                                         </ul>

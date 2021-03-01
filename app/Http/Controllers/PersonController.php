@@ -19,6 +19,12 @@ class PersonController extends Controller
         return view('people.index', compact('people'));
     }
 
+    public function indexJson()
+    {
+        $people = Person::where('state', 'activo')->get();
+        return response()->json(['people' => $people]);
+    }
+
     /**
      * Show the form for creating a new resource.
      *
