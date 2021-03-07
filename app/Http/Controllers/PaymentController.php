@@ -86,6 +86,15 @@ class PaymentController extends Controller
         return redirect()->route('prestamos.pagos', $request->loan_id)->with('mensaje', 'Se agrego con éxito los pago');
     }
 
+    public function delete($id)
+    {
+
+        $registro = Payment::findOrFail($id);
+        $registro->delete();
+        return response()->json(['status' => 'Registro eliminado']);
+
+        //Campeonato::destroy($id);
+    }
     /**
      * Display the specified resource.
      *

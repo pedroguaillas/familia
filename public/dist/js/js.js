@@ -8,7 +8,7 @@
             },
         });
 
-        $('#personDelete').click(function(e) {
+        $('.personDelete').click(function(e) {
             e.preventDefault();
             var csrf_token = $('meta[name="csrf-token"]').attr('content');
             var delete_id = $(this).closest("tr").find('.serdelete_val').val();

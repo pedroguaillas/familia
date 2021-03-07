@@ -84,16 +84,17 @@
                                         @if($dato['type'] === 'socio' )
                                         <span class="badge bg-success" style="font-size:0.9em">{{$dato['type']}}</span>
                                         @else
-                                        {{$dato['type']}}
+                                        <span class="badge bg-warning" style="font-size:0.9em">{{$dato['type']}}</span>
                                         @endif
                                     </td>
                                     <td>{{$dato['phone']}}</td>
                                     <td>{{$dato['email']}}</td>
                                     <td>
-                                        <a href="{{route('people.edit', $dato)}}" class="btn btn-warning btn-sm">
+                                        <a href="#" class="btn btn-warning btn-sm" onclick="editPerson(this)">
                                             <i class="far fa-edit"></i>
+                                            <!-- {{route('people.edit' , $dato)}}  -->
                                         </a>
-                                        <button class="btn btn-danger btn-sm" id="personDelete">
+                                        <button class="btn btn-danger btn-sm personDelete">
                                             <i class="far fa-trash-alt"></i>
                                         </button>
                                     </td>
@@ -102,15 +103,12 @@
                             </tbody>
                         </table>
                     </div>
-                    <!-- /.card-body -->
                 </div>
-                <!-- /.card -->
             </div>
         </div>
-        <!-- /.row -->
     </div>
-    <!-- /.container-fluid -->
 </div>
+
 <!-- /.MODAL ADD -->
 <div id="create" class="modal fade" role="dialog">
     <div class="modal-dialog">
@@ -119,7 +117,7 @@
                 <h4 class="modal-title" style="margin: auto;"></h4>
             </div>
             <div class="modal-body">
-                <form class="form-horizontal" role="form" method="POST" enctype="multipart/form-data" action="">
+                <form class="form-horizontal" role="form" method="POST" action="/people">
                     {{ csrf_field() }}
                     <div class="form-group row add">
                         <label class="control-label col-sm-2" for="identification_card">Cédula</label>
@@ -150,18 +148,85 @@
                             </select>
                         </div>
                     </div>
-
                     <div class="form-group row add">
                         <label class="control-label col-sm-2" for="phone">Teléfono</label>
                         <div class="col-sm-10">
                             <input type="text" class="form-control form-control-sm" id="phone" name="phone" onkeypress="return soloNumeros(event)" maxlength="10">
                         </div>
                     </div>
-
                     <div class="form-group row add">
                         <label class="control-label col-sm-2" for="email">Correo</label>
                         <div class="col-sm-10">
                             <input type="text" class="form-control form-control-sm" id="email" name="email">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-success" type="submit" id="add">
+                            Guardar
+                        </button>
+                        <button class="btn btn-warning" type="button" data-dismiss="modal">
+                            Cancelar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- /.MODAL EDIT -->
+<div class="modal fade" id="editModal" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" style="margin: auto;"></h4>
+            </div>
+            <div class="modal-body">
+
+                <form class="form-horizontal" role="form" method="POST" action="/people" id="editForm">
+                    {{ csrf_field() }}
+                    {{method_field('PUT')}}
+                    <div class="form-group row add">
+                        <label class="control-label col-sm-2" for="identification_card">Cédula</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control form-control-sm" id="identification_card1" name="identification_card" onkeypress="return soloNumeros(event)" maxlength="10" required>
+                        </div>
+                    </div>
+                    <div class="form-group row add">
+                        <label class="control-label col-sm-2" for="first_name"> Nombres </label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control form-control-sm" id="first_name1" name="first_name" onkeypress="return soloLetras(event)" required>
+                        </div>
+                    </div>
+                    <div class="form-group row add">
+                        <label class="control-label col-sm-2" for="last_name "> Apellidos </label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control form-control-sm" id="last_name1" name="last_name" onkeypress="return soloLetras(event);" required>
+                        </div>
+                    </div>
+                    <div class="form-group row add">
+                        <label class="control-label col-sm-2" for="type">Tipo</label>
+                        <div class="col-sm-10">
+                            <select class="custom-select form-control form-control-sm" id="type1" name="type" required>
+                                <option>Seleccione</option>
+                                <option value="socio">Socio</option>
+                                <option value="particular">Particular</option>
+
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group row add">
+                        <label class="control-label col-sm-2" for="phone">Teléfono</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control form-control-sm" id="phone1" name="phone" onkeypress="return soloNumeros(event)" maxlength="10">
+                        </div>
+                    </div>
+
+                    <div class="form-group row add">
+                        <label class="control-label col-sm-2" for="email">Correo</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control form-control-sm" id="email1" name="email">
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -186,4 +251,70 @@
 <script src="https://cdn.datatables.net/responsive/2.2.7/js/dataTables.responsive.min.js"></script>
 <script src="https://cdn.datatables.net/responsive/2.2.7/js/responsive.bootstrap4.min.js"></script>
 <script src="https://unpkg.com/ionicons@5.4.0/dist/ionicons.js"></script>
+
+<script>
+    function editPerson(edit) {
+        /* console.log(edit.parentNode.parentNode.children[0].value); */
+        let td = edit.parentNode.parentNode;
+        let id = td.children[0].value;
+
+        let identification_card = td.children[1].textContent;
+        let first_name = td.children[2].textContent;
+        let last_name = td.children[3].textContent;
+        let type = td.children[4].children[0].textContent;
+        let phone = td.children[5].textContent;
+        let email = td.children[6].textContent;
+
+        $('#identification_card1').val(identification_card);
+        $('#first_name1').val(first_name);
+        $('#last_name1').val(last_name);
+        $('#type1').val(type);
+        $('#phone1').val(phone)
+        $('#email1').val(email);
+
+        $('#editForm').attr('action', 'people/' + id);
+        $('#editModal').modal('show');
+
+        console.log({
+            id,
+            identification_card,
+            first_name,
+            last_name,
+            type,
+            phone,
+            email
+        });
+
+
+    }
+
+    /* 
+        $(document).ready(function() {
+            var table = $('#example1').DataTable();
+
+            table.on('click', '.edit', function() {
+
+                $tr = $(this).closest('tr');
+                if ($($tr).hasClass('child')) {
+                    $tr = $tr.prev('.parent');
+                }
+
+                var data = table.row($tr).data();
+                console.log(data);
+
+                $('#identification_card').val(data[1]);
+                $('#first_name').val(data[2]);
+                $('#last_name').val(data[3]);
+                $('#type').val(data[4]);
+                $('#phone').val(data[5]);
+                $('#email').val(data[6]);
+
+                $('#editForm').attr('action', 'people/' + data[0]);
+                $('#editModal').modal('show');
+
+            });
+        }); */
+</script>
+
+
 @endpush
