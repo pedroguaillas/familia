@@ -28,6 +28,7 @@ Route::get('prestamo/imprimir', 'LoanController@showPdf')->name('prestamo.imprim
 //PAYMENT ROUTES 
 Route::resource('payments', 'PaymentController');
 Route::get('prestamos/pagos/{id}', 'PaymentController@index2')->name('prestamos.pagos');
+Route::post('/payments.delete/{id}', 'PaymentController@delete');
 
 //PERSON ROUTES
 Route::resource('people', 'PersonController');

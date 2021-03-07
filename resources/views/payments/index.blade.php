@@ -2,6 +2,9 @@
 
 @push('csss')
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.23/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.2.7/css/responsive.bootstrap4.min.css">
 @endpush
 
 @section('content')
@@ -98,7 +101,8 @@
                             <tbody>
                                 @foreach ($payments as $dato)
                                 <tr>
-                                    <!--   <td>{{$dato['id']}}</td> -->
+                                 
+                                    <input type="hidden" class="serdelete_val" value="{{ $dato->id }}">
                                     <td style="text-align: right;">500</td>
                                     <td style="text-align: right;">{{'$' . number_format($dato['capital'], 2, ',', '.')}}</td>
                                     <td style="text-align: right;">{{'$' . number_format($dato['interest_amount'], 2, ',', '.')}}</td>
@@ -117,7 +121,7 @@
                                                     <a href="#" class="dropdown-item">
                                                         <i class="far fa-edit"></i> Editar
                                                     </a>
-                                                    <a href="#" class="dropdown-item">
+                                                    <a href="#" class="dropdown-item paymentDelete">
                                                         <i class="far fa-trash-alt"></i> Anular
                                                     </a>
                                                 </div>
@@ -202,6 +206,60 @@
 
 
 @push('scripts')
+
+<script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.23/js/dataTables.bootstrap4.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.2.7/js/dataTables.responsive.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.2.7/js/responsive.bootstrap4.min.js"></script>
+<script src="https://unpkg.com/ionicons@5.4.0/dist/ionicons.js"></script>
+<script>
+    $(document).ready(function() {
+
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+        });
+
+        $('.paymentDelete').click(function(e) {
+            e.preventDefault();
+            var csrf_token = $('meta[name="csrf-token"]').attr('content');
+            var delete_id = $(this).closest("tr").find('.serdelete_val').val();
+            swal({
+                    title: "¿Esta seguro?",
+                    text: "Eliminar Pago",
+                    icon: "warning",
+                    buttons: ["Cancelar", "Ok"],
+                    dangerMode: true,
+                })
+                .then((willDelete) => {
+                    if (willDelete) {
+
+                        var data = {
+                            "_token": $('input[name="csrf-token"]').val(),
+                            "id": delete_id,
+                        };
+
+                        $.ajax({
+                            type: "POST",
+                            url: '/payments.delete/' + delete_id,
+                            data: data,
+                            success: function(response) {
+                                swal(response.status, {
+                                        icon: "success",
+                                    })
+                                    .then((result) => {
+                                        location.reload();
+                                    });
+                            }
+                        });
+                    }
+                });
+        });
+    });
+</script>
+
+
 <script>
     /* SCRIPT FOR MODAL */
     $(document).on('click', '.create-modal', function() {
