@@ -1,7 +1,5 @@
-
   /* SCRIPT FOR DELETE  */
   $(document).ready(function() {
-
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -23,13 +21,13 @@
                     if (willDelete) {
 
                         var data = {
-                            "_token": $('input[name="csrf-token"]').val(),
-                            "id": delete_id,
+                            "_token": $('input[name="csrf-token"]').val()
+                           /*  "id": delete_id, */
                         };
 
                         $.ajax({
                             type: "POST",
-                            url: '/people.delete/' + delete_id,
+                            url: 'people/delete/' + delete_id,
                             data: data,
                             success: function(response) {
                                 swal(response.status, {
@@ -67,13 +65,6 @@
                 }
             }
         });
-    });
-
-      /* SCRIPT FOR MODAL */
-    $(document).on('click', '.create-modal', function() {
-        $('#create').modal('show');
-        $('.form-horizontal').show();
-        $('.modal-title').text('Registrar Nuevo Socio');
     });
 
   /* SCRIPT FOR VALIDATION LETTERS  */

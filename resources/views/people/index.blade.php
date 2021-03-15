@@ -53,7 +53,7 @@
                                 </ul>
                             </div>
                             <div class="dt-buttons btn-group flex-wrap">
-                                <a href="#" class="create-modal btn btn-success btn-sm">
+                                <a href="#" onclick="showModalCreate()" class="create-modal btn btn-success btn-sm">
                                     <i class="fas fa-plus"></i>
                                 </a>
                             </div>
@@ -114,7 +114,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title" style="margin: auto;"></h4>
+                <h4 class="modal-title" style="margin: auto;">Registrar Personal</h4>
             </div>
             <div class="modal-body">
                 <form class="form-horizontal" role="form" method="POST" action="/people">
@@ -179,7 +179,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title" style="margin: auto;"></h4>
+                <h4 class="modal-title" style="margin: auto;">Editar Personal</h4>
             </div>
             <div class="modal-body">
 
@@ -253,6 +253,11 @@
 <script src="https://unpkg.com/ionicons@5.4.0/dist/ionicons.js"></script>
 
 <script>
+    function showModalCreate() {
+        $('#create').modal('show');
+        $('.form-horizontal').show();
+    }
+
     function editPerson(edit) {
         /* console.log(edit.parentNode.parentNode.children[0].value); */
         let td = edit.parentNode.parentNode;
@@ -271,49 +276,9 @@
         $('#type1').val(type);
         $('#phone1').val(phone)
         $('#email1').val(email);
-
         $('#editForm').attr('action', 'people/' + id);
         $('#editModal').modal('show');
-
-        console.log({
-            id,
-            identification_card,
-            first_name,
-            last_name,
-            type,
-            phone,
-            email
-        });
-
-
     }
-
-    /* 
-        $(document).ready(function() {
-            var table = $('#example1').DataTable();
-
-            table.on('click', '.edit', function() {
-
-                $tr = $(this).closest('tr');
-                if ($($tr).hasClass('child')) {
-                    $tr = $tr.prev('.parent');
-                }
-
-                var data = table.row($tr).data();
-                console.log(data);
-
-                $('#identification_card').val(data[1]);
-                $('#first_name').val(data[2]);
-                $('#last_name').val(data[3]);
-                $('#type').val(data[4]);
-                $('#phone').val(data[5]);
-                $('#email').val(data[6]);
-
-                $('#editForm').attr('action', 'people/' + data[0]);
-                $('#editModal').modal('show');
-
-            });
-        }); */
 </script>
 
 

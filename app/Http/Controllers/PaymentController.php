@@ -5,8 +5,11 @@ namespace App\Http\Controllers;
 use App\Loan;
 use App\Payment;
 use App\Person;
+use DateTimeZone;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rules\Exists;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Carbon;
 
 class PaymentController extends Controller
 {
@@ -28,7 +31,6 @@ class PaymentController extends Controller
     {
         $loan = Loan::findOrFail($id);
         $person = $loan->person;
-
         $payments = $loan->payments;
 
         return view('payments.index', compact('person', 'loan', 'payments'));
@@ -52,37 +54,35 @@ class PaymentController extends Controller
      */
     public function store(Request $request)
     {
-
         $date_start = new \DateTime($request->get('date_start'));
-        $date_end = new \DateTime($request->get('date_end'));
-
-        if ($date_end != null) {
+        if (!is_null($request->get('date_end'))) {
+            $date_end = new \DateTime($request->get('date_end'));
             $monthstart = $date_start->format('m');
             $monthend = $date_end->format('m');
-            /* return response()->json(['inicio' => (int)$monthstart, 'Fin' => (int)$monthend]); */
             $payments = array();
-            for ($i = (int)$monthstart; $i < (int)$monthend; $i++) {
+            $carbon = new Carbon($date_start, new DateTimeZone('America/Guayaquil'));
+            for ($i = $monthstart; $i <= $monthend; $i++) {
                 $payment = [
                     'interest_amount' => $request->get('interest_amount'),
                     'capital' => 0,
                     'must' => 0,
-                    'date' => $request->get('date_start')
+                    'date' => $carbon->toDateTimeString()
                 ];
                 array_push($payments, $payment);
+                $carbon->addMonth();
             }
             $loan = Loan::findOrFail($request->loan_id);
             $loan->payments()->createMany($payments);
+        } else {
+            $payment = [
+                'interest_amount' => $request->get('interest_amount'),
+                'capital' => $request->get('capital'),
+                'must' => $request->get('must'),
+                'date' => $request->get('date_start')
+            ];
+            $loan = Loan::findOrFail($request->loan_id);
+            $loan->payments()->create($payment);
         }
-
-        /*  $payment = new Payment;
-
-        $payment->loan_id = $request->loan_id;
-        $payment->interest_amount = $request->interest_amount;
-        $payment->must = $request->must;
-        $payment->date = $request->date;
-
-        $payment->save();
- */
         return redirect()->route('prestamos.pagos', $request->loan_id)->with('mensaje', 'Se agrego con éxito los pago');
     }
 
@@ -114,7 +114,26 @@ class PaymentController extends Controller
      */
     public function edit(Payment $payment)
     {
-        //
+    }
+
+    public function interestCalculate($loan_id)
+    {
+        $loan = Loan::findOrFail($loan_id);
+        $payment = Payment::select(DB::raw('SUM(capital) as paid'))
+            ->where([
+                ['state', 'like', 'activo'],
+                ['loan_id', '=', $loan_id]
+            ])
+            ->groupBy('loan_id')->first();
+        /*  $toPay = $loan->amount - $payments[0]->paid; */
+        $toPay = 0;
+        if ($payment !== null) {
+            $toPay = $loan->amount - $payment->paid;
+        } else {
+            $toPay = $loan->amount;
+        }
+
+        return response()->json(['toPay' => $toPay * $loan->interest_percentage * 0.01]);
     }
 
     /**
