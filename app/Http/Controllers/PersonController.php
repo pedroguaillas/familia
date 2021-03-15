@@ -15,7 +15,7 @@ class PersonController extends Controller
      */
     public function index()
     {
-        $people = Person::all();
+        $people = Person::where('state', 'activo')->get();
         return view('people.index', compact('people'));
     }
 
@@ -107,7 +107,11 @@ class PersonController extends Controller
      */
     public function destroy(Person $person)
     {
-        //
+        $person->update([
+            ['state' => 'inactivo']
+        ]);
+
+        return redirect()->route('people.index')->with('danger', 'Se elimino ');
     }
 
 
@@ -121,8 +125,11 @@ class PersonController extends Controller
 
     public function delete($id)
     {
-        $registro = Person::findOrFail($id);
-        $registro->delete();
-        return response()->json(['status' => 'Registro eliminado.']);
+        $person = Person::findOrFail($id);
+        $person->state = 'inactivo';
+        $person->save();
+
+
+        return response()->json(['mensaje', 'se elimino']);
     }
 }

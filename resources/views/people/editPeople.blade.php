@@ -111,4 +111,13 @@
 <script src="https://cdn.datatables.net/responsive/2.2.7/js/dataTables.responsive.min.js"></script>
 <script src="https://cdn.datatables.net/responsive/2.2.7/js/responsive.bootstrap4.min.js"></script>
 <script src="https://unpkg.com/ionicons@5.4.0/dist/ionicons.js"></script>
+<script>
+   /* SCRIPT FOR MODAL */
+   
+   $(document).on('click', '.create-modal', function() {
+      $('#create').modal('show');
+      $('.form-horizontal').show();
+      $('.modal-title').text('Registrar Nuevo Socio');
+   });
+</script>
 @endpush

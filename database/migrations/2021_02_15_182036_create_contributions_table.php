@@ -20,6 +20,7 @@ class CreateContributionsTable extends Migration
             $table->dateTimeTz('date');
             $table->enum('type', ['mensual', 'anual']);
             $table->enum('state', ['activo', 'inactivo']);
+            $table->integer('actions')->nullable();
 
             $table->foreign('person_id')->references('id')->on('people');
             $table->timestamps();

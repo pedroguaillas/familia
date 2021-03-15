@@ -21,6 +21,7 @@ Auth::routes();
 Route::get('/home', 'HomeController@index')->name('home');
 
 Route::resource('contributions', 'ContributionController');
+Route::get('aportes/historial/{person_id}', 'ContributionController@history')->name('aportes.historial');
 
 Route::resource('loans', 'LoanController');
 Route::get('prestamo/imprimir', 'LoanController@showPdf')->name('prestamo.imprimir');
@@ -28,10 +29,10 @@ Route::get('prestamo/imprimir', 'LoanController@showPdf')->name('prestamo.imprim
 //PAYMENT ROUTES 
 Route::resource('payments', 'PaymentController');
 Route::get('prestamos/pagos/{id}', 'PaymentController@index2')->name('prestamos.pagos');
-Route::post('/payments.delete/{id}', 'PaymentController@delete');
+Route::get('payments/interestCalculate/{loan_id}', 'PaymentController@interestCalculate');
 
 //PERSON ROUTES
 Route::resource('people', 'PersonController');
 Route::get('people/index/json', 'PersonController@indexJson')->name('people.index.json');
-Route::post('/people.delete/{id}', 'PersonController@delete');
+Route::post('/people/delete/{id}', 'PersonController@delete');
 Route::get('personas/reporte/{type}', 'PersonController@report')->name('personas.reporte');
