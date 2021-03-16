@@ -219,7 +219,8 @@
 
     // Selecciona la persona del modal y Oculta el Modal
     function keypressAmount(e) {
-        let person = people.filter(p => Number(p.id) === Number($('#person_id').value))[0]
+        let person = people.filter(p => Number(p.id) === Number($('#person_id').val()))[0]
+
         if (person.type === 'socio') {
             $('#interest_percentage').val(Number(e.value) > 999 ? 0.9 : 1)
         } else {
