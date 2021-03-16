@@ -54,15 +54,15 @@
                         </div>
                     </div>
                     <div class="card-body">
-                        <table id="example1" class="table table-striped table-bordered" style="width:100%">
+                        <table id="example1" class="table table-striped table-bordered table-sm" style="width:100%">
                             <thead>
-                                <tr>
+                                <tr style="text-align: center;">
                                     <th>Nº</th>
                                     <th>DEUDOR</th>
-                                    <th>MONTO</th>
+                                    <th>PRESTAMO</th>
                                     <th>INTERES</th>
                                     <th>PAGADO</th>
-                                    <th>SALDO</th>
+                                    <th>DEUDA</th>
                                     <th>FECHA</th>
                                     <th></th>
                                 </tr>
@@ -71,13 +71,13 @@
                                 @foreach ($loans as $loan)
                                 <tr>
                                     <!-- <input type="hidden" class="serdelete_val" value="1"> -->
-                                    <td>{{$loan['id']}}</td>
+                                    <td style="text-align: center;">{{$loan['id']}}</td>
                                     <td>{{$loan['first_name'].' '. $loan['last_name']}}</td>
-                                    <td>{{'$'. number_format($loan['amount'], 2, ',', '.')}}</td>
-                                    <td>{{$loan['interest_percentage']. '%'}}</td>
-                                    <td>$500</td>
-                                    <td>$800</td>
-                                    <td>{{substr($loan['date'], 0, 10)}}</td>
+                                    <td style="text-align: right;">{{'$'. number_format($loan['amount'], 2, ',', '.')}}</td>
+                                    <td style="text-align: center;">{{$loan['interest_percentage']. '%'}}</td>
+                                    <td style="text-align: right;">{{'$' . number_format($loan['sum_capital_paid'], 2, ',', '.')}}</td>
+                                    <td style="text-align: right;">{{'$' . number_format($loan['amount'] - $loan['sum_capital_paid'], 2, ',', '.')}}</td>
+                                    <td style="text-align: center;">{{substr($loan['date'], 0, 10)}}</td>
                                     <td>
                                         <ul class="navbar-nav ml-auto">
                                             <li class="nav-item dropdown">

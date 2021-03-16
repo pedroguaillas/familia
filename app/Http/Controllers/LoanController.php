@@ -6,6 +6,7 @@ use App\Loan;
 use App\Person;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade as PDF;
+use Illuminate\Support\Facades\DB;
 
 class LoanController extends Controller
 {
@@ -16,9 +17,23 @@ class LoanController extends Controller
      */
     public function index()
     {
-        $loans = Loan::select('loans.*', 'people.first_name', 'people.last_name')
+        $loans = DB::table('loanS')
+            ->select(
+                'loans.id',
+                'loans.amount',
+                'loans.interest_percentage',
+                'loans.date',
+                'people.first_name',
+                'people.last_name',
+                DB::raw('sum(payments.capital) as sum_capital_paid')
+            )
             ->join('people', 'people.id', 'loans.person_id')
-            ->where('loans.state', 'activo')->get();
+            ->leftJoin('payments', 'payments.loan_id', 'loans.id')
+            ->groupBy('loans.id', 'loans.amount', 'loans.interest_percentage', 'loans.date', 'people.first_name', 'people.last_name')
+            ->where('loans.state', 'activo')
+            ->orderBy('loans.date')->get();
+
+        $loans = json_decode(json_encode($loans), true);
 
         return view('loans.index', compact('loans'));
     }

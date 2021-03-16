@@ -10,12 +10,12 @@
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h1>Registro de Prestamo</h1>
+                <h1>Editar Prestamo</h1>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item"><a href="{{ url('loans') }}">Prestamos</a></li>
-                    <li class="breadcrumb-item active">Registro de Prestamo</li>
+                    <li class="breadcrumb-item active">Editar Prestamo</li>
                 </ol>
             </div>
         </div>
@@ -88,9 +88,9 @@
                                 <div class="col-sm-10">
                                     <select class="custom-select form-control" id="interest_percentage" name="interest_percentage" required>
                                         <option>Seleccione</option>
-                                        <option value="0.9" {{ $loan['interest_percentage'] === '0.9' ? 'selected' : null }}>0.9%</option>
-                                        <option value="1" {{ $loan['interest_percentage'] === '1' ? 'selected' : null }}>1%</option>
-                                        <option value="2" {{ $loan['interest_percentage'] === '2' ? 'selected' : null }}>2%</option>
+                                        <option value="0.9" selected="{{ $loan['interest_percentage'] === 0.9 ? 'true' : 'false' }}">0.9%</option>
+                                        <option value="1" selected="{{ $loan['interest_percentage'] === 1 ? 'true' : 'false' }}">1%</option>
+                                        <option value="2" selected="{{ $loan['interest_percentage'] === 2 ? 'true' : 'false' }}">2%</option>
                                     </select>
                                 </div>
                             </div>
@@ -216,16 +216,6 @@
             $('#name_guarantor_loan').val(name)
         }
         $('#select-person').modal('hide')
-    }
-
-    // Selecciona la persona del modal y Oculta el Modal
-    function keypressAmount(e) {
-        let person = people.filter(p => Number(p.id) === Number($('#person_id').value))[0]
-        if (person.type === 'socio') {
-            $('#interest_percentage').val(Number(e.value) > 999 ? 0.9 : 1)
-        } else {
-            $('#interest_percentage').val(2)
-        }
     }
 </script>
 @endpush
