@@ -50,7 +50,7 @@
                     </div>
                     <div class="card-body">
                         <div class="input-group">
-                            <input type="text" value="{{$guarantor!==null?$person->first_name .' ' .$person->last_name:null}}" id="name_guarantor_loan" class="form-control">
+                            <input type="text" value="{{$guarantor!==null?$guarantor->first_name .' ' .$guarantor->last_name:null}}" id="name_guarantor_loan" class="form-control">
                             <span class="input-group-append">
                                 <button title="Buscar" type="button" onclick="selectGuarantorApplicant()" class="btn btn-secondary btn-flat">
                                     <i class="fas fa-search"></i>
@@ -75,12 +75,12 @@
                         <form class="form-horizontal" role="form" method="POST" action="{{ route('loans.update', $loan->id) }}">
                             {{ csrf_field() }}
                             @method('PUT')
-                            <input value="{{$loan->amount}}" type="hidden" id="person_id" name="person_id" required>
-                            <input value="{{$loan->amount}}" type="hidden" id="guarantor_id" name="guarantor_id" required>
+                            <input value="{{$loan->person_id}}" type="hidden" id="person_id" name="person_id" required>
+                            <input value="{{$loan->guarantor_id}}" type="hidden" id="guarantor_id" name="guarantor_id" required>
                             <div class="form-group row add">
                                 <label class="control-label col-sm-2" for="amount ">Monto</label>
                                 <div class="col-sm-10">
-                                    <input type="number" onkeyup="keypressAmount(this)" value="{{$loan->amount}}" max="10000" class="form-control" id="amount" name="amount" required>
+                                    <input type="number" onkeyup="keypressAmount(this)" max="10000" class="form-control" id="amount" name="amount" required value="{{substr((string)$loan->amount, -3) === '.00' ? substr((string)$loan->amount, 0, -3) : $loan->amount }}">
                                 </div>
                             </div>
                             <div class="form-group row add">
@@ -88,9 +88,9 @@
                                 <div class="col-sm-10">
                                     <select class="custom-select form-control" id="interest_percentage" name="interest_percentage" required>
                                         <option>Seleccione</option>
-                                        <option value="0.9" selected="{{ $loan['interest_percentage'] === 0.9 ? 'true' : 'false' }}">0.9%</option>
-                                        <option value="1" selected="{{ $loan['interest_percentage'] === 1 ? 'true' : 'false' }}">1%</option>
-                                        <option value="2" selected="{{ $loan['interest_percentage'] === 2 ? 'true' : 'false' }}">2%</option>
+                                        <option value="0.9" {{ ($loan['interest_percentage'] === 0.90) ? 'selected' : null }}>0.9%</option>
+                                        <option value="1" {{ ($loan['interest_percentage'] === 1.00) ? 'selected' : null }}>1%</option>
+                                        <option value="2" {{ ($loan['interest_percentage'] === 2.00) ? 'selected' : null }}>2%</option>
                                     </select>
                                 </div>
                             </div>
@@ -216,6 +216,12 @@
             $('#name_guarantor_loan').val(name)
         }
         $('#select-person').modal('hide')
+    }
+
+    // Selecciona la persona del modal y Oculta el Modal
+    function keypressAmount(e) {
+        let percentage = Number($('#interest_percentage').val())
+        $('#interest_percentage').val(percentage === 1 && Number(e.value) > 999 ? 0.9 : percentage)
     }
 </script>
 @endpush

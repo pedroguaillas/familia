@@ -23,7 +23,6 @@
     </div>
 </div>
 @endif
-</br>
 <!-- Content Header (Page header) -->
 <section class="content-header">
     <div class="container-fluid">
@@ -89,6 +88,11 @@
                                     <i class="far fa-file-pdf"></i>
                                 </a>
                             </div>
+                            <div class="dt-buttons btn-group flex-wrap">
+                                <a href="#" onclick="showModalCreate()" title="Registrar Aporte" class="create-modal btn btn-success btn-sm">
+                                    <i class="fas fa-plus"></i>
+                                </a>
+                            </div>
                         </div>
                     </div>
 
@@ -100,6 +104,7 @@
                                     <th>Mes</th>
                                     <th>Año</th>
                                     <th>Aporte</th>
+                                    <th>Mora</th>
                                     <th>Tipo</th>
                                     <th></th>
                                 </tr>
@@ -111,19 +116,13 @@
                                 @endphp
                                 @foreach ($contributions as $contribution)
                                 <tr>
-                                    <input type="hidden" name="contribution_id" value="{{$contribution['id']}}">
-                                    <input type="hidden" name="date" value="{{substr($contribution['date'], 0, 10)}}">
-                                    <input type="hidden" name="amount" value="{{$contribution['amount']}}">
                                     <td style="text-align: center;">{{$i}}</td>
-                                    <td style="text-align: center;">{{ substr($contribution['date'], 5,2 )}}</td>
-                                    <td style="text-align: center;">{{ substr($contribution['date'], 0,4 )}}</td>
-                                    <td style="text-align: right;">{{'$' . number_format($contribution['amount'], 2, ',', '.')}}</td>
+                                    <td style="text-align: center;">{{ substr($contribution->date, 5,2 )}}</td>
+                                    <td style="text-align: center;">{{ substr($contribution->date, 0,4 )}}</td>
+                                    <td style="text-align: right;">{{'$' . number_format($contribution->amount, 2, ',', '.')}}</td>
+                                    <td style="text-align: right;">{{'$' . number_format($contribution->must, 2, ',', '.')}}</td>
                                     <td style="text-align: center;">
-                                        @if($contribution['type'] === 'mensual' )
-                                        <span class="badge bg-success" style="font-size:0.9em">{{$contribution['type']}}</span>
-                                        @else
-                                        <span class="badge bg-warning" style="font-size:0.9em">{{$contribution['type']}}</span>
-                                        @endif
+                                        <span class="badge {{$contribution->type === 'mensual'? 'bg-success' : 'bg-warning'}}" style="font-size:0.9em">{{$contribution->type}}</span>
                                     </td>
                                     <td>
                                         <ul class="navbar-nav ml-auto">
@@ -132,10 +131,10 @@
                                                     <i class="fa fa-angle-down"></i>
                                                 </a>
                                                 <div class="dropdown-menu dropdown-menu-md dropdown-menu-right">
-                                                    <a href="#" class="dropdown-item paymentDelete" onclick="editContribution(this)">
+                                                    <a href="#" class="dropdown-item" onclick='showModalEdit("{{$contribution->id}}")'>
                                                         <i class="far fa-edit"></i> Editar
                                                     </a>
-                                                    <a href="#" class="dropdown-item" target="_blank">
+                                                    <a href="#" onclick='deleteContribution("{{$contribution->id}}")' class="dropdown-item">
                                                         <i class="far fa-trash-alt"></i> Anular
                                                     </a>
                                                 </div>
@@ -164,8 +163,74 @@
 
 @endsection
 
+<!-- /.Aporte CREATE MASIVE -->
+<div class="modal fade" id="addModal" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" style="margin: auto;">Registrar Aporte</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" role="form" action="{{route('contributions.store')}}" method="POST">
+                    {{ csrf_field() }}
+
+                    <input type="hidden" name="person_id" value="{{$person->id}}"> <!-- id del socio  -->
+
+                    <div class="form-group row add">
+                        <label class="control-label col-sm-3" for="type">Tipo</label>
+                        <div class="col-sm-9">
+                            <select name="type" onchange="changeType(this)" class="form-control form-control-sm">
+                                <option value="mensual">Mensual</option>
+                                <option value="anual">Anual</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group row add">
+                        <label class="control-label col-sm-3" for="amount">Monto</label>
+                        <div class="col-sm-9">
+                            <input type="text" value="{{$person->actions * 10}}" class="form-control form-control-sm" id="amount_insert" name="amount" onkeypress="return soloNumeros(event);" required>
+                        </div>
+                    </div>
+                    <div class="form-group row add">
+                        <label class="control-label col-sm-3" for="must">Mora</label>
+                        <div class="col-sm-9">
+                            <input type="text" value="0" class="form-control form-control-sm" name="must" onkeypress="return soloNumeros(event);" required>
+                        </div>
+                    </div>
+                    <div class="form-group row add">
+                        <label class="control-label col-sm-3" for="date">Fecha Inicio</label>
+                        <div class="col-sm-9">
+                            <input type="date" value="{{date('Y-m-d')}}" class="form-control form-control-sm" id="date_start" name="date" required>
+                        </div>
+                    </div>
+                    <div class="form-group row add">
+                        <label class="control-label col-sm-3" for="date_end">Fecha Fin</label>
+                        <div class="col-sm-9">
+                            <input type="date" class="form-control form-control-sm" id="date_end" name="date_end">
+                        </div>
+                    </div>
+                    <div class="form-group row add">
+                        <label class="control-label col-sm-3" for="boservation">Observación</label>
+                        <div class="col-sm-9">
+                            <textarea name="observation" class="form-control" rows="2"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-success" type="submit" id="add">
+                            <span class="glyphicon glyphicon-plus"></span> Guardar
+                        </button>
+                        <button class="btn btn-warning" type="button" data-dismiss="modal">
+                            <span class="glyphicon glyphicon-remove"></span> Cancelar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- /.Aporte EDIT -->
-<div class="modal fade" id="editModal1" role="dialog">
+<div class="modal fade" id="editModal" role="dialog">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -175,19 +240,32 @@
                 <form class="form-horizontal" role="form" method="POST" id="editForm">
                     {{ csrf_field() }}
                     {{method_field('PUT')}}
-                    
+
+                    <div class="form-group row add">
+                        <label class="control-label col-sm-3" for="amount">Monto</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control form-control-sm" id="amount_edit" name="amount" required>
+                        </div>
+                    </div>
+                    <div class="form-group row add">
+                        <label class="control-label col-sm-3" for="must">Mora</label>
+                        <div class="col-sm-9">
+                            <input type="text" value="0" class="form-control form-control-sm" id="must_edit" name="must" onkeypress="return soloNumeros(event);" required>
+                        </div>
+                    </div>
                     <div class="form-group row add">
                         <label class="control-label col-sm-3" for="date">Fecha</label>
                         <div class="col-sm-9">
-                            <input type="date" class="form-control form-control-sm" id="date" name="date" required>
+                            <input type="date" class="form-control form-control-sm" id="date_edit" name="date" required>
                         </div>
                     </div>
                     <div class="form-group row add">
-                        <label class="control-label col-sm-3" for="amount"> Monto </label>
+                        <label class="control-label col-sm-3" for="boservation">Observación</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control form-control-sm" id="amount" name="amount" onkeypress="return soloNumeros(event);" required>
+                            <textarea name="observation" id="observation_edit" class="form-control" rows="2"></textarea>
                         </div>
                     </div>
+
                     <div class="modal-footer">
                         <button class="btn btn-success" type="submit" id="add">
                             <span class="glyphicon glyphicon-plus"></span> Guardar
@@ -211,65 +289,60 @@
 <script src="https://cdn.datatables.net/responsive/2.2.7/js/responsive.bootstrap4.min.js"></script>
 <script src="https://unpkg.com/ionicons@5.4.0/dist/ionicons.js"></script>
 <script>
-    function editContribution(edit) {
-        /* a > div > li > ul > td */
-        let tr = edit.parentNode.parentNode.parentNode.parentNode.parentNode;
-        let id = tr.children[0].value
-        let date = tr.children[1].value
-        let amount = tr.children[2].value;
-
-        /* $('#contribution_id').val(id); */
-        $('#date').val(date);
-        $('#amount').val(amount);
-
-        $('#editForm').attr('action', 'contributions/' + id);
-        $('#editModal1').modal('show');
+    function showModalCreate() {
+        $('#addModal').modal('show')
     }
 
+    function changeType(e) {
+        $('#amount_insert').val(e.value === 'anual' ? 50 : 10)
+    }
 
-    function deleteContribution() {
-
-        $.ajaxSetup({
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    function showModalEdit(id) {
+        $.ajax({
+            type: 'GET',
+            url: "{{url('contributions')}}/" + id,
+            success: (response) => {
+                let {
+                    contribution
+                } = response
+                $('#amount_edit').val(contribution.amount)
+                $('#must_edit').val(contribution.must)
+                $('#date_edit').val(contribution.date.substring(0, 10))
+                $('#observation_edit').val(contribution.observation)
             },
-        });
+            error: (error) => console.log(error)
+        })
 
-        $('.paymentDelete').click(function(e) {
-            e.preventDefault();
-            var csrf_token = $('meta[name="csrf-token"]').attr('content');
-            var delete_id = $(this).closest("tr").find('.serdelete_val').val();
-            swal({
-                    title: "¿Esta seguro?",
-                    text: "Eliminar Pago",
-                    icon: "warning",
-                    buttons: ["Cancelar", "Ok"],
-                    dangerMode: true,
-                })
-                .then((willDelete) => {
-                    if (willDelete) {
+        $('#editForm').attr('action', "{{url('contributions')}}/" + id)
+        $('#editModal').modal('show')
+    }
 
-                        var data = {
-                            "_token": $('input[name="csrf-token"]').val(),
-                            "id": delete_id,
-                        };
-
-                        $.ajax({
-                            type: "POST",
-                            url: '/payments.delete/' + delete_id,
-                            data: data,
-                            success: function(response) {
-                                swal(response.status, {
-                                        icon: "success",
-                                    })
-                                    .then((result) => {
-                                        location.reload();
-                                    });
-                            }
-                        });
-                    }
-                });
-        });
+    function deleteContribution(id) {
+        swal({
+                title: "¿Esta seguro?",
+                text: "Eliminar Pago",
+                icon: "warning",
+                buttons: ["Cancelar", "Ok"],
+                dangerMode: true,
+            })
+            .then((willDelete) => {
+                if (willDelete) {
+                    $.ajax({
+                        type: "POST",
+                        url: "{{url('contributions')}}/" + id,
+                        data: {
+                            "_token": $('meta[name="csrf-token"]').content,
+                            "_method": "DELETE"
+                        },
+                        success: function(response) {
+                            swal(response.status, {
+                                icon: "success",
+                            });
+                            location.reload();
+                        }
+                    });
+                }
+            });
     }
 </script>
 @endpush

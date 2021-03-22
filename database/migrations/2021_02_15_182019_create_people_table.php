@@ -15,14 +15,15 @@ class CreatePeopleTable extends Migration
     {
         Schema::create('people', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('identification_card');
+            $table->string('identification_card')->nullable();
             $table->unique('identification_card');
             $table->string('first_name');
             $table->string('last_name');
-            $table->string('phone');
-            $table->string('email');
+            $table->string('phone')->nullable();
+            $table->string('email')->nullable();
             $table->enum('type', ['socio', 'particular']);
             $table->enum('state', ['activo', 'inactivo']);
+            $table->integer('actions')->nullable(); //Nota este campo solo se modifica cuando sea socio
 
             $table->timestamps();
         });

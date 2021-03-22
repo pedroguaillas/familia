@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Loan;
+use App\Payment;
 use App\Person;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade as PDF;
@@ -87,8 +88,11 @@ class LoanController extends Controller
      */
     public function edit(Loan $loan)
     {
-        $person = Person::where('id', $loan->person_id)->get()->first();
+        //Se requiere de person para mostrar el nombre en el formulario
+        $person = Person::findOrFail($loan->person_id);
+        //Se requiere de guarantor para mostrar el nombre del garante si existe
         $guarantor = Person::where('id', $loan->guarantor_id)->get()->first();
+
         return view('loans.edit', compact('loan', 'person', 'guarantor'));
     }
 
@@ -120,9 +124,11 @@ class LoanController extends Controller
      */
     public function destroy(Loan $loan)
     {
-        $loan->update([
-            ['state' => 'inactivo']
-        ]);
+        $loan->state = 'inactivo';
+        $loan->save();
+
+        $update = Payment::where('loan_id', $loan->id)
+            ->update(['state' => 'inactivo']);
 
         return redirect()->route('loans.index')->with('danger', 'Se elimino un prestamo');
     }

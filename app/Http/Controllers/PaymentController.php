@@ -3,11 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Loan;
-use App\Payment;
 use App\Person;
+use App\Payment;
 use DateTimeZone;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rules\Exists;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Carbon;
 
@@ -30,10 +29,20 @@ class PaymentController extends Controller
     public function index2($id)
     {
         $loan = Loan::findOrFail($id);
+        //Se requiere de person para mostrar el nombre en la cabecera
         $person = $loan->person;
-        $payments = $loan->payments;
+        //Se requiere de guarantor para mostrar el nombre en la cabecera
+        $guarantor = Person::where('id', $loan->guarantor_id)->get()->first();
+        // $payments = $loan->payments;
+        $payments = DB::table('payments')
+            ->where([
+                'loan_id' => $id,
+                'state' => 'activo'
+            ])
+            ->orderBy('date', 'asc')
+            ->get();
 
-        return view('payments.index', compact('person', 'loan', 'payments'));
+        return view('payments.index', compact('person', 'guarantor', 'loan', 'payments'));
     }
 
     /**
@@ -63,6 +72,7 @@ class PaymentController extends Controller
             $carbon = new Carbon($date_start, new DateTimeZone('America/Guayaquil'));
             for ($i = $monthstart; $i <= $monthend; $i++) {
                 $payment = [
+                    'debt' => $request->get('debt'),
                     'interest_amount' => $request->get('interest_amount'),
                     'capital' => 0,
                     'must' => 0,
@@ -75,6 +85,7 @@ class PaymentController extends Controller
             $loan->payments()->createMany($payments);
         } else {
             $payment = [
+                'debt' => $request->get('debt'),
                 'interest_amount' => $request->get('interest_amount'),
                 'capital' => $request->get('capital'),
                 'must' => $request->get('must'),
@@ -83,18 +94,10 @@ class PaymentController extends Controller
             $loan = Loan::findOrFail($request->loan_id);
             $loan->payments()->create($payment);
         }
+
         return redirect()->route('prestamos.pagos', $request->loan_id)->with('mensaje', 'Se agrego con éxito los pago');
     }
 
-    public function delete($id)
-    {
-
-        $registro = Payment::findOrFail($id);
-        $registro->delete();
-        return response()->json(['status' => 'Registro eliminado']);
-
-        //Campeonato::destroy($id);
-    }
     /**
      * Display the specified resource.
      *
@@ -103,7 +106,7 @@ class PaymentController extends Controller
      */
     public function show(Payment $payment)
     {
-        //
+        return response()->json(['payment' => $payment]);
     }
 
     /**
@@ -125,15 +128,17 @@ class PaymentController extends Controller
                 ['loan_id', '=', $loan_id]
             ])
             ->groupBy('loan_id')->first();
-        /*  $toPay = $loan->amount - $payments[0]->paid; */
-        $toPay = 0;
+        $debt = 0;
         if ($payment !== null) {
-            $toPay = $loan->amount - $payment->paid;
+            $debt = $loan->amount - $payment->paid;
         } else {
-            $toPay = $loan->amount;
+            $debt = $loan->amount;
         }
 
-        return response()->json(['toPay' => $toPay * $loan->interest_percentage * 0.01]);
+        return response()->json([
+            'debt' => $debt,
+            'interest' => $debt * $loan->interest_percentage * 0.01
+        ]);
     }
 
     /**
@@ -145,7 +150,9 @@ class PaymentController extends Controller
      */
     public function update(Request $request, Payment $payment)
     {
-        //
+        $payment->update($request->all());
+
+        return redirect()->route('prestamos.pagos', $payment->loan_id)->with('success', 'Se ha modificado un pago');
     }
 
     /**
@@ -156,6 +163,7 @@ class PaymentController extends Controller
      */
     public function destroy(Payment $payment)
     {
-        //
+        $payment->state = 'inactivo';
+        $payment->save();
     }
 }

@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Contribution extends Model
 {
     protected $fillable = [
-        'person_id', 'amount', 'date', 'type', 'state', 'actions'
+        'person_id', 'amount', 'date', 'type', 'must', 'observation', 'state'
     ];
 
     public function person()

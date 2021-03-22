@@ -12,7 +12,9 @@
 <section class="content-header">
     <div class="container-fluid">
         <div class="row mb-2">
-            <div class="col-sm-6"></div>
+            <div class="col-sm-6">
+                <h1>Registro de aportes {{$type}}</h1>
+            </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item"><a href="{{ url('contributions') }}">Aportes</a></li>
@@ -34,7 +36,10 @@
                         <h3 class="card-title">Aportes</h3>
                         <div class="card-tools">
                             <div class="dt-buttons btn-group flex-wrap">
-                                <select name="type" id="type">
+                                <input onchange="updateDate(this)" type="date" min="{{$date}}" value="{{$date}}" max="{{(new DateTime($date))->modify('last day of')->format('Y-m-d')}}">
+                            </div>
+                            <div class="dt-buttons btn-group flex-wrap" hidden>
+                                <select name="type" id="type" onchange="updateType(this)">
                                     <option value="mensual">Mensual</option>
                                     <option value="anual">Anual</option>
                                 </select>
@@ -48,27 +53,40 @@
                     </div>
 
                     <div class="card-body">
-                        <table id="example1" class="table table-striped table-bordered table-sm" style="width:100%">
+                        <table class="table table-striped table-bordered table-sm" style="width:100%">
                             <thead>
                                 <tr style="text-align: center;">
                                     <th>Nº</th>
                                     <th>Socio</th>
                                     <th>Nº Acciones</th>
                                     <th>Aporte</th>
+                                    <th>Mora</th>
+                                    <th>Fecha</th>
                                 </tr>
                             </thead>
-
                             <tbody>
-                                @foreach ($contributions as $contribution)
+                                @php
+                                $i=1;
+                                @endphp
+                                @foreach ($people as $person)
                                 <tr>
-                                    <input type="hidden" name="person_id" value="{{$contribution['id']}}">
-                                    <td style="text-align: center;">1</td>
-                                    <td>{{$contribution['first_name'] . ' ' . $contribution['last_name']}}</td>
-                                    <td style="text-align: center;">{{$contribution['actions']}}</td>
-                                    <td>
-                                        <input name="amount" value="{{$contribution['actions'] * 10}}">
+                                    <input type="hidden" name="person_id" value="{{$person['id']}}">
+                                    <td style="text-align: center;">{{$i}}</td>
+                                    <td>{{$person['first_name'] . ' ' . $person['last_name']}}</td>
+                                    <td style="text-align: center;">{{$person['actions']}}</td>
+                                    <td style="text-align: center;">
+                                        <input type="number" value="{{$person['actions'] * ($type==='mensual' ? 10 : 50)}}">
+                                    </td>
+                                    <td style="text-align: center;">
+                                        <input type="number" value="0">
+                                    </td>
+                                    <td style="text-align: center;">
+                                        <input type="date" min="{{$date}}" value="{{$date}}" max="{{(new DateTime($date))->modify('last day of')->format('Y-m-d')}}">
                                     </td>
                                 </tr>
+                                @php
+                                $i+=1;
+                                @endphp
                                 @endforeach
                             </tbody>
                         </table>
@@ -100,25 +118,41 @@
         $('tbody tr').each(function(index) {
             let item = {
                 person_id: $(this).children('input').val(),
-                amount: $(this).children('td:last-child').children('input').val(),
+                amount: $(this).children('td:nth-last-child(3)').children('input').val(),
+                must: $(this).children('td:nth-last-child(2)').children('input').val(),
+                date: $(this).children('td:last-child').children('input').val()
             }
             array.push(item)
         });
-
         $.ajax({
             type: 'POST',
-            url: "{{route('contributions.store')}}",
+            url: "{{route('contributions.storemasive')}}",
             data: {
+                "_token": $('meta[name="csrf-token"]').content,
                 contributions: JSON.stringify(array),
                 type: $('#type').val()
             },
             success: (response) => {
-                location.href = "{{route('contributions.index') }}";
-
+                location.href = "{{route('contributions.index')}}"
             },
             error: (error) => console.log(error)
         });
+    }
 
+    function updateDate(e) {
+        if (e.min <= e.value && e.value <= e.max) {
+            $('tbody tr').each(function(index) {
+                $(this).children('td:last-child').children('input').val(e.value)
+            })
+        }
+    }
+
+    function updateType(e) {
+        $('tbody tr').each(function(index) {
+            let newvalue = Number($(this).children('td:nth-last-child(3)').children('input').val())
+            newvalue = e.value === 'mensual' ? newvalue / 5 : 5 * newvalue
+            $(this).children('td:nth-last-child(3)').children('input').val(newvalue)
+        })
     }
 </script>
 @endpush

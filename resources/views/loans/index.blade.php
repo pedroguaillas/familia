@@ -89,7 +89,7 @@
                                                         <i class="fa fa-money-bill"></i> Pagos
                                                     </a>
                                                     <a href="{{ route('prestamo.imprimir')}}" class="dropdown-item" target="_blank">
-                                                        <i class="far fa-file"></i> Imprimir
+                                                        <i class="far fa-file"></i> Solicitud
                                                     </a>
                                                     <a href="{{ route('loans.edit', $loan['id']) }}" class="dropdown-item">
                                                         <i class="far fa-edit"></i> Editar
