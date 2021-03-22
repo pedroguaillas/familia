@@ -16,11 +16,11 @@ class CreateContributionsTable extends Migration
         Schema::create('contributions', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->bigInteger('person_id')->unsigned();
-            $table->float('amount', 8, 2);
+            $table->decimal('amount', 8, 2);
             $table->dateTimeTz('date');
             $table->enum('type', ['mensual', 'anual']);
             $table->enum('state', ['activo', 'inactivo']);
-            $table->integer('actions')->nullable();
+            $table->string('observation')->nullable();
 
             $table->foreign('person_id')->references('id')->on('people');
             $table->timestamps();

@@ -36,23 +36,28 @@
 
                     <div class="card-body">
                         <div class="row">
-                            <div class="col-sm-5">
+                            <div class="col-sm-4">
                                 <p>
                                     <strong>Deudor: </strong>
                                     {{$person->first_name.' '.$person->last_name}}
                                 </p>
                             </div>
-                            <div class="col-sm-5">
+                            <div class="col-sm-4" {{ $guarantor !== null ? null : 'hidden'}}>
                                 <p>
                                     <strong>Garante: </strong>
-                                    {{$person->first_name.' '.$person->last_name}}
+                                    {{$guarantor === null ? null : $guarantor->first_name.' '.$guarantor->last_name}}
                                 </p>
                             </div>
-
                             <div class="col-sm-2">
                                 <p>
                                     <strong>Monto: </strong>
-                                    {{$loan->amount}}
+                                    {{'$' . number_format($loan->amount, 2, ',', '.')}}
+                                </p>
+                            </div>
+                            <div class="col-sm-2">
+                                <p>
+                                    <strong>Interes: </strong>
+                                    {{'%' .$loan->interest_percentage}}
                                 </p>
                             </div>
                         </div>
@@ -75,7 +80,7 @@
                                 </a>
                             </div>
                             <div class="dt-buttons btn-group flex-wrap">
-                                <a href="#" onclick="showModalCreate({{$loan->id}})" class="create-modal btn btn-success btn-sm">
+                                <a href="#" onclick="showModalCreate('{{$loan->id}}')" class="create-modal btn btn-success btn-sm">
                                     <i class="fas fa-plus"></i>
                                 </a>
                             </div>
@@ -86,30 +91,38 @@
                         <table id="example1" class="table table-striped table-bordered table-sm" style="width:100%">
                             <thead>
                                 <tr style="text-align: center;">
-                                    <!-- <th>Nº</th> -->
-                                    <th>Saldo</th>
-                                    <th>P Capital</th>
-                                    <th>P Interes</th>
-                                    <th>P Mora</th>
+                                    <th>Nº</th>
+                                    <!-- <th>Saldo Actual</th> -->
+                                    <th>Deuda</th>
+                                    <th>Pago Capital</th>
+                                    <th>Pago Interes</th>
+                                    <th>Pago Mora</th>
                                     <th>Fecha Pago</th>
                                     <th></th>
                                 </tr>
                             </thead>
                             @php
-                            $toPay = $loan->amount;
+                            $i=0;
+                            $sum_capital=0;
+                            $sum_interest=0;
+                            $sum_must=0;
                             @endphp
                             <tbody>
-                                @foreach ($payments as $dato)
+                                @foreach ($payments as $payment)
                                 <tr>
                                     @php
-                                    $toPay -= $dato['capital'];
+                                    $i++;
+                                    $sum_capital+=$payment->capital;
+                                    $sum_interest+=$payment->interest_amount;
+                                    $sum_must+=$payment->must;
                                     @endphp
-                                    <input type="hidden" class="serdelete_val" value="{{ $dato->id }}">
-                                    <td style="text-align: right;">{{'$' . number_format($toPay, 2, ',', '.')}}</td>
-                                    <td style="text-align: right;">{{'$' . number_format($dato['capital'], 2, ',', '.')}}</td>
-                                    <td style="text-align: right;">{{'$' . number_format($dato['interest_amount'], 2, ',', '.')}}</td>
-                                    <td style="text-align: right;">{{'$' . number_format($dato['must'], 2, ',', '.')}}</td>
-                                    <td style="text-align: center;">{{substr($dato['date'], 0, 10)}}</td>
+                                    <input type="hidden" class="serdelete_val" value="{{ $payment->id }}">
+                                    <td style="text-align: center;">{{$i}}</td>
+                                    <td style="text-align: right;">{{'$' . number_format($payment->debt, 2, ',', '.')}}</td>
+                                    <td style="text-align: right;">{{'$' . number_format($payment->capital, 2, ',', '.')}}</td>
+                                    <td style="text-align: right;">{{'$' . number_format($payment->interest_amount, 2, ',', '.')}}</td>
+                                    <td style="text-align: right;">{{'$' . number_format($payment->must, 2, ',', '.')}}</td>
+                                    <td style="text-align: center;">{{substr($payment->date, 0, 10)}}</td>
                                     <td>
                                         <ul class="navbar-nav ml-auto">
                                             <li class="nav-item dropdown">
@@ -120,10 +133,10 @@
                                                     <a href="{{ route('prestamo.imprimir')}}" class="dropdown-item" target="_blank">
                                                         <i class="far fa-file"></i> Imprimir
                                                     </a>
-                                                    <a href="#" class="dropdown-item" onclick="editPayment(this)">
+                                                    <a href="#" class="dropdown-item" onclick='editPayment("{{$payment->id}}")'>
                                                         <i class="far fa-edit"></i> Editar
                                                     </a>
-                                                    <a href="#" class="dropdown-item paymentDelete">
+                                                    <a href="#" class="dropdown-item" onclick='paymentDelete("{{$payment->id}}")'>
                                                         <i class="far fa-trash-alt"></i> Anular
                                                     </a>
                                                 </div>
@@ -133,6 +146,19 @@
                                 </tr>
                                 @endforeach
                             </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th style="text-align: center;">TOTAL</th>
+                                    <th style="text-align: right;">
+                                        {{'$' .(count($payments) ? number_format($payments[count($payments)-1]->debt - $payments[count($payments)-1]->capital, 2, ',', '.') : number_format($loan->amount, 2, ',', '.'))}}
+                                    </th>
+                                    <th style="text-align: right;">{{'$' . number_format($sum_capital, 2, ',', '.')}}</th>
+                                    <th style="text-align: right;">{{'$' . number_format($sum_interest, 2, ',', '.')}}</th>
+                                    <th style="text-align: right;">{{'$' . number_format($sum_must, 2, ',', '.')}}</th>
+                                    <th></th>
+                                    <th></th>
+                                </tr>
+                            </tfoot>
                         </table>
                     </div>
                     <!-- /.card-body -->
@@ -159,25 +185,31 @@
                 <form class="form-horizontal" role="form" method="POST" action="{{route('payments.store')}}">
                     {{ csrf_field() }}
 
-                    <input type="hidden" class="serdelete_val" id="loan_id" name="loan_id" value="{{$loan->id}}"> <!-- codigo del prestamo  -->
+                    <input type="hidden" id="loan_id" name="loan_id" value="{{$loan->id}}"> <!-- codigo del prestamo  -->
 
+                    <div class="form-group row add">
+                        <label class="control-label col-sm-3" for="debt "> Deuda </label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control form-control-sm" id="debt" name="debt" required>
+                        </div>
+                    </div>
                     <div class="form-group row add">
                         <label class="control-label col-sm-3" for="interest_amount "> Interes </label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control form-control-sm" id="interest_amount" name="interest_amount" onkeypress="return soloNumeros(event);" required>
+                            <input type="number" class="form-control form-control-sm" id="interest_amount" name="interest_amount" required>
                         </div>
                     </div>
                     <div class="form-group row add">
                         <label class="control-label col-sm-3" for="capital">Capital</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control form-control-sm" id="capital" name="capital" value="0" onkeypress="return soloNumeros(event)" maxlength="10" required>
+                            <input type="number" class="form-control form-control-sm" id="capital" name="capital" value="0" maxlength="10" required>
                         </div>
                     </div>
 
                     <div class="form-group row add">
                         <label class="control-label col-sm-3" for="must">Mora</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control form-control-sm" id="must" name="must" value="0" onkeypress="return soloNumeros(event)" maxlength="10" required>
+                            <input type="number" class="form-control form-control-sm" id="must" name="must" value="0" maxlength="10" required>
                         </div>
                     </div>
                     <div class="form-group row add">
@@ -215,14 +247,43 @@
             </div>
             <div class="modal-body">
 
-                <form class="form-horizontal" role="form" method="POST" action="/payments" id="editForm">
+                <form class="form-horizontal" role="form" method="POST" id="editForm">
                     {{ csrf_field() }}
                     {{method_field('PUT')}}
+                    <div class="form-group row add">
+                        <label class="control-label col-sm-3" for="debt">Deuda</label>
+                        <div class="col-sm-9">
+                            <input class="form-control form-control-sm" id="debt_edit" name="debt" required>
+                        </div>
+                    </div>
+                    <div class="form-group row add">
+                        <label class="control-label col-sm-3" for="interest_amount ">Interes</label>
+                        <div class="col-sm-9">
+                            <input class="form-control form-control-sm" id="interest_amount_edit" name="interest_amount" required>
+                        </div>
+                    </div>
+                    <div class="form-group row add">
+                        <label class="control-label col-sm-3" for="capital">Capital</label>
+                        <div class="col-sm-9">
+                            <input class="form-control form-control-sm" id="capital_edit" name="capital" required>
+                        </div>
+                    </div>
 
-
+                    <div class="form-group row add">
+                        <label class="control-label col-sm-3" for="must">Mora</label>
+                        <div class="col-sm-9">
+                            <input class="form-control form-control-sm" id="must_edit" name="must" required>
+                        </div>
+                    </div>
+                    <div class="form-group row add">
+                        <label class="control-label col-sm-3" for="date">Fecha</label>
+                        <div class="col-sm-9">
+                            <input type="date" class="form-control form-control-sm" id="date_edit" name="date" required>
+                        </div>
+                    </div>
 
                     <div class="modal-footer">
-                        <button class="btn btn-success" type="submit" id="add">
+                        <button class="btn btn-success" type="submit">
                             Guardar
                         </button>
                         <button class="btn btn-warning" type="button" data-dismiss="modal">
@@ -235,7 +296,6 @@
     </div>
 </div>
 
-
 @push('scripts')
 
 <script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
@@ -244,65 +304,66 @@
 <script src="https://cdn.datatables.net/responsive/2.2.7/js/responsive.bootstrap4.min.js"></script>
 <script src="https://unpkg.com/ionicons@5.4.0/dist/ionicons.js"></script>
 <script>
-    function editPayment(edit) {
+    // Show Modal Edit Payments
+    function editPayment(id) {
+        $.ajax({
+            type: 'GET',
+            url: "{{url('payments')}}/" + id,
+            success: (response) => {
+                let {
+                    payment
+                } = response
+                $('#debt_edit').val(payment.debt)
+                $('#interest_amount_edit').val(payment.interest_amount)
+                $('#capital_edit').val(payment.capital)
+                $('#must_edit').val(payment.must)
+                $('#date_edit').val(payment.date.substring(0, 10))
+            },
+            error: (error) => console.log(error)
+        });
 
-
+        $('#editForm').attr('action', "{{url('payments')}}/" + id);
         $('#editModal').modal('show');
     }
 
-
-    $(document).ready(function() {
-
-        $.ajaxSetup({
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-        });
-
-        $('.paymentDelete').click(function(e) {
-            e.preventDefault();
-            var csrf_token = $('meta[name="csrf-token"]').attr('content');
-            var delete_id = $(this).closest("tr").find('.serdelete_val').val();
-            swal({
-                    title: "¿Esta seguro?",
-                    text: "Eliminar Pago",
-                    icon: "warning",
-                    buttons: ["Cancelar", "Ok"],
-                    dangerMode: true,
-                })
-                .then((willDelete) => {
-                    if (willDelete) {
-
-                        var data = {
-                            "_token": $('input[name="csrf-token"]').val(),
-                            "id": delete_id,
-                        };
-
-                        $.ajax({
-                            type: "POST",
-                            url: '/payments.delete/' + delete_id,
-                            data: data,
-                            success: function(response) {
-                                swal(response.status, {
-                                        icon: "success",
-                                    })
-                                    .then((result) => {
-                                        location.reload();
-                                    });
-                            }
-                        });
-                    }
-                });
-        });
-    });
+    function paymentDelete(id) {
+        swal({
+                title: "¿Esta seguro?",
+                text: "Eliminar Pago",
+                icon: "warning",
+                buttons: ["Cancelar", "Ok"],
+                dangerMode: true,
+            })
+            .then((willDelete) => {
+                if (willDelete) {
+                    $.ajax({
+                        type: "POST",
+                        url: "{{url('payments')}}/" + id,
+                        data: {
+                            "_token": $('meta[name="csrf-token"]').content,
+                            "_method": "DELETE"
+                        },
+                        success: function(response) {
+                            swal(response.status, {
+                                    icon: "success",
+                                })
+                                .then((result) => {
+                                    location.reload();
+                                });
+                        }
+                    });
+                }
+            });
+    }
 
     function showModalCreate(loan_id) {
         $.ajax({
             type: 'GET',
-            url: '/payments/interestCalculate/' + loan_id,
+            url: "{{url('payments')}}/interestCalculate/" + loan_id,
 
             success: (response) => {
-                $('#interest_amount').val(response.toPay);
+                $('#debt').val(response.debt);
+                $('#interest_amount').val(response.interest);
             },
             error: (error) => console.log(error)
         });

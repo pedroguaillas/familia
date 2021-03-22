@@ -16,11 +16,13 @@ class CreatePaymentsTable extends Migration
         Schema::create('payments', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->bigInteger('loan_id')->unsigned();
+            $table->decimal('debt', 8, 2);
             $table->decimal('interest_amount', 8, 2)->default(0);
             $table->decimal('capital', 8, 2)->default(0);
             $table->decimal('must', 8, 2)->default(0);
             $table->dateTimeTz('date');
             $table->enum('state', ['activo', 'inactivo']);
+            $table->string('observation')->nullable();
 
             $table->foreign('loan_id')->references('id')->on('loans');
 

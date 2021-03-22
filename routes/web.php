@@ -21,6 +21,8 @@ Auth::routes();
 Route::get('/home', 'HomeController@index')->name('home');
 
 Route::resource('contributions', 'ContributionController');
+Route::post('contributions/create2', 'ContributionController@create2')->name('contributions.create2');
+Route::post('contributions/storemasive', 'ContributionController@storeMasive')->name('contributions.storemasive');
 Route::get('aportes/historial/{person_id}', 'ContributionController@history')->name('aportes.historial');
 
 Route::resource('loans', 'LoanController');

@@ -8,6 +8,21 @@
 @endpush
 
 @section('content')
+@if('session'('success'))
+<div class="col-12">
+    <div class="alert alert-info">
+        {{session('success')}}
+        <button type="button" class="close" data-dismiss="alert" aria-label="close"><span aria-hidden="true">&times;</span></button>
+    </div>
+</div>
+@elseif('session'('danger'))
+<div class="col-12">
+    <div class="alert alert-danger">
+        {{session('danger')}}
+        <button type="button" class="close" data-dismiss="alert" aria-label="close"><span aria-hidden="true">&times;</span></button>
+    </div>
+</div>
+@endif
 <!-- Main content -->
 <br>
 <div class="content">
@@ -27,7 +42,7 @@
                                 </a>
                             </div>
                             <div class="dt-buttons btn-group flex-wrap">
-                                <a href="{{route('contributions.create')}}" class="btn btn-success btn-sm">
+                                <a href="#" onclick="showModal()" class="btn btn-success btn-sm">
                                     <i class="fas fa-plus"></i>
                                 </a>
                             </div>
@@ -65,11 +80,8 @@
                                                 </a>
                                                 <div class="dropdown-menu dropdown-menu-md dropdown-menu-right">
                                                     <a href="{{route('aportes.historial', $contribution['person_id'])}}" class="dropdown-item paymentDelete">
-                                                        <i class="far fa-trash-alt"></i> Historial
+                                                        <i class="far fa-file"></i> Historial
                                                     </a>
-                                                    <!--  <a href="{{ route('prestamo.imprimir')}}" class="dropdown-item" target="_blank">
-                                                        <i class="far fa-file"></i> Imprimir
-                                                    </a> -->
                                                 </div>
                                             </li>
                                         </ul>
@@ -96,10 +108,54 @@
 
 @endsection
 
+<!-- /.Aporte CREATE MASIVE -->
+<div class="modal fade" id="addModal" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" style="margin: auto;">Registrar Aportes Masiva</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" role="form" action="{{route('contributions.create2')}}" method="POST">
+                    {{ csrf_field() }}
+
+                    <div class="form-group row add">
+                        <label class="control-label col-sm-3" for="amount">Tipo</label>
+                        <div class="col-sm-9">
+                            <select name="type" class="form-control form-control-sm">
+                                <option value="mensual">Mensual</option>
+                                <option value="anual">Anual</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group row add">
+                        <label class="control-label col-sm-3" for="date">Fecha</label>
+                        <div class="col-sm-9">
+                            <input type="date" name="date" value="{{date('Y-m-d')}}" class="form-control form-control-sm">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-success" type="submit" id="add">
+                            <span class="glyphicon glyphicon-plus"></span> Cargar
+                        </button>
+                        <button class="btn btn-warning" type="button" data-dismiss="modal">
+                            <span class="glyphicon glyphicon-remove"></span> Cancelar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 @push('scripts')
 <script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.10.23/js/dataTables.bootstrap4.min.js"></script>
 <script src="https://cdn.datatables.net/responsive/2.2.7/js/dataTables.responsive.min.js"></script>
 <script src="https://cdn.datatables.net/responsive/2.2.7/js/responsive.bootstrap4.min.js"></script>
 <script src="https://unpkg.com/ionicons@5.4.0/dist/ionicons.js"></script>
+<script>
+    function showModal() {
+        $('#addModal').modal('show')
+    }
+</script>
 @endpush

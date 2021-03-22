@@ -48,29 +48,42 @@ class ContributionController extends Controller
      */
     public function create()
     {
-        $contributions = DB::table('people')
-            ->select(
-                'people.id',
-                'people.first_name',
-                'people.last_name',
-                'people.actions',
-                DB::raw('SUM(contributions.amount) as amount')
-            )->leftJoin('contributions', 'people.id', 'contributions.person_id')
-            ->groupBy(
-                'people.id',
-                'people.first_name',
-                'people.last_name',
-                'people.actions'
-            )
-            ->where([
-                ['people.state', 'activo'],
-                ['people.type', 'socio']
-            ])
-            ->get();
-        $contributions = json_decode(json_encode($contributions), true);
-        return view('contributions/create', compact('contributions'));
     }
 
+    public function create2(Request $request)
+    {
+        $date = new \DateTime($request->date);
+
+        if ($request->type === 'mensual') {
+            $contributions = Contribution::select('contributions.person_id')
+                ->where([
+                    'state' => 'activo',
+                    'type' => 'mensual'
+                ])
+                ->whereMonth('contributions.date', $date->format('m'))
+                ->whereYear('contributions.date', $date->format('Y'))
+                ->get();
+        } else {
+            $contributions = Contribution::select('contributions.person_id')
+                ->where([
+                    'state' => 'activo',
+                    'type' => 'anual'
+                ])
+                ->whereYear('contributions.date', $date->format('Y'))
+                ->get();
+        }
+
+        $people = Person::where([
+            ['state', 'activo'],
+            ['type', 'socio']
+        ])
+            ->whereNotIn('id', $contributions)->get();
+
+        $date = $request->date;
+        $type = $request->type;
+
+        return view('contributions/create', compact('people', 'date', 'type'));
+    }
     /**
      * Store a newly created resource in storage.
      *
@@ -79,11 +92,36 @@ class ContributionController extends Controller
      */
     public function store(Request $request)
     {
+        $person = Person::findOrFail($request->get('person_id'));
+        $contribution = $request->only(['date', 'amount', 'must', 'type']);
+
+        if ($request->type === 'mensual' && !is_null($request->get('date_end'))) {
+            $date_start = new \DateTime($request->get('date'));
+            $date_end = new \DateTime($request->get('date_end'));
+            $monthstart = $date_start->format('m');
+            $monthend = $date_end->format('m');
+            $contributions = array();
+            $carbon = new Carbon($date_start, new DateTimeZone('America/Guayaquil'));
+            for ($i = $monthstart; $i <= $monthend; $i++) {
+                $contribution['date'] = $carbon->toDateTimeString();
+                array_push($contributions, $contribution);
+                $carbon->addMonth();
+            }
+            $person->contributions()->createMany($contributions);
+        } else {
+            $contribution['observation'] = $request->observation;
+            $person->contributions()->create($contribution);
+        }
+
+        return redirect()->route('aportes.historial', $request->person_id)->with('success', 'Se agrego con éxito los aportes');
+    }
+
+    public function storeMasive(Request $request)
+    {
         $contributions = $request->get('contributions');
         $date = Carbon::now();
         $contributions = json_decode($contributions);
         foreach ($contributions as $contribution) {
-            $contribution->date = $date->toDateTimeString();
             $contribution->type = (string)$request->get('type');
         }
 
@@ -98,10 +136,16 @@ class ContributionController extends Controller
     {
         $person = Person::findOrFail($person_id);
         $amount = 0;
-        $contributions = $person->contributions;
+        $contributions = Contribution::where([
+            'person_id' => $person_id,
+            'state' => 'activo'
+        ])
+            ->orderBy('date', 'DESC')->get();
         for ($i = 0; $i < count($contributions); $i++) {
             $amount += $contributions[$i]->amount;
         }
+
+        $contributions = json_decode(json_encode($contributions));
 
         return view('contributions/history', compact('person', 'contributions', 'amount'));
     }
@@ -114,7 +158,7 @@ class ContributionController extends Controller
      */
     public function show(Contribution $contribution)
     {
-        //
+        return response()->json(['contribution' => $contribution]);
     }
 
     /**
@@ -135,15 +179,11 @@ class ContributionController extends Controller
      * @param  \App\Models\Contribution  $contribution
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Contribution $contribution)
     {
-        dd($id);
-        $contribution = Contribution::findOrFail($id);
-        $person_id = $contribution->person->id;
-        $contribution->date = $request->date;
-        $contribution->amount = $request->amount;
-        $contribution->save();
-        return redirect()->route('aportes.historial', $person_id)->with('success', 'Se actualizo un registro con exito ');
+        $contribution->update($request->all());
+
+        return redirect()->route('aportes.historial', $contribution->person->id)->with('success', 'Se modifico un aporte');
     }
 
     /**
@@ -154,6 +194,9 @@ class ContributionController extends Controller
      */
     public function destroy(Contribution $contribution)
     {
-        //
+        $contribution->state = 'inactivo';
+        $contribution->save();
+
+        return response()->json(['msm' => "Se elimino un aporte"]);
     }
 }
