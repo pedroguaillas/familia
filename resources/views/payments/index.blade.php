@@ -31,7 +31,7 @@
 
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="card-title">Datos del Préstamo</h3>
+                        <h3 class="card-title">DATOS DEL PRÉSTAMO</h3>
                     </div>
 
                     <div class="card-body">
@@ -72,10 +72,10 @@
                 <!-- card -->
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="card-title">Pagos</h3>
+                        <h3 class="card-title">PAGOS</h3>
                         <div class="card-tools">
                             <div class="dt-buttons btn-group flex-wrap">
-                                <a class="btn btn-secondary btn-sm" href="" target="_blank">
+                                <a class="btn btn-secondary btn-sm" href="{{route('prestamos.pagos.pdf', $loan->id)}}" target="_blank">
                                     <i class="far fa-file-pdf"></i>
                                 </a>
                             </div>
@@ -93,11 +93,11 @@
                                 <tr style="text-align: center;">
                                     <th>Nº</th>
                                     <!-- <th>Saldo Actual</th> -->
-                                    <th>Deuda</th>
-                                    <th>Pago Capital</th>
-                                    <th>Pago Interes</th>
-                                    <th>Pago Mora</th>
-                                    <th>Fecha Pago</th>
+                                    <th>DEUDA</th>
+                                    <th>PAGO CAPITAL</th>
+                                    <th>PAGO INTERES</th>
+                                    <th>PAGO MORA</th>
+                                    <th>FECHA PAGO</th>
                                     <th></th>
                                 </tr>
                             </thead>
@@ -196,20 +196,20 @@
                     <div class="form-group row add">
                         <label class="control-label col-sm-3" for="interest_amount "> Interes </label>
                         <div class="col-sm-9">
-                            <input type="number" class="form-control form-control-sm" id="interest_amount" name="interest_amount" required>
+                            <input type="number" class="form-control form-control-sm" id="interest_amount" step="0.01" name="interest_amount" required>
                         </div>
                     </div>
                     <div class="form-group row add">
                         <label class="control-label col-sm-3" for="capital">Capital</label>
                         <div class="col-sm-9">
-                            <input type="number" class="form-control form-control-sm" id="capital" name="capital" value="0" maxlength="10" required>
+                            <input type="number" class="form-control form-control-sm" id="capital" step="0.01" name="capital" value="0" maxlength="10" required>
                         </div>
                     </div>
 
                     <div class="form-group row add">
                         <label class="control-label col-sm-3" for="must">Mora</label>
                         <div class="col-sm-9">
-                            <input type="number" class="form-control form-control-sm" id="must" name="must" value="0" maxlength="10" required>
+                            <input type="number" class="form-control form-control-sm" id="must" step="0.01" name="must" value="0" maxlength="10" required>
                         </div>
                     </div>
                     <div class="form-group row add">

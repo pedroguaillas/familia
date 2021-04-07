@@ -63,7 +63,7 @@
                     <div class="card-body">
                         <table id="example1" class="table table-striped table-bordered" style="width:100%">
                             <thead>
-                                <tr>
+                                <tr style="text-align: center;">
                                     <th>CEDULA</th>
                                     <th>NOMBRES</th>
                                     <th>APELLIDOS</th>

@@ -10,10 +10,8 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
     <!-- Font Awesome Icons -->
     <link href="{{ asset('plugins/fontawesome-free/css/all.min.css') }}" rel="stylesheet">
-    <!-- <link rel="stylesheet" href="plugins/fontawesome-free/css/all.min.css"> -->
     <!-- IonIcons -->
     @stack('csss')
-    <!-- <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css"> -->
     <!-- Theme style -->
     <link href="{{ asset('dist/css/adminlte.min.css') }}" rel="stylesheet">
     <link href="{{ asset('dist/css/styles.css') }}" rel="stylesheet">
@@ -65,7 +63,7 @@
         <!-- Main Sidebar Container -->
         <aside class="main-sidebar sidebar-dark-primary elevation-4">
             <!-- Brand Logo -->
-            <a href="index3.html" class="brand-link">
+            <a href="{{url('home')}}" class="brand-link">
                 <img src="{{ asset('dist/img/AdminLTELogo.png') }}" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
                 <span class="brand-text font-weight-light">Caja Familiar</span>
             </a>
@@ -150,4 +148,5 @@
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
     @stack('scripts')
 </body>
+
 </html>

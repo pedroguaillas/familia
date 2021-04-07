@@ -38,12 +38,13 @@
                             <div class="dt-buttons btn-group flex-wrap">
                                 <input onchange="updateDate(this)" type="date" min="{{$date}}" value="{{$date}}" max="{{(new DateTime($date))->modify('last day of')->format('Y-m-d')}}">
                             </div>
-                            <div class="dt-buttons btn-group flex-wrap" hidden>
+                            <input type="hidden" id="type" value="{{$type}}">
+                            <!-- <div class="dt-buttons btn-group flex-wrap" hidden>
                                 <select name="type" id="type" onchange="updateType(this)">
                                     <option value="mensual">Mensual</option>
                                     <option value="anual">Anual</option>
                                 </select>
-                            </div>
+                            </div> -->
                             <div class="dt-buttons btn-group flex-wrap">
                                 <button class="btn btn-success btn-sm" onclick="save()">
                                     <i class="fas fa-save"></i>
