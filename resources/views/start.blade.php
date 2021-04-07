@@ -1,314 +1,274 @@
 @extends('layouts.dashboard')
 
+@push('csss')
+<link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+<link rel="stylesheet" href="{{ asset('plugins/overlayScrollbars/css/OverlayScrollbars.min.css') }}">
+@endpush
+
 @section('content')
-<!-- Content Header (Page header) -->
-<div class="content-header">
-    <div class="container-fluid">
-        <div class="row mb-2">
-            <div class="col-sm-6">
-                <h1 class="m-0">Informe</h1>
-            </div><!-- /.col -->
-            <div class="col-sm-6">
-                <ol class="breadcrumb float-sm-right">
-                    <!-- <li class="breadcrumb-item"><a href="#">Home</a></li> -->
-                    <li class="breadcrumb-item active">Informe</li>
-                </ol>
-            </div><!-- /.col -->
-        </div><!-- /.row -->
-    </div><!-- /.container-fluid -->
-</div>
-<!-- /.content-header -->
+<br />
 <!-- Main content -->
 <div class="content">
     <div class="container-fluid">
+        <!-- Small boxes (Stat box) -->
+        <div class="row">
+            <div class="col-lg-3 col-6">
+                <!-- small box -->
+                <div class="small-box bg-info">
+                    <div class="inner">
+                        <h3>{{ $countmembers }}</h3>
+
+                        <p>Cantidad de socios</p>
+                    </div>
+                    <div class="icon">
+                        <i class="ion ion-person-stalker"></i>
+                    </div>
+                    <a href="#" class="small-box-footer">Mas info <i class="fas fa-arrow-circle-right"></i></a>
+                </div>
+            </div>
+            <!-- ./col -->
+            <div class="col-lg-3 col-6">
+                <!-- small box -->
+                <div class="small-box bg-success">
+                    <div class="inner">
+                        <h3>{{ $countdebtors }}</h3>
+
+                        <p>Personas que tienen prestamo</p>
+                    </div>
+                    <div class="icon">
+                        <i class="ion ion-person"></i>
+                    </div>
+                    <a href="#" class="small-box-footer">Mas info <i class="fas fa-arrow-circle-right"></i></a>
+                </div>
+            </div>
+            <!-- ./col -->
+            <div class="col-lg-3 col-6">
+                <!-- small box -->
+                <div class="small-box bg-warning">
+                    <div class="inner">
+                        <h3>{{'$' . number_format($total, 2, ',', '.')}}</h3>
+
+                        <p>Monto total en caja</p>
+                    </div>
+                    <div class="icon">
+                        <i class="ion ion-cash"></i>
+                    </div>
+                    <a href="#" class="small-box-footer">Mas info <i class="fas fa-arrow-circle-right"></i></a>
+                </div>
+            </div>
+            <!-- ./col -->
+            <div class="col-lg-3 col-6">
+                <!-- small box -->
+                <div class="small-box bg-danger">
+                    <div class="inner">
+                        <h3>{{'$' . number_format($total_borrowed, 2, ',', '.')}}</h3>
+
+                        <p>Monto prestado</p>
+                    </div>
+                    <div class="icon">
+                        <i class="ion ion-pricetags"></i>
+                    </div>
+                    <a href="#" class="small-box-footer">Mas info <i class="fas fa-arrow-circle-right"></i></a>
+                </div>
+            </div>
+            <!-- ./col -->
+        </div>
+        <!-- /.row -->
         <div class="row">
             <!-- /.col-md-6 -->
             <div class="col-lg-6">
                 <!-- card -->
-                <div class="card">
-                    <div class="card-header border-0">
-                        <h3 class="card-title">ESTADO ACTUAL DE CAJA FAMILIAR</h3>
+                <!-- Donut chart -->
+                <div class="card card-primary card-outline">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="far fa-chart-bar"></i>
+                            Monto total en caja $<span id="general_total">00,00</span>
+                        </h3>
+
                         <div class="card-tools">
-                            <a href="#" class="btn btn-tool btn-sm">
-                                <i class="fas fa-download"></i>
-                            </a>
-                            <a href="#" class="btn btn-tool btn-sm">
-                                <i class="fas fa-bars"></i>
-                            </a>
+                            <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            <button type="button" class="btn btn-tool" data-card-widget="remove">
+                                <i class="fas fa-times"></i>
+                            </button>
                         </div>
                     </div>
-                    <div class="card-body table-responsive p-0">
-                        <table class="table table-striped table-valign-middle">
-                            <tbody>
-                                <tr>
-                                    <td>
-                                        <img src="dist/img/default-150x150.png" alt="Product 1" class="img-circle img-size-32 mr-2">
-                                        MONTO TOTAL EN CAJA
-                                    </td>
-                                    <td>
-                                        <small class="text-success mr-1">
-                                            <i class="fas fa-arrow-up"></i>
-                                            12%
-                                        </small>
-                                        $15.977,20
-                                    </td>
-                                    <td>
-                                        <a href="#" class="text-muted">
-                                            <i class="fas fa-search"></i>
-                                        </a>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <img src="dist/img/default-150x150.png" alt="Product 1" class="img-circle img-size-32 mr-2">
-                                        APORTACIONES DE SOCIOS
-                                    </td>
-                                    <td>
-                                        <small class="text-warning mr-1">
-                                            <i class="fas fa-arrow-down"></i>
-                                            0.5%
-                                        </small>
-                                        $12.236,55
-                                    </td>
-                                    <td>
-                                        <a href="#" class="text-muted">
-                                            <i class="fas fa-search"></i>
-                                        </a>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <img src="dist/img/default-150x150.png" alt="Product 1" class="img-circle img-size-32 mr-2">
-                                        TOTAL DE INTERESES
-                                    </td>
-                                    <td>
-                                        <small class="text-danger mr-1">
-                                            <i class="fas fa-arrow-down"></i>
-                                            3%
-                                        </small>
-                                        $2.190,65
-                                    </td>
-                                    <td>
-                                        <a href="#" class="text-muted">
-                                            <i class="fas fa-search"></i>
-                                        </a>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <img src="dist/img/default-150x150.png" alt="Product 1" class="img-circle img-size-32 mr-2">
-                                        CUOTAS ANULES
-                                    </td>
-                                    <td>
-                                        <small class="text-success mr-1">
-                                            <i class="fas fa-arrow-up"></i>
-                                            63%
-                                        </small>
-                                        $1.550,00
-                                    </td>
-                                    <td>
-                                        <a href="#" class="text-muted">
-                                            <i class="fas fa-search"></i>
-                                        </a>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <img src="dist/img/default-150x150.png" alt="Product 1" class="img-circle img-size-32 mr-2">
-                                        TOTAL DE PRESTAMOS
-                                    </td>
-                                    <td>
-                                        <small class="text-success mr-1">
-                                            <i class="fas fa-arrow-up"></i>
-                                            63%
-                                        </small>
-                                        $14.320,00
-                                    </td>
-                                    <td>
-                                        <a href="#" class="text-muted">
-                                            <i class="fas fa-search"></i>
-                                        </a>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <img src="dist/img/default-150x150.png" alt="Product 1" class="img-circle img-size-32 mr-2">
-                                        GASTOS DE OFICINA
-                                    </td>
-                                    <td>
-                                        <small class="text-success mr-1">
-                                            <i class="fas fa-arrow-up"></i>
-                                            63%
-                                        </small>
-                                        $500,00
-                                    </td>
-                                    <td>
-                                        <a href="#" class="text-muted">
-                                            <i class="fas fa-search"></i>
-                                        </a>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <img src="dist/img/default-150x150.png" alt="Product 1" class="img-circle img-size-32 mr-2">
-                                        SALDO ACTUAL EN CAJA
-                                    </td>
-                                    <td>
-                                        <small class="text-success mr-1">
-                                            <i class="fas fa-arrow-up"></i>
-                                            63%
-                                        </small>
-                                        $1.157,20
-                                    </td>
-                                    <td>
-                                        <a href="#" class="text-muted">
-                                            <i class="fas fa-search"></i>
-                                        </a>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                    <div class="card-body">
+                        <!-- <div id="donut-chart" style="height: 300px;"></div> -->
+                        <div class="col-md-12">
+                            <div class="chart-responsive">
+                                <div id="donut-chart-general" style="height: 300px;"></div>
+                                <!-- <canvas id="pieChart" height="150"></canvas> -->
+                            </div>
+                            <!-- ./chart-responsive -->
+                        </div>
+                        <!-- /.col -->
+                        <div class="col-md-12">
+                            <ul class="chart-legend clearfix">
+                                <li><i style="color: #3c8dbc;" class="far fa-circle"></i> Aportes mensuales $<span id="general_c_months">00,00</span></li>
+                                <li><i style="color: #0073b7;" class="far fa-circle"></i> Interes $<span id="general_interest">00,00</span></li>
+                                <li><i style="color: #00c0ef;" class="far fa-circle"></i> Aportes anual $<span id="general_c_year">00,00</span></li>
+                            </ul>
+                        </div>
+                        <!-- /.col -->
                     </div>
                 </div>
-                <!-- /.card -->
+                <!-- /.card-body-->
             </div>
+            <!-- /.card -->
             <!-- /.col-md-6 -->
             <div class="col-lg-6">
                 <!-- card -->
-                <div class="card">
-                    <div class="card-header border-0">
-                        <h3 class="card-title">MONTO POR CADA SOCIO</h3>
+                <!-- Donut chart -->
+                <div class="card card-primary card-outline">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="far fa-chart-bar"></i>
+                            Monto total en caja $<span id="members_total">00,00</span>
+                        </h3>
+
                         <div class="card-tools">
-                            <a href="#" class="btn btn-tool btn-sm">
-                                <i class="fas fa-download"></i>
-                            </a>
-                            <a href="#" class="btn btn-tool btn-sm">
-                                <i class="fas fa-bars"></i>
-                            </a>
+                            <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            <button type="button" class="btn btn-tool" data-card-widget="remove">
+                                <i class="fas fa-times"></i>
+                            </button>
                         </div>
                     </div>
-                    <div class="card-body table-responsive p-0">
-                        <table class="table table-striped table-valign-middle">
-                            <tbody>
-                                <tr>
-                                    <td>
-                                        <img src="dist/img/default-150x150.png" alt="Product 1" class="img-circle img-size-32 mr-2">
-                                        APORTACIONES DE SOCIOS
-                                    </td>
-                                    <td>
-                                        <small class="text-success mr-1">
-                                            <i class="fas fa-arrow-up"></i>
-                                            12%
-                                        </small>
-                                        $11.256,55
-                                    </td>
-                                    <td>
-                                        <a href="#" class="text-muted">
-                                            <i class="fas fa-search"></i>
-                                        </a>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <img src="dist/img/default-150x150.png" alt="Product 1" class="img-circle img-size-32 mr-2">
-                                        TOTAL DE INTERESES
-                                    </td>
-                                    <td>
-                                        <small class="text-warning mr-1">
-                                            <i class="fas fa-arrow-down"></i>
-                                            0.5%
-                                        </small>
-                                        $12.236,55
-                                    </td>
-                                    <td>
-                                        <a href="#" class="text-muted">
-                                            <i class="fas fa-search"></i>
-                                        </a>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <img src="dist/img/default-150x150.png" alt="Product 1" class="img-circle img-size-32 mr-2">
-                                        CUOTAS ANULES
-                                    </td>
-                                    <td>
-                                        <small class="text-danger mr-1">
-                                            <i class="fas fa-arrow-down"></i>
-                                            3%
-                                        </small>
-                                        $1.550,00
-                                    </td>
-                                    <td>
-                                        <a href="#" class="text-muted">
-                                            <i class="fas fa-search"></i>
-                                        </a>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <img src="dist/img/default-150x150.png" alt="Product 1" class="img-circle img-size-32 mr-2">
-                                        SALDO ACTUAL EN CAJA
-                                    </td>
-                                    <td>
-                                        <small class="text-success mr-1">
-                                            <i class="fas fa-arrow-up"></i>
-                                            63%
-                                        </small>
-                                        $14.997,20
-                                    </td>
-                                    <td>
-                                        <a href="#" class="text-muted">
-                                            <i class="fas fa-search"></i>
-                                        </a>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <img src="dist/img/default-150x150.png" alt="Product 1" class="img-circle img-size-32 mr-2">
-                                        NUMERO DE SOCIOS
-                                    </td>
-                                    <td>
-                                        <small class="text-success mr-1">
-                                            <i class="fas fa-arrow-up"></i>
-                                            63%
-                                        </small>
-                                        31
-                                    </td>
-                                    <td>
-                                        <a href="#" class="text-muted">
-                                            <i class="fas fa-search"></i>
-                                        </a>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <img src="dist/img/default-150x150.png" alt="Product 1" class="img-circle img-size-32 mr-2">
-                                        MONTO POR CADA SOCIO
-                                    </td>
-                                    <td>
-                                        <small class="text-success mr-1">
-                                            <i class="fas fa-arrow-up"></i>
-                                            63%
-                                        </small>
-                                        $483,78
-                                    </td>
-                                    <td>
-                                        <a href="#" class="text-muted">
-                                            <i class="fas fa-search"></i>
-                                        </a>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                    <div class="card-body">
+                        <!-- <div id="donut-chart" style="height: 300px;"></div> -->
+                        <div class="col-md-12">
+                            <div class="chart-responsive">
+                                <div id="donut-chart-current" style="height: 300px;"></div>
+                                <!-- <canvas id="pieChart" height="150"></canvas> -->
+                            </div>
+                            <!-- ./chart-responsive -->
+                        </div>
+                        <!-- /.col -->
+                        <div class="col-md-12">
+                            <ul class="chart-legend clearfix">
+                                <li><i style="color: #3c8dbc;" class="far fa-circle"></i> Aportes mensuales $<span id="members_c_months">00,00</span></li>
+                                <li><i style="color: #0073b7;" class="far fa-circle"></i> Interes $<span id="members_interest">00,00</span></li>
+                                <li><i style="color: #00c0ef;" class="far fa-circle"></i> Aportes anual $<span id="members_c_year">00,00</span></li>
+                            </ul>
+                        </div>
+                        <!-- /.col -->
                     </div>
                 </div>
-                <!-- /.card -->
+                <!-- /.card-body-->
             </div>
-            <!-- /.col-md-6 -->
         </div>
-        <!-- /.row -->
+        <!-- /.col-md-6 -->
     </div>
-    <!-- /.container-fluid -->
+    <!-- /.row -->
+</div>
+<!-- /.container-fluid -->
 </div>
 <!-- /.content -->
 @endsection
+@push('scripts')
+<script src="{{ asset('plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js') }}"></script>
+<!-- jQuery Mapael -->
+<script src="{{ asset('plugins/jquery-mousewheel/jquery.mousewheel.js') }}"></script>
+<script src="{{ asset('plugins/raphael/raphael.min.js') }}"></script>
+<script src="{{ asset('plugins/jquery-mapael/jquery.mapael.min.js') }}"></script>
+<script src="{{ asset('plugins/jquery-mapael/maps/usa_states.min.js') }}"></script>
+<!-- ChartJS -->
+<!-- FLOT CHARTS -->
+<script src="{{ asset('plugins/flot/jquery.flot.js') }}"></script>
+<!-- FLOT RESIZE PLUGIN - allows the chart to redraw when the window is resized -->
+<script src="{{ asset('plugins/flot/plugins/jquery.flot.resize.js') }}"></script>
+<!-- FLOT PIE PLUGIN - also used to draw donut charts -->
+<script src="{{ asset('plugins/flot/plugins/jquery.flot.pie.js') }}"></script>
+<script>
+    $(function() {
+        /*
+         * DONUT CHART
+         * -----------
+         */
+
+        var data = [{
+                label: 'Anual',
+                color: '#00c0ef'
+            }, {
+                label: 'AportesMensual',
+                color: '#3c8dbc'
+            },
+            {
+                label: 'Interes',
+                color: '#0073b7'
+            }
+        ]
+
+        $.ajax({
+            type: 'GET',
+            url: "{{route('home.report')}}",
+            success: (res) => {
+
+                // General -----------------------------
+
+                data[0].data = res.general_contributions[0].sum
+                data[1].data = res.general_contributions[1].sum
+                data[2].data = res.general_interest
+
+                loadChart(data, 'donut-chart-general')
+
+                let total = Number(res.general_contributions[0].sum) + Number(res.general_contributions[1].sum) + Number(res.general_interest)
+                $('#general_total').text(total)
+                $('#general_c_months').text(res.general_contributions[1].sum)
+                $('#general_interest').text(res.general_interest)
+                $('#general_c_year').text(res.general_contributions[0].sum)
+
+                // Current ----------------------------
+
+                data[0].data = res.current_contributions[0].sum
+                data[1].data = res.current_contributions[1].sum
+                data[2].data = res.current_interest
+
+                loadChart(data, 'donut-chart-current')
+
+                let members_total = Number(res.current_contributions[0].sum) + Number(res.current_contributions[1].sum) + Number(res.current_interest)
+                $('#members_total').text(members_total)
+                $('#members_c_months').text(res.current_contributions[1].sum)
+                $('#members_interest').text(res.current_interest)
+                $('#members_c_year').text(res.current_contributions[0].sum)
+            },
+            error: (error) => console.log(error)
+        })
+    })
+
+    function loadChart(data, id) {
+        $.plot('#' + id, data, {
+            series: {
+                pie: {
+                    show: true,
+                    radius: 1,
+                    innerRadius: 0.5,
+                    label: {
+                        show: true,
+                        radius: 2 / 3,
+                        formatter: labelFormatter,
+                        threshold: 0.1
+                    }
+
+                }
+            },
+            legend: {
+                show: false
+            }
+        })
+    }
+
+    /*
+     * Custom Label formatter
+     * ----------------------
+     */
+    function labelFormatter(label, series) {
+        return '<div style="font-size:12px; text-align:center; color: #fff; font-weight: 400;">' +
+            Math.round(series.percent) + '%</div>'
+    }
+</script>
+@endpush

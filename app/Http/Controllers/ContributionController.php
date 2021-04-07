@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use DateTimeZone;
 use Illuminate\Http\Request;
 use Illuminate\Support\facades\DB;
+use Barryvdh\DomPDF\Facade as PDF;
 
 class ContributionController extends Controller
 {
@@ -17,6 +18,13 @@ class ContributionController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index()
+    {
+        $contributions = $this->list();
+
+        return view('contributions/index', compact('contributions'));
+    }
+
+    private function list()
     {
         $contributions = DB::table('people')
             ->select(
@@ -37,8 +45,9 @@ class ContributionController extends Controller
                 ['people.type', 'socio']
             ])
             ->get();
-        $contributions = json_decode(json_encode($contributions), true);
-        return view('contributions/index', compact('contributions'));
+        // $contributions = json_decode(json_encode($contributions), true);
+
+        return $contributions;
     }
 
     /**
@@ -119,7 +128,6 @@ class ContributionController extends Controller
     public function storeMasive(Request $request)
     {
         $contributions = $request->get('contributions');
-        $date = Carbon::now();
         $contributions = json_decode($contributions);
         foreach ($contributions as $contribution) {
             $contribution->type = (string)$request->get('type');
@@ -134,6 +142,16 @@ class ContributionController extends Controller
 
     public function history($person_id)
     {
+        return $this->historyview($person_id);
+    }
+
+    public function historypdf($person_id)
+    {
+        return  $this->historyview($person_id, true);
+    }
+
+    private function historyview($person_id, $pdf = false)
+    {
         $person = Person::findOrFail($person_id);
         $amount = 0;
         $contributions = Contribution::where([
@@ -147,7 +165,12 @@ class ContributionController extends Controller
 
         $contributions = json_decode(json_encode($contributions));
 
-        return view('contributions/history', compact('person', 'contributions', 'amount'));
+        if ($pdf) {
+            $pdf = PDF::loadView('contributions.reporthistorial', compact('person', 'contributions', 'amount'));
+            return $pdf->stream('historial_de_aportes.pdf');
+        } else {
+            return view('contributions/history', compact('person', 'contributions', 'amount'));
+        }
     }
 
     /**
@@ -198,5 +221,14 @@ class ContributionController extends Controller
         $contribution->save();
 
         return response()->json(['msm' => "Se elimino un aporte"]);
+    }
+
+    public function report()
+    {
+        $contributions = $this->list();
+
+        $pdf = PDF::loadView('contributions/report',  compact('contributions'));
+
+        return $pdf->stream('reporte_aportes.pdf');
     }
 }

@@ -84,7 +84,7 @@
                         <h3 class="card-title">Aportes</h3>
                         <div class="card-tools">
                             <div class="dt-buttons btn-group flex-wrap">
-                                <a class="btn btn-secondary btn-sm" href="" target="_blank">
+                                <a class="btn btn-secondary btn-sm" href="{{ route('aportes.historialpdf', $person->id)}}" target="_blank">
                                     <i class="far fa-file-pdf"></i>
                                 </a>
                             </div>
@@ -101,11 +101,11 @@
                             <thead>
                                 <tr style="text-align: center;">
                                     <th>Nº</th>
-                                    <th>Mes</th>
-                                    <th>Año</th>
-                                    <th>Aporte</th>
-                                    <th>Mora</th>
-                                    <th>Tipo</th>
+                                    <th>MES</th>
+                                    <th>AÑO</th>
+                                    <th>APORTE</th>
+                                    <th>MORA</th>
+                                    <th>TIPO</th>
                                     <th></th>
                                 </tr>
                             </thead>
@@ -122,6 +122,9 @@
                                     <td style="text-align: right;">{{'$' . number_format($contribution->amount, 2, ',', '.')}}</td>
                                     <td style="text-align: right;">{{'$' . number_format($contribution->must, 2, ',', '.')}}</td>
                                     <td style="text-align: center;">
+                                        @if($contribution->observation!==null)
+                                        <span class="badge bg-info" title="{{$contribution->observation}}"><i class="far fa-file"></i></span>
+                                        @endif
                                         <span class="badge {{$contribution->type === 'mensual'? 'bg-success' : 'bg-warning'}}" style="font-size:0.9em">{{$contribution->type}}</span>
                                     </td>
                                     <td>

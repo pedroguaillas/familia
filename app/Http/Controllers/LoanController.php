@@ -39,6 +39,31 @@ class LoanController extends Controller
         return view('loans.index', compact('loans'));
     }
 
+    public function pdf()
+    {
+        $loans = DB::table('loanS')
+            ->select(
+                'loans.id',
+                'loans.amount',
+                'loans.interest_percentage',
+                'loans.date',
+                'people.first_name',
+                'people.last_name',
+                DB::raw('sum(payments.capital) as sum_capital_paid')
+            )
+            ->join('people', 'people.id', 'loans.person_id')
+            ->leftJoin('payments', 'payments.loan_id', 'loans.id')
+            ->groupBy('loans.id', 'loans.amount', 'loans.interest_percentage', 'loans.date', 'people.first_name', 'people.last_name')
+            ->where('loans.state', 'activo')
+            ->orderBy('loans.date')->get();
+
+        $loans = json_decode(json_encode($loans), true);
+
+        $pdf = PDF::loadView('loans.report', compact('loans'));
+
+        return $pdf->stream('prestamos.pdf');
+    }
+
     /**
      * Show the form for creating a new resource.
      *

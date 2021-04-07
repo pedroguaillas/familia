@@ -17,6 +17,7 @@ class CreateContributionsTable extends Migration
             $table->bigIncrements('id');
             $table->bigInteger('person_id')->unsigned();
             $table->decimal('amount', 8, 2);
+            $table->decimal('must', 8, 2)->default(0);
             $table->dateTimeTz('date');
             $table->enum('type', ['mensual', 'anual']);
             $table->enum('state', ['activo', 'inactivo']);

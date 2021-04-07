@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Contribution;
 use App\Person;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade as PDF;
 
@@ -52,6 +54,24 @@ class PersonController extends Controller
                 return redirect()->route('people.index')->with('mensaje', 'Ya se ha registrado una persona con la cédula ' . $request->identification_card);
             }
         }
+    }
+
+    public function purchaseActions(Request $request)
+    {
+        $person = Person::findOrFail($request->person_id);
+        $person->actions = $request->quantity_action_purchase + 1;
+
+        if ($person->save()) {
+            $date = Carbon::now();
+            Contribution::create([
+                'person_id' => $request->person_id,
+                'amount' => $request->amount_to_pay,
+                'date' => $date->format('Y-m-d'),
+                'observation' => $request->observation
+            ]);
+        }
+
+        return redirect()->route('contributions.index')->with('success', 'Se registro la compra de acciones del socio ' . $person->first_name . ' ' . $person->last_name);
     }
 
     /**
@@ -114,12 +134,12 @@ class PersonController extends Controller
         return redirect()->route('people.index')->with('danger', 'Se elimino ');
     }
 
-
     public function report($type)
     {
         $people = Person::where('type', $type)->get();
 
         $pdf = PDF::loadView('people.report',  compact('people'));
+        (new PdfController())->loadTempleate($pdf);
         return $pdf->stream('reporte_socios.pdf');
     }
 
@@ -128,7 +148,6 @@ class PersonController extends Controller
         $person = Person::findOrFail($id);
         $person->state = 'inactivo';
         $person->save();
-
 
         return response()->json(['mensaje', 'se elimino']);
     }

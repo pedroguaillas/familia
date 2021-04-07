@@ -9,6 +9,7 @@ use DateTimeZone;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Carbon;
+use Barryvdh\DomPDF\Facade as PDF;
 
 class PaymentController extends Controller
 {
@@ -45,6 +46,28 @@ class PaymentController extends Controller
         return view('payments.index', compact('person', 'guarantor', 'loan', 'payments'));
     }
 
+    public function pdf($id)
+    {
+        $loan = Loan::findOrFail($id);
+        //Se requiere de person para mostrar el nombre en la cabecera
+        $person = $loan->person;
+        //Se requiere de guarantor para mostrar el nombre en la cabecera
+        $guarantor = Person::where('id', $loan->guarantor_id)->get()->first();
+        // $payments = $loan->payments;
+        $payments = DB::table('payments')
+            ->where([
+                'loan_id' => $id,
+                'state' => 'activo'
+            ])
+            ->orderBy('date', 'asc')
+            ->get();
+
+        $pdf = PDF::loadView('payments.report', compact('person', 'guarantor', 'loan', 'payments'));
+
+        (new PdfController())->loadTempleate($pdf);
+
+        return $pdf->stream('pagosprestamo.pdf');
+    }
     /**
      * Show the form for creating a new resource.
      *

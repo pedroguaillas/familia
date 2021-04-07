@@ -42,12 +42,12 @@
                         <h3 class="card-title">PRESTAMOS</h3>
                         <div class="card-tools">
                             <div class="dt-buttons btn-group flex-wrap">
-                                <button class="btn btn-secondary buttons-pdf buttons-html5" tabindex="0" aria-controls="example1" type="button">
-                                    <span>PDF</span>
-                                </button>
+                                <a class="btn btn-secondary btn-sm" href="{{route('loans.pdf')}}" target="_blank">
+                                    <i class="far fa-file-pdf"></i>
+                                </a>
                             </div>
                             <div class="dt-buttons btn-group flex-wrap">
-                                <a href="{{ route('loans.create') }}" class="btn btn-success">
+                                <a href="{{ route('loans.create') }}" class="btn btn-success btn-sm">
                                     <i class="fas fa-plus"></i>
                                 </a>
                             </div>
@@ -68,10 +68,12 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                @php
+                                $i=1;
+                                @endphp
                                 @foreach ($loans as $loan)
                                 <tr>
-                                    <!-- <input type="hidden" class="serdelete_val" value="1"> -->
-                                    <td style="text-align: center;">{{$loan['id']}}</td>
+                                    <td style="text-align: center;">{{$i}}</td>
                                     <td>{{$loan['first_name'].' '. $loan['last_name']}}</td>
                                     <td style="text-align: right;">{{'$'. number_format($loan['amount'], 2, ',', '.')}}</td>
                                     <td style="text-align: center;">{{$loan['interest_percentage']. '%'}}</td>
@@ -106,6 +108,9 @@
                                         </ul>
                                     </td>
                                 </tr>
+                                @php
+                                $i+=1;
+                                @endphp
                                 @endforeach
                             </tbody>
                         </table>
