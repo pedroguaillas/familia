@@ -15,7 +15,7 @@
             <div class="col-sm-6"></div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
-                    <li class="breadcrumb-item"><a href="{{ url('loans') }}">Prestamos</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url('loans') }}">Préstamos</a></li>
                     <li class="breadcrumb-item active">Pagos</li>
                 </ol>
             </div>
@@ -31,7 +31,7 @@
 
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="card-title">DATOS DEL PRÉSTAMO</h3>
+                        <h3 class="card-title">DATOS DEL PRESTAMO</h3>
                     </div>
 
                     <div class="card-body">
@@ -80,9 +80,9 @@
                                 </a>
                             </div>
                             <div class="dt-buttons btn-group flex-wrap">
-                                <a href="#" onclick="showModalCreate('{{$loan->id}}')" class="create-modal btn btn-success btn-sm">
+                                <button onclick="showModalCreate('{{$loan->id}}')" class="create-modal btn btn-success btn-sm">
                                     <i class="fas fa-plus"></i>
-                                </a>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -133,12 +133,12 @@
                                                     <a href="{{ route('prestamo.imprimir')}}" class="dropdown-item" target="_blank">
                                                         <i class="far fa-file"></i> Imprimir
                                                     </a>
-                                                    <a href="#" class="dropdown-item" onclick='editPayment("{{$payment->id}}")'>
+                                                    <button class="dropdown-item" onclick='editPayment("{{$payment->id}}")'>
                                                         <i class="far fa-edit"></i> Editar
-                                                    </a>
-                                                    <a href="#" class="dropdown-item" onclick='paymentDelete("{{$payment->id}}")'>
+                                                    </button>
+                                                    <button class="dropdown-item" onclick='paymentDelete("{{$payment->id}}")'>
                                                         <i class="far fa-trash-alt"></i> Anular
-                                                    </a>
+                                                    </button>
                                                 </div>
                                             </li>
                                         </ul>
@@ -173,8 +173,6 @@
 </div>
 <!-- /.content -->
 
-@endsection
-
 <div id="createPayment" class="modal fade" role="dialog">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -194,7 +192,7 @@
                         </div>
                     </div>
                     <div class="form-group row add">
-                        <label class="control-label col-sm-3" for="interest_amount "> Interes </label>
+                        <label class="control-label col-sm-3" for="interest_amount "> Interés </label>
                         <div class="col-sm-9">
                             <input type="number" class="form-control form-control-sm" id="interest_amount" step="0.01" name="interest_amount" required>
                         </div>
@@ -216,6 +214,12 @@
                         <label class="control-label col-sm-3" for="date">Fecha Inicio</label>
                         <div class="col-sm-9">
                             <input type="date" value="{{date('Y-m-d')}}" class="form-control form-control-sm" id="date_start" name="date_start" required>
+                        </div>
+                    </div>
+                    <div class="form-group row add">
+                        <label class="control-label col-sm-3" for="boservation">Observación</label>
+                        <div class="col-sm-9">
+                            <textarea name="observation" class="form-control" rows="2"></textarea>
                         </div>
                     </div>
                     <div class="form-group row add">
@@ -295,9 +299,9 @@
         </div>
     </div>
 </div>
+@endsection
 
 @push('scripts')
-
 <script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.10.23/js/dataTables.bootstrap4.min.js"></script>
 <script src="https://cdn.datatables.net/responsive/2.2.7/js/dataTables.responsive.min.js"></script>
@@ -329,7 +333,7 @@
     function paymentDelete(id) {
         swal({
                 title: "¿Esta seguro?",
-                text: "Eliminar Pago",
+                text: "Eliminar pago",
                 icon: "warning",
                 buttons: ["Cancelar", "Ok"],
                 dangerMode: true,
@@ -343,17 +347,18 @@
                             "_token": $('meta[name="csrf-token"]').content,
                             "_method": "DELETE"
                         },
-                        success: function(response) {
-                            swal(response.status, {
-                                    icon: "success",
+                        success: () => {
+                            swal({
+                                    text: "Se elimino un pago",
+                                    icon: "success"
                                 })
                                 .then((result) => {
                                     location.reload();
                                 });
                         }
-                    });
+                    })
                 }
-            });
+            })
     }
 
     function showModalCreate(loan_id) {

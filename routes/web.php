@@ -18,9 +18,9 @@ Route::get('/', function () {
 
 Auth::routes();
 
-Route::get('/home', 'HomeController@index')->name('home');
-Route::get('/home/report', 'HomeController@report')->name('home.report');
-Route::get('/home/reportcurrent/{person_id}', 'HomeController@reportcurrent')->name('home.reportcurrent');
+Route::get('home', 'HomeController@index')->name('inicio');
+Route::get('home/report', 'HomeController@report')->name('home.report');
+Route::get('home/reportcurrent/{person_id}', 'HomeController@reportcurrent')->name('home.reportcurrent');
 
 Route::resource('contributions', 'ContributionController');
 Route::post('aportes/registro-masivo', 'ContributionController@create2')->name('contributions.create2');
@@ -30,6 +30,7 @@ Route::get('aportes/historialpdf/{person_id}', 'ContributionController@historypd
 Route::get('aportes/reporte', 'ContributionController@report')->name('aportes.reporte');
 
 Route::resource('loans', 'LoanController');
+Route::post('loans/renovation/{loan}', 'LoanController@renovation');
 Route::get('prestamo/imprimir', 'LoanController@showPdf')->name('prestamo.imprimir');
 Route::get('prestamos/pdf', 'LoanController@pdf')->name('loans.pdf');
 

@@ -18,6 +18,8 @@ class PersonController extends Controller
     public function index()
     {
         $people = Person::where('state', 'activo')->get();
+        $people = json_decode(json_encode($people));
+
         return view('people.index', compact('people'));
     }
 
@@ -47,11 +49,11 @@ class PersonController extends Controller
     {
         try {
             $person =  Person::create($request->all());
-            return redirect()->route('people.index')->with('mensaje', (($request->type === 'socio') ? 'Socio' : 'Persona particular') . ' agregado con éxito.');
+            return redirect()->route('people.index')->with('info', (($request->type === 'socio') ? 'Socio' : 'Persona particular') . ' agregado con éxito.');
         } catch (\Illuminate\Database\QueryException $e) {
             $errorcode = $e->errorInfo[1];
             if ($errorcode === 1062) {
-                return redirect()->route('people.index')->with('mensaje', 'Ya se ha registrado una persona con la cédula ' . $request->identification_card);
+                return redirect()->route('people.index')->with('warning', 'Ya se ha registrado una persona con la cédula ' . $request->identification_card);
             }
         }
     }
@@ -82,19 +84,7 @@ class PersonController extends Controller
      */
     public function show(Person $person)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Person  $person
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        $person = Person::findOrFail($id);
-        return view('people.editPeople', compact('person'));
+        return response()->json(['person' => $person]);
     }
 
     /**
@@ -104,19 +94,11 @@ class PersonController extends Controller
      * @param  \App\Models\Person  $person
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Person $person)
     {
-        $dato = Person::findOrFail($id);
+        $person->update($request->all());
 
-
-        $dato->first_name = $request->first_name;
-        $dato->last_name = $request->last_name;
-        $dato->identification_card = $request->identification_card;
-        $dato->phone = $request->phone;
-        $dato->email = $request->email;
-
-        $dato->save();
-        return redirect()->route('people.index')->with('mensaje', 'Datos del socio actulizado.');
+        return redirect()->route('people.index')->with('info', 'Datos del personal actualizado.');
     }
 
     /**
@@ -127,11 +109,8 @@ class PersonController extends Controller
      */
     public function destroy(Person $person)
     {
-        $person->update([
-            ['state' => 'inactivo']
-        ]);
-
-        return redirect()->route('people.index')->with('danger', 'Se elimino ');
+        $person->state = 'inactivo';
+        $person->save();
     }
 
     public function report($type)
@@ -141,14 +120,5 @@ class PersonController extends Controller
         $pdf = PDF::loadView('people.report',  compact('people'));
         (new PdfController())->loadTempleate($pdf);
         return $pdf->stream('reporte_socios.pdf');
-    }
-
-    public function delete($id)
-    {
-        $person = Person::findOrFail($id);
-        $person->state = 'inactivo';
-        $person->save();
-
-        return response()->json(['mensaje', 'se elimino']);
     }
 }
