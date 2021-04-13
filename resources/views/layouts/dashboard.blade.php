@@ -78,7 +78,7 @@
                         <li class="nav-item">
                             <a href="{{ url('loans') }}" class="nav-link">
                                 <i class="nav-icon fas fa-copy"></i>
-                                <p>Prestamos</p>
+                                <p>Préstamos</p>
                             </a>
                         </li>
                         <li class="nav-item">

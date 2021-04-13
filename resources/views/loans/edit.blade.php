@@ -10,12 +10,12 @@
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h1>Editar Prestamo</h1>
+                <h1>Editar Préstamo</h1>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
-                    <li class="breadcrumb-item"><a href="{{ url('loans') }}">Prestamos</a></li>
-                    <li class="breadcrumb-item active">Editar Prestamo</li>
+                    <li class="breadcrumb-item"><a href="{{ url('loans') }}">Préstamos</a></li>
+                    <li class="breadcrumb-item active">Editar Préstamo</li>
                 </ol>
             </div>
         </div>
@@ -130,18 +130,16 @@
             </div>
             <div class="modal-body">
                 <table id="example1" class="table table-bordered" style="width:100%">
-                    <table class="table table-head-fixed text-nowrap">
-                        <thead>
-                            <tr>
-                                <th>Cédula</th>
-                                <th>Nombres</th>
-                                <th>Apellidos</th>
-                                <th>Tipo</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tbody-rows-modal" style="cursor: pointer;">
-                        </tbody>
-                    </table>
+                    <thead>
+                        <tr>
+                            <th>Cédula</th>
+                            <th>Nombres</th>
+                            <th>Apellidos</th>
+                            <th>Tipo</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-rows-modal" style="cursor: pointer;">
+                    </tbody>
                 </table>
             </div>
         </div>

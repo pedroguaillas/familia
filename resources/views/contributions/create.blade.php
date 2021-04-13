@@ -58,11 +58,11 @@
                             <thead>
                                 <tr style="text-align: center;">
                                     <th>Nº</th>
-                                    <th>Socio</th>
-                                    <th>Nº Acciones</th>
-                                    <th>Aporte</th>
-                                    <th>Mora</th>
-                                    <th>Fecha</th>
+                                    <th>SOCIO</th>
+                                    <th>Nº ACCIONES</th>
+                                    <th>APORTE</th>
+                                    <th>MORA</th>
+                                    <th>FECHA</th>
                                 </tr>
                             </thead>
                             <tbody>

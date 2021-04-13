@@ -42,9 +42,9 @@
                                 </a>
                             </div>
                             <div class="dt-buttons btn-group flex-wrap">
-                                <a href="#" onclick="showModal()" class="btn btn-success btn-sm">
+                                <button onclick="showModal()" class="btn btn-success btn-sm">
                                     <i class="fas fa-plus"></i>
-                                </a>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -108,8 +108,6 @@
     <!-- /.container-fluid -->
 </div>
 <!-- /.content -->
-
-@endsection
 
 <!-- /.Aporte CREATE MASIVE -->
 <div class="modal fade" id="addModal" role="dialog">
@@ -213,6 +211,8 @@
         </div>
     </div>
 </div>
+@endsection
+
 @push('scripts')
 <script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.10.23/js/dataTables.bootstrap4.min.js"></script>

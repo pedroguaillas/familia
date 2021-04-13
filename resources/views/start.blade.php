@@ -33,7 +33,7 @@
                     <div class="inner">
                         <h3>{{ $countdebtors }}</h3>
 
-                        <p>Personas que tienen prestamo</p>
+                        <p>Personas que tienen préstamo</p>
                     </div>
                     <div class="icon">
                         <i class="ion ion-person"></i>
@@ -108,7 +108,7 @@
                         <div class="col-md-12">
                             <ul class="chart-legend clearfix">
                                 <li><i style="color: #3c8dbc;" class="far fa-circle"></i> Aportes mensuales $<span id="general_c_months">00,00</span></li>
-                                <li><i style="color: #0073b7;" class="far fa-circle"></i> Interes $<span id="general_interest">00,00</span></li>
+                                <li><i style="color: #0073b7;" class="far fa-circle"></i> Interés $<span id="general_interest">00,00</span></li>
                                 <li><i style="color: #00c0ef;" class="far fa-circle"></i> Aportes anual $<span id="general_c_year">00,00</span></li>
                             </ul>
                         </div>
@@ -126,7 +126,7 @@
                     <div class="card-header">
                         <h3 class="card-title">
                             <i class="far fa-chart-bar"></i>
-                            Monto total en caja $<span id="members_total">00,00</span>
+                            Monto total en caja hasta la fecha actual $<span id="members_total">00,00</span>
                         </h3>
 
                         <div class="card-tools">
@@ -151,7 +151,7 @@
                         <div class="col-md-12">
                             <ul class="chart-legend clearfix">
                                 <li><i style="color: #3c8dbc;" class="far fa-circle"></i> Aportes mensuales $<span id="members_c_months">00,00</span></li>
-                                <li><i style="color: #0073b7;" class="far fa-circle"></i> Interes $<span id="members_interest">00,00</span></li>
+                                <li><i style="color: #0073b7;" class="far fa-circle"></i> Interés $<span id="members_interest">00,00</span></li>
                                 <li><i style="color: #00c0ef;" class="far fa-circle"></i> Aportes anual $<span id="members_c_year">00,00</span></li>
                             </ul>
                         </div>
@@ -217,7 +217,7 @@
                 loadChart(data, 'donut-chart-general')
 
                 let total = Number(res.general_contributions[0].sum) + Number(res.general_contributions[1].sum) + Number(res.general_interest)
-                $('#general_total').text(total)
+                $('#general_total').text(total.toFixed(2))
                 $('#general_c_months').text(res.general_contributions[1].sum)
                 $('#general_interest').text(res.general_interest)
                 $('#general_c_year').text(res.general_contributions[0].sum)
@@ -231,7 +231,7 @@
                 loadChart(data, 'donut-chart-current')
 
                 let members_total = Number(res.current_contributions[0].sum) + Number(res.current_contributions[1].sum) + Number(res.current_interest)
-                $('#members_total').text(members_total)
+                $('#members_total').text(members_total.toFixed(2))
                 $('#members_c_months').text(res.current_contributions[1].sum)
                 $('#members_interest').text(res.current_interest)
                 $('#members_c_year').text(res.current_contributions[0].sum)
@@ -253,7 +253,6 @@
                         formatter: labelFormatter,
                         threshold: 0.1
                     }
-
                 }
             },
             legend: {

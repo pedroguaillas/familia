@@ -15,14 +15,28 @@
 @endpush
 
 @section('content')
+@if('session'('info'))
 <div class="col-12">
-    @if('session'('mensaje'))
     <div class="alert alert-info">
-        {{session('mensaje')}}
+        {{session('info')}}
         <button type="button" class="close" data-dismiss="alert" aria-label="close"><span aria-hidden="true">&times;</span></button>
     </div>
-    @endif
 </div>
+@elseif('session'('warning'))
+<div class="col-12">
+    <div class="alert alert-warning">
+        {{session('warning')}}
+        <button type="button" class="close" data-dismiss="alert" aria-label="close"><span aria-hidden="true">&times;</span></button>
+    </div>
+</div>
+@elseif('session'('danger'))
+<div class="col-12">
+    <div class="alert alert-danger">
+        {{session('danger')}}
+        <button type="button" class="close" data-dismiss="alert" aria-label="close"><span aria-hidden="true">&times;</span></button>
+    </div>
+</div>
+@endif
 <br>
 <!-- Main content -->
 <div class="content">
@@ -38,9 +52,9 @@
                             <div class="dt-buttons btn-group flex-wrap">
                                 <ul class="navbar-nav ml-auto">
                                     <li class="nav-item dropdown">
-                                        <a class="btn btn-secondary btn-sm" data-toggle="dropdown" href="#">
+                                        <button class="btn btn-secondary btn-sm" data-toggle="dropdown">
                                             <i class="far fa-file-pdf"></i>
-                                        </a>
+                                        </button>
                                         <div class="dropdown-menu dropdown-menu-md dropdown-menu-right">
                                             <a href="{{ route('personas.reporte', 'socio')}}" class="dropdown-item" target="_blank">
                                                 <i class="fa fa-money-bill"></i> Socios
@@ -53,15 +67,15 @@
                                 </ul>
                             </div>
                             <div class="dt-buttons btn-group flex-wrap">
-                                <a href="#" onclick="showModalCreate()" class="create-modal btn btn-success btn-sm">
+                                <button onclick="showModalCreate()" class="create-modal btn btn-success btn-sm">
                                     <i class="fas fa-plus"></i>
-                                </a>
+                                </button>
                             </div>
 
                         </div>
                     </div>
                     <div class="card-body">
-                        <table id="example1" class="table table-striped table-bordered" style="width:100%">
+                        <table id="example1" class="table table-striped table-bordered table-sm" style="width:100%">
                             <thead>
                                 <tr style="text-align: center;">
                                     <th>CEDULA</th>
@@ -74,29 +88,36 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($people as $dato)
+                                @foreach ($people as $person)
                                 <tr>
-                                    <input type="hidden" class="serdelete_val" value="{{ $dato->id }}">
-                                    <td>{{$dato['identification_card']}}</td>
-                                    <td>{{$dato['first_name']}}</td>
-                                    <td>{{$dato['last_name']}}</td>
+                                    <td>{{$person->identification_card}}</td>
+                                    <td>{{$person->first_name}}</td>
+                                    <td>{{$person->last_name}}</td>
                                     <td>
-                                        @if($dato['type'] === 'socio' )
-                                        <span class="badge bg-success" style="font-size:0.9em">{{$dato['type']}}</span>
+                                        @if($person->type === 'socio' )
+                                        <span class="badge bg-success" style="font-size:0.9em">{{$person->type}}</span>
                                         @else
-                                        <span class="badge bg-warning" style="font-size:0.9em">{{$dato['type']}}</span>
+                                        <span class="badge bg-warning" style="font-size:0.9em">{{$person->type}}</span>
                                         @endif
                                     </td>
-                                    <td>{{$dato['phone']}}</td>
-                                    <td>{{$dato['email']}}</td>
+                                    <td>{{$person->phone}}</td>
+                                    <td>{{$person->email}}</td>
                                     <td>
-                                        <a href="#" class="btn btn-warning btn-sm" onclick="editPerson(this)">
-                                            <i class="far fa-edit"></i>
-                                            <!-- {{route('people.edit' , $dato)}}  -->
-                                        </a>
-                                        <button class="btn btn-danger btn-sm personDelete">
-                                            <i class="far fa-trash-alt"></i>
-                                        </button>
+                                        <ul class="navbar-nav ml-auto">
+                                            <li class="nav-item dropdown">
+                                                <a class="nav-link" data-toggle="dropdown" href="#">
+                                                    <i class="fa fa-angle-down"></i>
+                                                </a>
+                                                <div class="dropdown-menu dropdown-menu-md dropdown-menu-right">
+                                                    <button class="dropdown-item" onclick='editPerson("{{$person->id}}")'>
+                                                        <i class="far fa-edit"></i> Editar
+                                                    </button>
+                                                    <button class="dropdown-item" onclick='deletePerson("{{$person->id}}")'>
+                                                        <i class="far fa-trash-alt"></i> Anular
+                                                    </button>
+                                                </div>
+                                            </li>
+                                        </ul>
                                     </td>
                                 </tr>
                                 @endforeach
@@ -161,7 +182,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button class="btn btn-success" type="submit" id="add">
+                        <button class="btn btn-success" type="submit">
                             Guardar
                         </button>
                         <button class="btn btn-warning" type="button" data-dismiss="modal">
@@ -175,7 +196,7 @@
 </div>
 
 <!-- /.MODAL EDIT -->
-<div class="modal fade" id="editModal" role="dialog">
+<div class="modal fade" id="edit-modal" role="dialog">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -183,9 +204,10 @@
             </div>
             <div class="modal-body">
 
-                <form class="form-horizontal" role="form" method="POST" action="/people" id="editForm">
+                <form class="form-horizontal" role="form" method="POST" id="edit-form">
                     {{ csrf_field() }}
                     {{method_field('PUT')}}
+
                     <div class="form-group row add">
                         <label class="control-label col-sm-2" for="identification_card">Cédula</label>
                         <div class="col-sm-10">
@@ -230,7 +252,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button class="btn btn-success" type="submit" id="add">
+                        <button class="btn btn-success" type="submit">
                             Guardar
                         </button>
                         <button class="btn btn-warning" type="button" data-dismiss="modal">
@@ -258,28 +280,57 @@
         $('.form-horizontal').show();
     }
 
-    function editPerson(edit) {
-        /* console.log(edit.parentNode.parentNode.children[0].value); */
-        let td = edit.parentNode.parentNode;
-        let id = td.children[0].value;
+    function editPerson(id) {
+        $.ajax({
+            type: 'GET',
+            url: "{{url('people')}}/" + id,
+            data: {
+                "_token": $('meta[name="csrf-token"]').content
+            },
+            success: (res) => {
+                let p = res.person
+                $('#identification_card1').val(p.identification_card);
+                $('#first_name1').val(p.first_name);
+                $('#last_name1').val(p.last_name);
+                $('#type1').val(p.type)
+                $('#phone1').val(p.phone)
+                $('#email1').val(p.email)
+                $('#edit-form').attr('action', "{{url('people')}}/" + id);
+                $('#edit-modal').modal('show');
+            },
+            error: (error) => console.log(error)
+        })
+    }
 
-        let identification_card = td.children[1].textContent;
-        let first_name = td.children[2].textContent;
-        let last_name = td.children[3].textContent;
-        let type = td.children[4].children[0].textContent;
-        let phone = td.children[5].textContent;
-        let email = td.children[6].textContent;
-
-        $('#identification_card1').val(identification_card);
-        $('#first_name1').val(first_name);
-        $('#last_name1').val(last_name);
-        $('#type1').val(type);
-        $('#phone1').val(phone)
-        $('#email1').val(email);
-        $('#editForm').attr('action', 'people/' + id);
-        $('#editModal').modal('show');
+    function deletePerson(id) {
+        swal({
+                title: "¿Esta seguro?",
+                text: "Eliminar esta persona",
+                icon: "warning",
+                buttons: ["Cancelar", "Ok"],
+                dangerMode: true,
+            })
+            .then((willDelete) => {
+                if (willDelete) {
+                    $.ajax({
+                        type: "POST",
+                        url: "{{url('people')}}/" + id,
+                        data: {
+                            "_token": $('meta[name="csrf-token"]').content,
+                            "_method": "DELETE"
+                        },
+                        success: () => {
+                            swal({
+                                    text: "Se elimino una persona",
+                                    icon: "success"
+                                })
+                                .then((result) => {
+                                    location.reload();
+                                });
+                        }
+                    })
+                }
+            })
     }
 </script>
-
-
 @endpush

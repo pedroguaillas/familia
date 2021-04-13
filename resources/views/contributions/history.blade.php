@@ -31,7 +31,7 @@
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item"><a href="{{ url('contributions') }}">Aportes</a></li>
-                    <li class="breadcrumb-item active">Historial Aportes</li>
+                    <li class="breadcrumb-item active">Historial de aportes</li>
                 </ol>
             </div>
         </div>
@@ -89,9 +89,9 @@
                                 </a>
                             </div>
                             <div class="dt-buttons btn-group flex-wrap">
-                                <a href="#" onclick="showModalCreate()" title="Registrar Aporte" class="create-modal btn btn-success btn-sm">
+                                <button onclick="showModalCreate()" title="Registrar Aporte" class="create-modal btn btn-success btn-sm">
                                     <i class="fas fa-plus"></i>
-                                </a>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -134,12 +134,12 @@
                                                     <i class="fa fa-angle-down"></i>
                                                 </a>
                                                 <div class="dropdown-menu dropdown-menu-md dropdown-menu-right">
-                                                    <a href="#" class="dropdown-item" onclick='showModalEdit("{{$contribution->id}}")'>
+                                                    <button class="dropdown-item" onclick='showModalEdit("{{$contribution->id}}")'>
                                                         <i class="far fa-edit"></i> Editar
-                                                    </a>
-                                                    <a href="#" onclick='deleteContribution("{{$contribution->id}}")' class="dropdown-item">
+                                                    </button>
+                                                    <button onclick='deleteContribution("{{$contribution->id}}")' class="dropdown-item">
                                                         <i class="far fa-trash-alt"></i> Anular
-                                                    </a>
+                                                    </button>
                                                 </div>
                                             </li>
                                         </ul>
@@ -283,7 +283,6 @@
     </div>
 </div>
 
-
 @push('scripts')
 
 <script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
@@ -323,7 +322,7 @@
     function deleteContribution(id) {
         swal({
                 title: "¿Esta seguro?",
-                text: "Eliminar Pago",
+                text: "Eliminar aporte",
                 icon: "warning",
                 buttons: ["Cancelar", "Ok"],
                 dangerMode: true,
@@ -337,15 +336,18 @@
                             "_token": $('meta[name="csrf-token"]').content,
                             "_method": "DELETE"
                         },
-                        success: function(response) {
-                            swal(response.status, {
-                                icon: "success",
-                            });
-                            location.reload();
+                        success: () => {
+                            swal({
+                                    text: "Se elimino un aporte",
+                                    icon: "success"
+                                })
+                                .then((result) => {
+                                    location.reload()
+                                });
                         }
-                    });
+                    })
                 }
-            });
+            })
     }
 </script>
 @endpush

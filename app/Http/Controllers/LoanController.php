@@ -8,6 +8,7 @@ use App\Person;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade as PDF;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Carbon;
 
 class LoanController extends Controller
 {
@@ -33,8 +34,6 @@ class LoanController extends Controller
             ->groupBy('loans.id', 'loans.amount', 'loans.interest_percentage', 'loans.date', 'people.first_name', 'people.last_name')
             ->where('loans.state', 'activo')
             ->orderBy('loans.date')->get();
-
-        $loans = json_decode(json_encode($loans), true);
 
         return view('loans.index', compact('loans'));
     }
@@ -84,7 +83,7 @@ class LoanController extends Controller
     public function store(Request $request)
     {
         Loan::create($request->all());
-        return redirect()->route('loans.index')->with('success', 'Se registro un nuevo prestamo');
+        return redirect()->route('loans.index')->with('success', 'Se registro un nuevo préstamo');
     }
 
     /**
@@ -95,7 +94,22 @@ class LoanController extends Controller
      */
     public function show(Loan $loan)
     {
-        //
+        //Usuda para mostrar renovacion de credito
+        $person = $loan->person;
+
+        $payments = $loan->payments;
+
+        $loan->debt = 0;
+
+        foreach ($payments as $item) {
+            if ($item->state === 'activo') {
+                $loan->debt += $item->capital;
+            }
+        }
+
+        $today = Carbon::now();
+
+        return response()->json(['loan' => $loan, 'person' => $person]);
     }
 
     public function showPdf()
@@ -138,7 +152,36 @@ class LoanController extends Controller
         // ]);
         $loan->update($request->all());
 
-        return redirect()->route('loans.index')->with('success', 'Se actualizo un registro con exito');
+        return redirect()->route('loans.index')->with('success', 'Se actualizo un préstamo.');
+    }
+
+    public function renovation(Request $request, Loan $loan)
+    {
+        $old_loan_amount = $loan->amount;
+        $loan->amount = $request->amount + $loan->amount;
+        $loan->date = $request->date;
+        $loan->interest_percentage = $request->interest_percentage;
+
+        if ($loan->save() && $request->interest_amount > 0) {
+
+            $payments = $loan->payments;
+
+            $old_debt = 0;
+
+            foreach ($payments as $item) {
+                if ($item->state === 'activo') {
+                    $old_debt += $item->capital;
+                }
+            }
+
+            $loan->payments()->create([
+                'debt' => $old_loan_amount - $old_debt,
+                'date' => $request->date,
+                'interest_amount' => $request->interest_amount
+            ]);
+        }
+
+        return redirect()->route('loans.index')->with('success', 'Se renovo el crédito de ' . $loan->person->first_name . ' ' . $loan->person->last_name);
     }
 
     /**
@@ -155,6 +198,6 @@ class LoanController extends Controller
         $update = Payment::where('loan_id', $loan->id)
             ->update(['state' => 'inactivo']);
 
-        return redirect()->route('loans.index')->with('danger', 'Se elimino un prestamo');
+        return redirect()->route('loans.index')->with('danger', 'Se elimino un préstamo');
     }
 }
