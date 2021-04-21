@@ -51,13 +51,13 @@
                             <div class="col-sm-2">
                                 <p>
                                     <strong>Monto: </strong>
-                                    {{'$' . number_format($loan->amount, 2, ',', '.')}}
+                                    {{number_format($loan->amount, 2, ',', '.')}}
                                 </p>
                             </div>
                             <div class="col-sm-2">
                                 <p>
-                                    <strong>Interes: </strong>
-                                    {{'%' .$loan->interest_percentage}}
+                                    <strong>Interés: </strong>
+                                    {{$loan->interest_percentage .'%'}}
                                 </p>
                             </div>
                         </div>
@@ -98,7 +98,7 @@
                                     <th>PAGO INTERES</th>
                                     <th>PAGO MORA</th>
                                     <th>FECHA PAGO</th>
-                                    <th></th>
+                                    <th colspan="2"></th>
                                 </tr>
                             </thead>
                             @php
@@ -118,11 +118,16 @@
                                     @endphp
                                     <input type="hidden" class="serdelete_val" value="{{ $payment->id }}">
                                     <td style="text-align: center;">{{$i}}</td>
-                                    <td style="text-align: right;">{{'$' . number_format($payment->debt, 2, ',', '.')}}</td>
-                                    <td style="text-align: right;">{{'$' . number_format($payment->capital, 2, ',', '.')}}</td>
-                                    <td style="text-align: right;">{{'$' . number_format($payment->interest_amount, 2, ',', '.')}}</td>
-                                    <td style="text-align: right;">{{'$' . number_format($payment->must, 2, ',', '.')}}</td>
+                                    <td style="text-align: right;">{{number_format($payment->debt, 2, ',', '.')}}</td>
+                                    <td style="text-align: right;">{{number_format($payment->capital, 2, ',', '.')}}</td>
+                                    <td style="text-align: right;">{{number_format($payment->interest_amount, 2, ',', '.')}}</td>
+                                    <td style="text-align: right;">{{number_format($payment->must, 2, ',', '.')}}</td>
                                     <td style="text-align: center;">{{substr($payment->date, 0, 10)}}</td>
+                                    <td style="text-align: center;">
+                                        @if($payment->observation!==null)
+                                        <span class="badge bg-info" title="{{$payment->observation}}"><i class="far fa-newspaper"></i></span>
+                                        @endif
+                                    </td>
                                     <td>
                                         <ul class="navbar-nav ml-auto">
                                             <li class="nav-item dropdown">
@@ -152,11 +157,11 @@
                                     <th style="text-align: right;">
                                         {{'$' .(count($payments) ? number_format($payments[count($payments)-1]->debt - $payments[count($payments)-1]->capital, 2, ',', '.') : number_format($loan->amount, 2, ',', '.'))}}
                                     </th>
-                                    <th style="text-align: right;">{{'$' . number_format($sum_capital, 2, ',', '.')}}</th>
-                                    <th style="text-align: right;">{{'$' . number_format($sum_interest, 2, ',', '.')}}</th>
-                                    <th style="text-align: right;">{{'$' . number_format($sum_must, 2, ',', '.')}}</th>
+                                    <th style="text-align: right;">{{number_format($sum_capital, 2, ',', '.')}}</th>
+                                    <th style="text-align: right;">{{number_format($sum_interest, 2, ',', '.')}}</th>
+                                    <th style="text-align: right;">{{number_format($sum_must, 2, ',', '.')}}</th>
                                     <th></th>
-                                    <th></th>
+                                    <th colspan="2"></th>
                                 </tr>
                             </tfoot>
                         </table>
@@ -217,15 +222,15 @@
                         </div>
                     </div>
                     <div class="form-group row add">
-                        <label class="control-label col-sm-3" for="boservation">Observación</label>
-                        <div class="col-sm-9">
-                            <textarea name="observation" class="form-control" rows="2"></textarea>
-                        </div>
-                    </div>
-                    <div class="form-group row add">
                         <label class="control-label col-sm-3" for="date">Fecha Fin</label>
                         <div class="col-sm-9">
                             <input type="date" class="form-control form-control-sm" id="date_end" name="date_end">
+                        </div>
+                    </div>
+                    <div class="form-group row add">
+                        <label class="control-label col-sm-3" for="boservation">Observación</label>
+                        <div class="col-sm-9">
+                            <textarea name="observation" class="form-control" rows="2"></textarea>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -285,6 +290,12 @@
                             <input type="date" class="form-control form-control-sm" id="date_edit" name="date" required>
                         </div>
                     </div>
+                    <div class="form-group row add">
+                        <label class="control-label col-sm-3" for="boservation">Observación</label>
+                        <div class="col-sm-9">
+                            <textarea name="observation" class="form-control" id="observation_edit" rows="2"></textarea>
+                        </div>
+                    </div>
 
                     <div class="modal-footer">
                         <button class="btn btn-success" type="submit">
@@ -322,12 +333,13 @@
                 $('#capital_edit').val(payment.capital)
                 $('#must_edit').val(payment.must)
                 $('#date_edit').val(payment.date.substring(0, 10))
+                $('#observation_edit').val(payment.observation)
             },
             error: (error) => console.log(error)
         });
 
-        $('#editForm').attr('action', "{{url('payments')}}/" + id);
-        $('#editModal').modal('show');
+        $('#editForm').attr('action', "{{url('payments')}}/" + id)
+        $('#editModal').modal('show')
     }
 
     function paymentDelete(id) {
@@ -353,7 +365,7 @@
                                     icon: "success"
                                 })
                                 .then((result) => {
-                                    location.reload();
+                                    location.reload()
                                 });
                         }
                     })
@@ -367,14 +379,14 @@
             url: "{{url('payments')}}/interestCalculate/" + loan_id,
 
             success: (response) => {
-                $('#debt').val(response.debt);
-                $('#interest_amount').val(response.interest);
+                $('#debt').val(response.debt)
+                $('#interest_amount').val(response.interest)
             },
             error: (error) => console.log(error)
         });
 
-        $('#createPayment').modal('show');
-        $('.form-horizontal').show();
+        $('#createPayment').modal('show')
+        $('.form-horizontal').show()
     }
 </script>
 @endpush

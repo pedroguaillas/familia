@@ -276,8 +276,8 @@
 
 <script>
     function showModalCreate() {
-        $('#create').modal('show');
-        $('.form-horizontal').show();
+        $('#create').modal('show')
+        $('.form-horizontal').show()
     }
 
     function editPerson(id) {
@@ -289,14 +289,14 @@
             },
             success: (res) => {
                 let p = res.person
-                $('#identification_card1').val(p.identification_card);
-                $('#first_name1').val(p.first_name);
-                $('#last_name1').val(p.last_name);
+                $('#identification_card1').val(p.identification_card)
+                $('#first_name1').val(p.first_name)
+                $('#last_name1').val(p.last_name)
                 $('#type1').val(p.type)
                 $('#phone1').val(p.phone)
                 $('#email1').val(p.email)
-                $('#edit-form').attr('action', "{{url('people')}}/" + id);
-                $('#edit-modal').modal('show');
+                $('#edit-form').attr('action', "{{url('people')}}/" + id)
+                $('#edit-modal').modal('show')
             },
             error: (error) => console.log(error)
         })
@@ -325,7 +325,7 @@
                                     icon: "success"
                                 })
                                 .then((result) => {
-                                    location.reload();
+                                    location.reload()
                                 });
                         }
                     })

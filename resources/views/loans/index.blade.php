@@ -75,10 +75,10 @@
                                 <tr>
                                     <td style="text-align: center;">{{$i}}</td>
                                     <td>{{$loan->first_name.' '. $loan->last_name}}</td>
-                                    <td style="text-align: right;">{{'$'. number_format($loan->amount, 2, ',', '.')}}</td>
+                                    <td style="text-align: right;">{{number_format($loan->amount, 2, ',', '.')}}</td>
                                     <td style="text-align: center;">{{$loan->interest_percentage. '%'}}</td>
-                                    <td style="text-align: right;">{{'$' . number_format($loan->sum_capital_paid, 2, ',', '.')}}</td>
-                                    <td style="text-align: right;">{{'$' . number_format($loan->amount - $loan->sum_capital_paid, 2, ',', '.')}}</td>
+                                    <td style="text-align: right;">{{number_format($loan->sum_capital_paid, 2, ',', '.')}}</td>
+                                    <td style="text-align: right;">{{number_format($loan->amount - $loan->sum_capital_paid, 2, ',', '.')}}</td>
                                     <td style="text-align: center;">{{substr($loan->date, 0, 10)}}</td>
                                     <td>
                                         <ul class="navbar-nav ml-auto">
@@ -90,12 +90,12 @@
                                                     <a href="{{ route('prestamos.pagos', $loan->id) }}" class="dropdown-item">
                                                         <i class="fa fa-money-bill"></i> Pagos
                                                     </a>
-                                                    <a href="{{ route('prestamo.imprimir')}}" class="dropdown-item" target="_blank">
-                                                        <i class="far fa-file"></i> Solicitud
-                                                    </a>
                                                     <button onclick='showModalNovacion("{{$loan->id}}")' class="dropdown-item">
                                                         <i class="far fa-edit"></i> Renovar
                                                     </button>
+                                                    <a href="{{ route('prestamos.solicitud', $loan->id)}}" class="dropdown-item" target="_blank">
+                                                        <i class="far fa-file"></i> Solicitud
+                                                    </a>
                                                     <a href="{{ route('loans.edit', $loan->id) }}" class="dropdown-item">
                                                         <i class="far fa-edit"></i> Editar
                                                     </a>
@@ -332,7 +332,7 @@
                                 })
                                 .then((result) => {
                                     location.reload()
-                                });
+                                })
                         }
                     })
                 }

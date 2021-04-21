@@ -11,6 +11,14 @@ use Barryvdh\DomPDF\Facade as PDF;
 class PersonController extends Controller
 {
     /**
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
+    /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
@@ -115,7 +123,10 @@ class PersonController extends Controller
 
     public function report($type)
     {
-        $people = Person::where('type', $type)->get();
+        $people = Person::where([
+            'type' => $type,
+            'state' => 'activo'
+        ])->get();
 
         $pdf = PDF::loadView('people.report',  compact('people'));
         (new PdfController())->loadTempleate($pdf);

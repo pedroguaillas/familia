@@ -124,7 +124,8 @@
                 date: $(this).children('td:last-child').children('input').val()
             }
             array.push(item)
-        });
+        })
+
         $.ajax({
             type: 'POST',
             url: "{{route('contributions.storemasive')}}",
@@ -137,7 +138,7 @@
                 location.href = "{{route('contributions.index')}}"
             },
             error: (error) => console.log(error)
-        });
+        })
     }
 
     function updateDate(e) {

@@ -69,7 +69,7 @@
                                 <tr>
                                     <td style="text-align: center;">{{$i}}</td>
                                     <td>{{$contribution->first_name . ' ' . $contribution->last_name}}</td>
-                                    <td style="text-align: right;">{{'$' . number_format($contribution->amount, 2, ',', '.')}}</td>
+                                    <td style="text-align: right;">{{number_format($contribution->amount, 2, ',', '.')}}</td>
                                     <td style="text-align: center;">{{$contribution->actions}}</td>
 
                                     <td>
@@ -85,6 +85,9 @@
                                                     <button onclick='showModalPurchaseActions("{{$contribution->person_id}}")' class="dropdown-item">
                                                         <i class="far fa-file"></i> Comprar acciones
                                                     </button>
+                                                    <a href="{{route('aportes.solicitude', $contribution->person_id)}}" class="dropdown-item" target="_blank">
+                                                        <i class="far fa-file"></i> Solicitud
+                                                    </a>
                                                 </div>
                                             </li>
                                         </ul>

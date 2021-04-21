@@ -23,7 +23,7 @@
                     <div class="icon">
                         <i class="ion ion-person-stalker"></i>
                     </div>
-                    <a href="#" class="small-box-footer">Mas info <i class="fas fa-arrow-circle-right"></i></a>
+                    <a href="{{url('people')}}" class="small-box-footer">Mas info <i class="fas fa-arrow-circle-right"></i></a>
                 </div>
             </div>
             <!-- ./col -->
@@ -38,7 +38,7 @@
                     <div class="icon">
                         <i class="ion ion-person"></i>
                     </div>
-                    <a href="#" class="small-box-footer">Mas info <i class="fas fa-arrow-circle-right"></i></a>
+                    <a href="{{url('loans')}}" class="small-box-footer">Mas info <i class="fas fa-arrow-circle-right"></i></a>
                 </div>
             </div>
             <!-- ./col -->
@@ -46,7 +46,7 @@
                 <!-- small box -->
                 <div class="small-box bg-warning">
                     <div class="inner">
-                        <h3>{{'$' . number_format($total, 2, ',', '.')}}</h3>
+                        <h3>{{number_format($total, 2, ',', '.')}}</h3>
 
                         <p>Monto total en caja</p>
                     </div>
@@ -61,7 +61,7 @@
                 <!-- small box -->
                 <div class="small-box bg-danger">
                     <div class="inner">
-                        <h3>{{'$' . number_format($total_borrowed, 2, ',', '.')}}</h3>
+                        <h3>{{number_format($total_borrowed, 2, ',', '.')}}</h3>
 
                         <p>Monto prestado</p>
                     </div>
@@ -83,7 +83,7 @@
                     <div class="card-header">
                         <h3 class="card-title">
                             <i class="far fa-chart-bar"></i>
-                            Monto total en caja $<span id="general_total">00,00</span>
+                            Monto total en caja <span id="general_total">00,00</span>
                         </h3>
 
                         <div class="card-tools">
@@ -107,9 +107,9 @@
                         <!-- /.col -->
                         <div class="col-md-12">
                             <ul class="chart-legend clearfix">
-                                <li><i style="color: #3c8dbc;" class="far fa-circle"></i> Aportes mensuales $<span id="general_c_months">00,00</span></li>
-                                <li><i style="color: #0073b7;" class="far fa-circle"></i> Interés $<span id="general_interest">00,00</span></li>
-                                <li><i style="color: #00c0ef;" class="far fa-circle"></i> Aportes anual $<span id="general_c_year">00,00</span></li>
+                                <li><i style="color: #3c8dbc;" class="far fa-circle"></i> Aportes mensuales <span id="general_c_months">00,00</span></li>
+                                <li><i style="color: #0073b7;" class="far fa-circle"></i> Interés <span id="general_interest">00,00</span></li>
+                                <li><i style="color: #00c0ef;" class="far fa-circle"></i> Aportes anual <span id="general_c_year">00,00</span></li>
                             </ul>
                         </div>
                         <!-- /.col -->
@@ -126,7 +126,7 @@
                     <div class="card-header">
                         <h3 class="card-title">
                             <i class="far fa-chart-bar"></i>
-                            Monto total en caja hasta la fecha actual $<span id="members_total">00,00</span>
+                            Monto total en caja hasta la fecha actual <span id="members_total">00,00</span>
                         </h3>
 
                         <div class="card-tools">
@@ -150,9 +150,9 @@
                         <!-- /.col -->
                         <div class="col-md-12">
                             <ul class="chart-legend clearfix">
-                                <li><i style="color: #3c8dbc;" class="far fa-circle"></i> Aportes mensuales $<span id="members_c_months">00,00</span></li>
-                                <li><i style="color: #0073b7;" class="far fa-circle"></i> Interés $<span id="members_interest">00,00</span></li>
-                                <li><i style="color: #00c0ef;" class="far fa-circle"></i> Aportes anual $<span id="members_c_year">00,00</span></li>
+                                <li><i style="color: #3c8dbc;" class="far fa-circle"></i> Aportes mensuales <span id="members_c_months">00,00</span></li>
+                                <li><i style="color: #0073b7;" class="far fa-circle"></i> Interés <span id="members_interest">00,00</span></li>
+                                <li><i style="color: #00c0ef;" class="far fa-circle"></i> Aportes anual <span id="members_c_year">00,00</span></li>
                             </ul>
                         </div>
                         <!-- /.col -->
@@ -198,7 +198,7 @@
                 color: '#3c8dbc'
             },
             {
-                label: 'Interes',
+                label: 'Interés',
                 color: '#0073b7'
             }
         ]
@@ -217,10 +217,10 @@
                 loadChart(data, 'donut-chart-general')
 
                 let total = Number(res.general_contributions[0].sum) + Number(res.general_contributions[1].sum) + Number(res.general_interest)
-                $('#general_total').text(total.toFixed(2))
-                $('#general_c_months').text(res.general_contributions[1].sum)
-                $('#general_interest').text(res.general_interest)
-                $('#general_c_year').text(res.general_contributions[0].sum)
+                $('#general_total').text(formatter.format(total))
+                $('#general_c_months').text(formatter.format(res.general_contributions[1].sum))
+                $('#general_interest').text(formatter.format(res.general_interest))
+                $('#general_c_year').text(formatter.format(res.general_contributions[0].sum))
 
                 // Current ----------------------------
 
@@ -231,10 +231,10 @@
                 loadChart(data, 'donut-chart-current')
 
                 let members_total = Number(res.current_contributions[0].sum) + Number(res.current_contributions[1].sum) + Number(res.current_interest)
-                $('#members_total').text(members_total.toFixed(2))
-                $('#members_c_months').text(res.current_contributions[1].sum)
-                $('#members_interest').text(res.current_interest)
-                $('#members_c_year').text(res.current_contributions[0].sum)
+                $('#members_total').text(formatter.format(members_total))
+                $('#members_c_months').text(formatter.format(res.current_contributions[1].sum))
+                $('#members_interest').text(formatter.format(res.current_interest))
+                $('#members_c_year').text(formatter.format(res.current_contributions[0].sum))
             },
             error: (error) => console.log(error)
         })
@@ -260,6 +260,16 @@
             }
         })
     }
+
+    // Create our number formatter.
+    var formatter = new Intl.NumberFormat('es-EC', {
+        //     style: 'currency',
+        //     currency: 'USD',
+
+        //     // These options are needed to round to whole numbers if that's what you want.
+        minimumFractionDigits: 2, // (this suffices for whole numbers, but will print 2500.10 as $2,500.1)
+        maximumFractionDigits: 2, // (causes 2500.99 to be printed as $2,501)
+    })
 
     /*
      * Custom Label formatter
