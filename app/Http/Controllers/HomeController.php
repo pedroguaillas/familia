@@ -53,7 +53,11 @@ class HomeController extends Controller
 
         $this->querys($contributions, $interest);
 
-        $total = $contributions[0]->sum + $contributions[1]->sum + $interest;
+        $total = $interest;
+
+        foreach ($contributions as $c) {
+            $total += $c->sum;
+        }
 
         $amounts_borrowed = Loan::join('payments AS p', 'p.loan_id', 'loans.id')
             ->select('loans.amount as total_borrowed')
@@ -78,7 +82,6 @@ class HomeController extends Controller
     //Reporte general
     public function report()
     {
-
         $current_contributions = null;
         $current_interest = 0;
 

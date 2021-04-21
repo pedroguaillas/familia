@@ -13,6 +13,13 @@ use Illuminate\Support\Carbon;
 class LoanController extends Controller
 {
     /**
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+    /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
@@ -59,6 +66,7 @@ class LoanController extends Controller
         $loans = json_decode(json_encode($loans), true);
 
         $pdf = PDF::loadView('loans.report', compact('loans'));
+        (new PdfController())->loadTempleate($pdf);
 
         return $pdf->stream('prestamos.pdf');
     }
@@ -112,11 +120,14 @@ class LoanController extends Controller
         return response()->json(['loan' => $loan, 'person' => $person]);
     }
 
-    public function showPdf()
+    public function solicitude(Loan $loan)
     {
-        $pdf = PDF::loadView('loans.print_unit');
+        //Se requiere de guarantor para mostrar el nombre del garante si existe
+        $guarantor = Person::where('id', $loan->guarantor_id)->get()->first();
 
-        return $pdf->stream('prestamo.pdf');
+        $pdf = PDF::loadView('loans.solicitude', compact('loan', 'guarantor'));
+
+        return $pdf->stream('solicitud_prestamo.pdf');
     }
 
     /**

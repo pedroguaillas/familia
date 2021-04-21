@@ -13,6 +13,14 @@ use Barryvdh\DomPDF\Facade as PDF;
 class ContributionController extends Controller
 {
     /**
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
+    /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
@@ -167,6 +175,7 @@ class ContributionController extends Controller
 
         if ($pdf) {
             $pdf = PDF::loadView('contributions.reporthistorial', compact('person', 'contributions', 'amount'));
+            (new PdfController())->loadTempleate($pdf);
             return $pdf->stream('historial_de_aportes.pdf');
         } else {
             return view('contributions/history', compact('person', 'contributions', 'amount'));
@@ -228,7 +237,16 @@ class ContributionController extends Controller
         $contributions = $this->list();
 
         $pdf = PDF::loadView('contributions/report',  compact('contributions'));
+        (new PdfController())->loadTempleate($pdf);
 
         return $pdf->stream('reporte_aportes.pdf');
+    }
+
+    public function solicitude(int $person_id)
+    {
+        $person = Person::findOrFail($person_id);
+        $pdf = PDF::loadView('contributions/solicitude', compact('person'));
+
+        return $pdf->stream('solicitud_compra_acciones.pdf');
     }
 }

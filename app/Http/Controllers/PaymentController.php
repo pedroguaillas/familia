@@ -14,6 +14,13 @@ use Barryvdh\DomPDF\Facade as PDF;
 class PaymentController extends Controller
 {
     /**
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+    /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
@@ -99,7 +106,8 @@ class PaymentController extends Controller
                     'interest_amount' => $request->get('interest_amount'),
                     'capital' => 0,
                     'must' => 0,
-                    'date' => $carbon->toDateTimeString()
+                    'date' => $carbon->toDateTimeString(),
+                    'observation' => $request->get('observation')
                 ];
                 array_push($payments, $payment);
                 $carbon->addMonth();
@@ -112,7 +120,8 @@ class PaymentController extends Controller
                 'interest_amount' => $request->get('interest_amount'),
                 'capital' => $request->get('capital'),
                 'must' => $request->get('must'),
-                'date' => $request->get('date_start')
+                'date' => $request->get('date_start'),
+                'observation' => $request->get('observation')
             ];
             $loan = Loan::findOrFail($request->loan_id);
             $loan->payments()->create($payment);

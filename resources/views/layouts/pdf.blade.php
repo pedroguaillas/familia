@@ -8,117 +8,46 @@
     <title>@yield('title')</title>
     <style>
         body {
-            margin: 0;
-            padding: 0;
             font-size: 1em;
             line-height: 1.5em;
             font-family: sans-serif;
         }
 
-        #main-header {
-            height: 50px;
-            width: 100%;
-            left: 0;
-            top: 0;
-        }
-
-        hr {
-            border: 1px solid #aaa;
-        }
-
-        /*Logo*/
-        #logo-header {
-            float: left;
-            padding: 1px;
-            text-decoration: none;
-        }
-
-        #logo-header .site-name {
-            display: block;
-        }
-
-        #logo-header .site-desc {
-            display: block;
-            font-weight: 300;
-            font-size: 0.8em;
-            color: #999;
-        }
-
-        .logo {
-            padding-top: 10px;
-            height: 50px;
-            float: right;
-            margin: 5px;
-        }
-
-        /*   Navegación */
-        nav {
-            float: right;
-        }
-
-        nav ul {
-            margin: 0;
-            padding: 0;
-            list-style: none;
-            padding-right: 300px;
-        }
-
-        nav ul li a {
-            text-decoration: none;
-            color: black;
-        }
-
         table {
             border-collapse: collapse;
+            /* border-style: solid;
+            border-width: 1px; */
+        }
+
+        thead {
+            background-color: #eee;
+            color: #333;
         }
 
         th,
         td {
-            padding: 1px;
             font-size: 12px;
             text-align: center;
         }
 
-        .margin {
-            padding: 0;
+        th {
+            padding: 1px;
+            padding-bottom: 3px;
         }
 
-        thead,
-        tfoot {
-            background-color: #aaa;
-            color: #FFF;
+        td {
+            padding: 0px 5px;
         }
 
-        footer {
-            color: black;
-            width: 100%;
-            height: 81px;
-            position: absolute;
-            bottom: 0;
-            left: 0;
+        .card-title {
+            text-align: center;
         }
     </style>
 </head>
 
 <body>
     <br>
-    <div class="content">
-        <div class="container-fluid">
-            <div class="row">
-                <!-- /.col-md-6 -->
-                <div class="col-12">
-                    <!-- card -->
-                    <div class="card">
-                        @yield('content')
-                        <!-- /.card-body -->
-                    </div>
-                    <!-- /.card -->
-                </div>
-            </div>
-            <!-- /.row -->
-        </div>
-        <!-- /.container-fluid -->
-    </div>
+    @yield('content')
 </body>
 
 </html>

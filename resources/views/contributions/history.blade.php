@@ -66,7 +66,7 @@
                             <div class="col-sm-2">
                                 <p>
                                     <strong>Monto: </strong>
-                                    {{'$' . number_format($amount, 2, ',', '.')}}
+                                    {{number_format($amount, 2, ',', '.')}}
                                 </p>
                             </div>
                         </div>
@@ -106,7 +106,7 @@
                                     <th>APORTE</th>
                                     <th>MORA</th>
                                     <th>TIPO</th>
-                                    <th></th>
+                                    <th colspan="2"></th>
                                 </tr>
                             </thead>
 
@@ -119,13 +119,15 @@
                                     <td style="text-align: center;">{{$i}}</td>
                                     <td style="text-align: center;">{{ substr($contribution->date, 5,2 )}}</td>
                                     <td style="text-align: center;">{{ substr($contribution->date, 0,4 )}}</td>
-                                    <td style="text-align: right;">{{'$' . number_format($contribution->amount, 2, ',', '.')}}</td>
-                                    <td style="text-align: right;">{{'$' . number_format($contribution->must, 2, ',', '.')}}</td>
+                                    <td style="text-align: right;">{{number_format($contribution->amount, 2, ',', '.')}}</td>
+                                    <td style="text-align: right;">{{number_format($contribution->must, 2, ',', '.')}}</td>
+                                    <td style="text-align: center;">
+                                        <span class="badge {{$contribution->type === 'mensual'? 'bg-success' : 'bg-warning'}}" style="font-size:0.9em">{{$contribution->type}}</span>
+                                    </td>
                                     <td style="text-align: center;">
                                         @if($contribution->observation!==null)
-                                        <span class="badge bg-info" title="{{$contribution->observation}}"><i class="far fa-file"></i></span>
+                                        <span class="badge bg-info" title="{{$contribution->observation}}"><i class="far fa-newspaper"></i></span>
                                         @endif
-                                        <span class="badge {{$contribution->type === 'mensual'? 'bg-success' : 'bg-warning'}}" style="font-size:0.9em">{{$contribution->type}}</span>
                                     </td>
                                     <td>
                                         <ul class="navbar-nav ml-auto">
@@ -163,8 +165,6 @@
     <!-- /.container-fluid -->
 </div>
 <!-- /.content -->
-
-@endsection
 
 <!-- /.Aporte CREATE MASIVE -->
 <div class="modal fade" id="addModal" role="dialog">
@@ -282,6 +282,7 @@
         </div>
     </div>
 </div>
+@endsection
 
 @push('scripts')
 
