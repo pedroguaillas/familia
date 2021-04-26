@@ -53,9 +53,9 @@ class PaymentController extends Controller
         return view('payments.index', compact('person', 'guarantor', 'loan', 'payments'));
     }
 
-    public function pdf($id)
+    public function report(Loan $loan)
     {
-        $loan = Loan::findOrFail($id);
+        // $loan = Loan::findOrFail($id);
         //Se requiere de person para mostrar el nombre en la cabecera
         $person = $loan->person;
         //Se requiere de guarantor para mostrar el nombre en la cabecera
@@ -63,7 +63,7 @@ class PaymentController extends Controller
         // $payments = $loan->payments;
         $payments = DB::table('payments')
             ->where([
-                'loan_id' => $id,
+                'loan_id' => $loan->id,
                 'state' => 'activo'
             ])
             ->orderBy('date', 'asc')
@@ -74,6 +74,15 @@ class PaymentController extends Controller
         (new PdfController())->loadTempleate($pdf);
 
         return $pdf->stream('pagosprestamo.pdf');
+    }
+
+    public function voucher(Payment $payment)
+    {
+        $pdf = PDF::loadView('payments.voucher', compact('payment'));
+        $pdf->setPaper('a6');
+        // (new PdfController())->loadTempleate($pdf);
+
+        return $pdf->stream('pago.pdf');
     }
     /**
      * Show the form for creating a new resource.

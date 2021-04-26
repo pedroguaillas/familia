@@ -93,6 +93,12 @@
                                 <p>Personal</p>
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a href="{{ url('spends') }}" class="nav-link">
+                                <i class="nav-icon far fa-money-bill-alt"></i>
+                                <p>Gastos</p>
+                            </a>
+                        </li>
                     </ul>
                 </nav>
                 <!-- /.sidebar-menu -->

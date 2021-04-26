@@ -79,13 +79,13 @@
                                                     <i class="fa fa-angle-down"></i>
                                                 </a>
                                                 <div class="dropdown-menu dropdown-menu-md dropdown-menu-right">
-                                                    <a href="{{route('aportes.historial', $contribution->person_id)}}" class="dropdown-item">
+                                                    <a href="{{route('aporte.historial', $contribution->person_id)}}" class="dropdown-item">
                                                         <i class="far fa-file"></i> Historial
                                                     </a>
                                                     <button onclick='showModalPurchaseActions("{{$contribution->person_id}}")' class="dropdown-item">
                                                         <i class="far fa-file"></i> Comprar acciones
                                                     </button>
-                                                    <a href="{{route('aportes.solicitude', $contribution->person_id)}}" class="dropdown-item" target="_blank">
+                                                    <a href="{{route('aporte.solicitude', $contribution->person_id)}}" class="dropdown-item" target="_blank">
                                                         <i class="far fa-file"></i> Solicitud
                                                     </a>
                                                 </div>

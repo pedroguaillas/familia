@@ -16,9 +16,9 @@
                 <!-- small box -->
                 <div class="small-box bg-info">
                     <div class="inner">
-                        <h3>{{ $countmembers }}</h3>
+                        <h3>{{ $countactions }}</h3>
 
-                        <p>Cantidad de socios</p>
+                        <p>Número de acciones</p>
                     </div>
                     <div class="icon">
                         <i class="ion ion-person-stalker"></i>
@@ -48,7 +48,7 @@
                     <div class="inner">
                         <h3>{{number_format($total, 2, ',', '.')}}</h3>
 
-                        <p>Monto total en caja</p>
+                        <p>Valor de cada acción</p>
                     </div>
                     <div class="icon">
                         <i class="ion ion-cash"></i>

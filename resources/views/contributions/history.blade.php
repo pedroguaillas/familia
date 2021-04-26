@@ -84,7 +84,7 @@
                         <h3 class="card-title">Aportes</h3>
                         <div class="card-tools">
                             <div class="dt-buttons btn-group flex-wrap">
-                                <a class="btn btn-secondary btn-sm" href="{{ route('aportes.historialpdf', $person->id)}}" target="_blank">
+                                <a class="btn btn-secondary btn-sm" href="{{ route('aporte.historial-reporte', $person->id)}}" target="_blank">
                                     <i class="far fa-file-pdf"></i>
                                 </a>
                             </div>

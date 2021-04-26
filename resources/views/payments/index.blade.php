@@ -75,7 +75,7 @@
                         <h3 class="card-title">PAGOS</h3>
                         <div class="card-tools">
                             <div class="dt-buttons btn-group flex-wrap">
-                                <a class="btn btn-secondary btn-sm" href="{{route('prestamos.pagos.pdf', $loan->id)}}" target="_blank">
+                                <a class="btn btn-secondary btn-sm" href="{{route('prestamo.pagos.reporte', $loan->id)}}" target="_blank">
                                     <i class="far fa-file-pdf"></i>
                                 </a>
                             </div>
@@ -135,7 +135,7 @@
                                                     <i class="fa fa-angle-down"></i>
                                                 </a>
                                                 <div class="dropdown-menu dropdown-menu-md dropdown-menu-right">
-                                                    <a href="{{ route('prestamo.imprimir')}}" class="dropdown-item" target="_blank">
+                                                    <a href="{{ route('prestamo.pago.comprobante', $payment->id)}}" class="dropdown-item" target="_blank">
                                                         <i class="far fa-file"></i> Imprimir
                                                     </a>
                                                     <button class="dropdown-item" onclick='editPayment("{{$payment->id}}")'>
@@ -266,7 +266,7 @@
                         </div>
                     </div>
                     <div class="form-group row add">
-                        <label class="control-label col-sm-3" for="interest_amount ">Interes</label>
+                        <label class="control-label col-sm-3" for="interest_amount ">Interés</label>
                         <div class="col-sm-9">
                             <input class="form-control form-control-sm" id="interest_amount_edit" name="interest_amount" required>
                         </div>
