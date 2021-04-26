@@ -30,13 +30,16 @@ class HomeController extends Controller
     public function index()
     {
         // Cuenta la cantidad de socios que tiene la caja
-        $countmembers = Person::select(DB::raw('COUNT(id) AS count'))
+        $countactions = Person::select(DB::raw('SUM(actions) AS sum_actions'))
+            // $countmembers = Person::select(DB::raw('COUNT(id) AS count'))
             ->groupBy('type')
             ->where([
                 ['state', '=', 'activo'],
                 ['type', '=', 'socio']
-            ])->get()->first()->count;
-
+                // ])->get()->first();
+            ])->get()->first()->sum_actions;
+        // $countmembers = $person->count;
+        // $actions = $person->sum_actions;
         // // Selecciona las persona que tienen creditos que aun no ha terminado de pagar
         // $people = Loan::join('payments AS p', 'p.loan_id', 'loans.id')
         //     ->select('person_id')
@@ -59,23 +62,33 @@ class HomeController extends Controller
             $total += $c->sum;
         }
 
-        $amounts_borrowed = Loan::join('payments AS p', 'p.loan_id', 'loans.id')
-            ->select('loans.amount as total_borrowed')
-            ->groupBy('loans.id', 'total_borrowed')
-            ->havingRaw('SUM(p.capital) <> total_borrowed')
-            ->where('p.state', 'activo')->get();
+        // Selecciona los montos prestamos
+        $sql = "SELECT l.amount as total_borrowed, ";
+        // Suma los capitales devueltos si ese pago esta activo
+        $sql .= "(SELECT SUM(p.capital) FROM payments AS p WHERE p.loan_id = l.id AND p.state = 'activo') AS total_returned ";
+        // Selecciona todos los registros de prestamos
+        $sql .= "FROM loans AS l ";
+        // Condiciona que el prestamos este activo
+        $sql .= "WHERE l.state = 'activo'";
 
+        $amounts_borrowed = DB::select($sql);
+
+        // Sumador de la deuda
         $total_borrowed = 0;
-        // El contador de la siguiente linea no siempre va se real
-        // Siempre y cuando la persona tenga dos creditos pero eso nunca va ha darse
+        // Contador de las personas que tienen prestamos
         $countdebtors = 0;
 
         foreach ($amounts_borrowed as $item) {
-            $total_borrowed += $item->total_borrowed;
-            $countdebtors++;
+            // Condiciona que el monto devuelto este menor que el monto del prestamo
+            if ($item->total_returned < $item->total_borrowed) {
+                // La deuda es el monto del prestamo menos el monto devuelto
+                $total_borrowed += $item->total_borrowed - $item->total_returned;
+                $countdebtors++;
+            }
         }
+        $total = round($total / $countactions, 2);
 
-        return view('start', compact('countmembers', 'countdebtors', 'total', 'total_borrowed'));
+        return view('start', compact('countactions', 'countdebtors', 'total', 'total_borrowed'));
         // return view('home');
     }
 
@@ -89,7 +102,8 @@ class HomeController extends Controller
 
         $general_contributions = Contribution::select('type', DB::raw('SUM(amount) AS sum'))
             ->groupBy('type')
-            ->where('state', 'activo')->get();
+            ->where('state', 'activo')
+            ->orderBy('type', 'DESC')->get();
 
         $general_interest = Payment::select(DB::raw('SUM(interest_amount) AS sum'))
             ->where('state', 'activo')->get()->first()->sum;
@@ -135,12 +149,14 @@ class HomeController extends Controller
                 ['state', '=', 'activo'],
                 ['date', '<', $date->format('Y-m-d')]
             ])
-            ->orderBy('type')->get();
+            ->orderBy('type', 'DESC')->get();
 
         $interest = Payment::select(DB::raw('SUM(interest_amount) AS sum'))
-            ->where([
-                ['state', '=', 'activo'],
-                ['date', '<', $date->format('Y-m-d')]
-            ])->get()->first()->sum;
+            ->where('state', 'activo')
+            // ->where([
+            //     ['state', '=', 'activo'],
+            //     ['date', '<', $date->format('Y-m-d')]
+            // ])
+            ->get()->first()->sum;
     }
 }

@@ -174,7 +174,7 @@ class ContributionController extends Controller
         $contributions = json_decode(json_encode($contributions));
 
         if ($pdf) {
-            $pdf = PDF::loadView('contributions.reporthistorial', compact('person', 'contributions', 'amount'));
+            $pdf = PDF::loadView('contributions.historialreport', compact('person', 'contributions', 'amount'));
             (new PdfController())->loadTempleate($pdf);
             return $pdf->stream('historial_de_aportes.pdf');
         } else {

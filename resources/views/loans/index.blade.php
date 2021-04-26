@@ -87,7 +87,7 @@
                                                     <i class="fa fa-angle-down"></i>
                                                 </a>
                                                 <div class="dropdown-menu dropdown-menu-md dropdown-menu-right">
-                                                    <a href="{{ route('prestamos.pagos', $loan->id) }}" class="dropdown-item">
+                                                    <a href="{{ route('prestamo.pagos', $loan->id) }}" class="dropdown-item">
                                                         <i class="fa fa-money-bill"></i> Pagos
                                                     </a>
                                                     <button onclick='showModalNovacion("{{$loan->id}}")' class="dropdown-item">
