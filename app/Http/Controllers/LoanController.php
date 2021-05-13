@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Directive;
 use App\Loan;
 use App\Payment;
 use App\Person;
@@ -26,7 +27,7 @@ class LoanController extends Controller
      */
     public function index()
     {
-        $loans = DB::table('loanS')
+        $loans = DB::table('loans')
             ->select(
                 'loans.id',
                 'loans.amount',
@@ -47,7 +48,7 @@ class LoanController extends Controller
 
     public function pdf()
     {
-        $loans = DB::table('loanS')
+        $loans = DB::table('loans')
             ->select(
                 'loans.id',
                 'loans.amount',
@@ -125,7 +126,10 @@ class LoanController extends Controller
         //Se requiere de guarantor para mostrar el nombre del garante si existe
         $guarantor = Person::where('id', $loan->guarantor_id)->get()->first();
 
-        $pdf = PDF::loadView('loans.solicitude', compact('loan', 'guarantor'));
+        // Presidente
+        $directive = Directive::all()->first()->person;
+
+        $pdf = PDF::loadView('loans.solicitude', compact('loan', 'guarantor', 'directive'));
 
         return $pdf->stream('solicitud_prestamo.pdf');
     }
@@ -173,23 +177,32 @@ class LoanController extends Controller
         $loan->date = $request->date;
         $loan->interest_percentage = $request->interest_percentage;
 
-        if ($loan->save() && $request->interest_amount > 0) {
+        if ($loan->save()) {
 
-            $payments = $loan->payments;
-
-            $old_debt = 0;
-
-            foreach ($payments as $item) {
-                if ($item->state === 'activo') {
-                    $old_debt += $item->capital;
-                }
-            }
-
-            $loan->payments()->create([
-                'debt' => $old_loan_amount - $old_debt,
-                'date' => $request->date,
-                'interest_amount' => $request->interest_amount
+            $loan->loan_renewals()->create([
+                'amount' => $loan->amount,
+                'interest_percentage' => $loan->interest_percentage,
+                'date' => $loan->date
             ]);
+
+            if ($request->interest_amount > 0) {
+
+                $payments = $loan->payments;
+
+                $old_debt = 0;
+
+                foreach ($payments as $item) {
+                    if ($item->state === 'activo') {
+                        $old_debt += $item->capital;
+                    }
+                }
+
+                $loan->payments()->create([
+                    'debt' => $old_loan_amount - $old_debt,
+                    'date' => $request->date,
+                    'interest_amount' => $request->interest_amount
+                ]);
+            }
         }
 
         return redirect()->route('loans.index')->with('success', 'Se renovo el crédito de ' . $loan->person->first_name . ' ' . $loan->person->last_name);

@@ -33,9 +33,9 @@
                     </div>
                     <div class="card-body">
                         <div class="input-group">
-                            <input type="text" value="{{$person->first_name .' ' .$person->last_name}}" id="name_person_loan" class="form-control">
+                            <input type="text" value="{{$person->first_name .' ' .$person->last_name}}" id="name_person_loan" class="form-control" disabled>
                             <span class="input-group-append">
-                                <button title="Buscar" type="button" onclick="selectPersonApplicant()" class="btn btn-secondary btn-flat">
+                                <button title="Buscar" type="button" onclick='selectPersonApplicant("{{$person->id}}")' class="btn btn-secondary btn-flat" disabled>
                                     <i class="fas fa-search"></i>
                                 </button>
                             </span>
@@ -76,7 +76,7 @@
                             {{ csrf_field() }}
                             @method('PUT')
                             <input value="{{$loan->person_id}}" type="hidden" id="person_id" name="person_id" required>
-                            <input value="{{$loan->guarantor_id}}" type="hidden" id="guarantor_id" name="guarantor_id" required>
+                            <input value="{{$loan->guarantor_id}}" type="hidden" id="guarantor_id" name="guarantor_id">
                             <div class="form-group row add">
                                 <label class="control-label col-sm-2" for="amount ">Monto</label>
                                 <div class="col-sm-10">
@@ -120,10 +120,10 @@
 <!-- /.content -->
 
 <div id="select-person" class="modal fade" role="dialog">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title" id="modal-title"></h4>
+                <h4 style="text-align: center;" class="modal-title" id="modal-title"></h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -131,7 +131,7 @@
             <div class="modal-body">
                 <table id="example1" class="table table-bordered" style="width:100%">
                     <thead>
-                        <tr>
+                        <tr style="text-align: center;">
                             <th>Cédula</th>
                             <th>Nombres</th>
                             <th>Apellidos</th>
@@ -152,32 +152,37 @@
 <script>
     let people = undefined
     // Mostrar el modal para seleccionar la persona que solicita el prestamo
-    function selectPersonApplicant() {
-        $('#modal-title').text('Seleccionar Solicitante');
-        getPeople()
+    function selectPersonApplicant(id) {
+        $('#modal-title').text('Seleccionar Solicitante')
+        getPeople(id)
     }
 
     // Mostrar el modal para seleccionar el Garante del prestamo
     function selectGuarantorApplicant() {
-        $('#modal-title').text('Seleccionar Garante');
+        $('#modal-title').text('Seleccionar Garante')
         // No se puede repetir el Solicitante con el Garante 
         // Por que solo cuando sea Particular requiere Garante y el Garante va ser socio
         // Para lo cual hay que filtrar solo socios
-        let garantors = people.filter(p => p.type === 'socio')
-        loadHml(garantors)
+        getPeople('socio')
+        // let garantors = people.filter(p => p.type === 'socio')
+        // loadHml(garantors)
     }
 
     // Petition Ajax
-    function getPeople() {
+    function getPeople(fil) {
         $.ajax({
             type: 'GET',
             url: "{{route('people.index.json')}}",
             success: (response) => {
-                people = response.people
+                if (isNaN(fil)) {
+                    people = response.people.filter(p => p.type === fil)
+                } else {
+                    people = response.people.filter(p => Number(p.id) !== Number(fil))
+                }
                 loadHml(people)
             },
             error: (error) => console.log(error)
-        });
+        })
     }
 
     // Load HTML with data in table
@@ -200,12 +205,12 @@
 
     // Selecciona la persona del modal y Oculta el Modal
     function select_person(id) {
-        let modal_title = $('.modal-title').text();
+        let modal_title = $('.modal-title').text()
         let person = people.filter(p => p.id === id)[0]
         let name = person.first_name + ' ' + person.last_name
         if (modal_title === 'Seleccionar Solicitante') {
-            $('#person_id').val(id);
-            $('#name_person_loan').val(name);
+            $('#person_id').val(id)
+            $('#name_person_loan').val(name)
             if (person.type === 'particular') {
                 $('#card-guarantor').removeAttr('hidden')
             }

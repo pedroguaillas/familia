@@ -8,6 +8,22 @@
 @endpush
 
 @section('content')
+@if('session'('success'))
+<div class="col-12">
+    <div class="alert alert-info">
+        {{session('success')}}
+        <button type="button" class="close" data-dismiss="alert" aria-label="close"><span aria-hidden="true">&times;</span></button>
+    </div>
+</div>
+@elseif('session'('danger'))
+<div class="col-12">
+    <div class="alert alert-danger">
+        {{session('danger')}}
+        <button type="button" class="close" data-dismiss="alert" aria-label="close"><span aria-hidden="true">&times;</span></button>
+    </div>
+</div>
+@endif
+
 <!-- Content Header (Page header) -->
 <section class="content-header">
     <div class="container-fluid">
@@ -178,7 +194,7 @@
 </div>
 <!-- /.content -->
 
-<div id="createPayment" class="modal fade" role="dialog">
+<div id="create-payment" class="modal fade" role="dialog">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -224,7 +240,7 @@
                     <div class="form-group row add">
                         <label class="control-label col-sm-3" for="date">Fecha Fin</label>
                         <div class="col-sm-9">
-                            <input type="date" class="form-control form-control-sm" id="date_end" name="date_end">
+                            <input type="date" class="form-control form-control-sm" id="date_end" name="date_end" min="{{(int)date('m') < 12 ? date('Y-m-d', strtotime(date('Y-m-d'). ' +1 month')) : date('Y-m-d')}}">
                         </div>
                     </div>
                     <div class="form-group row add">
@@ -232,6 +248,10 @@
                         <div class="col-sm-9">
                             <textarea name="observation" class="form-control" rows="2"></textarea>
                         </div>
+                    </div>
+                    <div class="form-group row add">
+                        <label class="control-label col-sm-3" for="boservation">Total</label>
+                        <label id="total-create" class="control-label col-sm-3">0.00</label>
                     </div>
                     <div class="modal-footer">
                         <button class="btn btn-success" type="submit" id="add">
@@ -259,6 +279,7 @@
                 <form class="form-horizontal" role="form" method="POST" id="editForm">
                     {{ csrf_field() }}
                     {{method_field('PUT')}}
+
                     <div class="form-group row add">
                         <label class="control-label col-sm-3" for="debt">Deuda</label>
                         <div class="col-sm-9">
@@ -336,7 +357,7 @@
                 $('#observation_edit').val(payment.observation)
             },
             error: (error) => console.log(error)
-        });
+        })
 
         $('#editForm').attr('action', "{{url('payments')}}/" + id)
         $('#editModal').modal('show')
@@ -366,27 +387,73 @@
                                 })
                                 .then((result) => {
                                     location.reload()
-                                });
+                                })
                         }
                     })
                 }
             })
     }
 
+    let interest_amount = undefined
+
     function showModalCreate(loan_id) {
         $.ajax({
             type: 'GET',
             url: "{{url('payments')}}/interestCalculate/" + loan_id,
-
             success: (response) => {
                 $('#debt').val(response.debt)
                 $('#interest_amount').val(response.interest)
+                interest_amount = response.interest
+                $('#total-create').text(response.interest.toFixed(2))
             },
             error: (error) => console.log(error)
-        });
+        })
 
-        $('#createPayment').modal('show')
+        $('#create-payment').modal('show')
         $('.form-horizontal').show()
+    }
+
+    $('#date_start').change(function() {
+
+        let date_str = $(this).val().substring(0, 10).split("-")
+        let month = parseInt(date_str[1])
+
+        if (month < 9) {
+            // Suma mes
+            date_str[1] = '0' + (month + 1)
+        } else {
+            if (month < 12) {
+                // Suma mes
+                date_str[1] = month + 1
+            }
+            if (month === 12) {
+                // Suma año
+                date_str[0] = parseInt(date_str[0]) + 1
+                // Pone el mes 1
+                date_str[1] = '0' + 1
+            }
+        }
+
+        var date = date_str.join('-')
+        $('#date_end').attr('min', date)
+    })
+
+    $('#date_end').change(function() {
+        let day_difference = calDays($('#date_start').val(), $(this).val())
+        $('#total-create').text((interest_amount * day_difference).toFixed(2))
+    })
+
+    function calDays(date_start, date_end) {
+
+        // d(date)
+        let d_start = date_start.substring(0, 10).split("-")
+        let d_end = date_end.substring(0, 10).split("-")
+
+        // m(Month)
+        let m_start = parseInt(d_start[1])
+        let m_end = parseInt(d_end[1])
+
+        return m_end - m_start;
     }
 </script>
 @endpush

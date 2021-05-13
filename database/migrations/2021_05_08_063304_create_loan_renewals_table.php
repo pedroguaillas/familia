@@ -1,10 +1,10 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
 
-class CreateLoansTable extends Migration
+class CreateLoanRenewalsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,17 +13,15 @@ class CreateLoansTable extends Migration
      */
     public function up()
     {
-        Schema::create('loans', function (Blueprint $table) {
+        Schema::create('loan_renewals', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->bigInteger('person_id')->unsigned();
-            $table->bigInteger('guarantor_id')->unsigned()->nullable();
+            $table->bigInteger('loan_id')->unsigned();
             $table->float('interest_percentage', 5, 2);
             $table->decimal('amount', 8, 2);
             $table->dateTimeTz('date');
             $table->enum('state', ['activo', 'inactivo']);
 
-            $table->foreign('person_id')->references('id')->on('people');
-            $table->foreign('guarantor_id')->references('id')->on('people');
+            $table->foreign('loan_id')->references('id')->on('loans');
 
             $table->timestamps();
         });
@@ -36,6 +34,6 @@ class CreateLoansTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('loans');
+        Schema::dropIfExists('loan_renewals');
     }
 }

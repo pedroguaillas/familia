@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Contribution;
 use App\Person;
+use App\Directive;
 use Carbon\Carbon;
 use DateTimeZone;
 use Illuminate\Http\Request;
@@ -130,7 +131,7 @@ class ContributionController extends Controller
             $person->contributions()->create($contribution);
         }
 
-        return redirect()->route('aportes.historial', $request->person_id)->with('success', 'Se agrego con éxito los aportes');
+        return redirect()->route('aporte.historial', $request->person_id)->with('success', 'Se agrego con éxito los aportes');
     }
 
     public function storeMasive(Request $request)
@@ -245,7 +246,11 @@ class ContributionController extends Controller
     public function solicitude(int $person_id)
     {
         $person = Person::findOrFail($person_id);
-        $pdf = PDF::loadView('contributions/solicitude', compact('person'));
+
+        // Presidente
+        $directive = Directive::all()->first()->person;
+
+        $pdf = PDF::loadView('contributions/solicitude', compact('person', 'directive'));
 
         return $pdf->stream('solicitud_compra_acciones.pdf');
     }
