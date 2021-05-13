@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Contribution;
+use App\Directive;
 use App\Person;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -28,7 +29,10 @@ class PersonController extends Controller
         $people = Person::where('state', 'activo')->get();
         $people = json_decode(json_encode($people));
 
-        return view('people.index', compact('people'));
+        $directive = Directive::all()->first();
+        $directive->person;
+
+        return view('people.index', compact('people', 'directive'));
     }
 
     public function indexJson()

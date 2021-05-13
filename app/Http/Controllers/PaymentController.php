@@ -136,7 +136,7 @@ class PaymentController extends Controller
             $loan->payments()->create($payment);
         }
 
-        return redirect()->route('prestamos.pagos', $request->loan_id)->with('mensaje', 'Se agrego con éxito los pago');
+        return redirect()->route('prestamo.pagos', $request->loan_id)->with('mensaje', 'Se agrego con éxito los pago');
     }
 
     /**
@@ -178,7 +178,7 @@ class PaymentController extends Controller
 
         return response()->json([
             'debt' => $debt,
-            'interest' => $debt * $loan->interest_percentage * 0.01
+            'interest' => round($debt * $loan->interest_percentage * 0.01, 2)
         ]);
     }
 
@@ -193,7 +193,7 @@ class PaymentController extends Controller
     {
         $payment->update($request->all());
 
-        return redirect()->route('prestamos.pagos', $payment->loan_id)->with('success', 'Se ha modificado un pago');
+        return redirect()->route('prestamo.pagos', $payment->loan_id)->with('success', 'Se ha modificado un pago');
     }
 
     /**

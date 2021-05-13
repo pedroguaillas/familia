@@ -49,6 +49,19 @@
                     <div class="card-header">
                         <h3 class="card-title">SOCIOS Y DEUDORES</h3>
                         <div class="card-tools">
+                            <div class="dt-buttons btn-group flex-wrap" style="width: 300px;">
+                                <div class="input-group input-group-sm">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">Presidente</span>
+                                    </div>
+                                    <input value="{{$directive->person->first_name .' ' .$directive->person->last_name}}" class="form-control">
+                                    <div class="input-group-append">
+                                        <button onclick="showModalDirective()" class="input-group-text">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="dt-buttons btn-group flex-wrap">
                                 <ul class="navbar-nav ml-auto">
                                     <li class="nav-item dropdown">
@@ -125,6 +138,46 @@
                         </table>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- /.MODAL DIRECTIVE -->
+<div id="directive" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" style="margin: auto;">Presidente</h4>
+            </div>
+            <div class="modal-body">
+                <form action="{{route('directives.update', 1)}}" class="form-horizontal" role="form" method="POST">
+                    {{ csrf_field() }}
+                    {{method_field('PUT')}}
+
+                    <div class="form-group row add">
+                        <label class="control-label col-sm-2" for="interest_percentage">Tipo</label>
+                        <div class="col-sm-10">
+                            <select class="custom-select form-control form-control-sm" id="type" name="person_id" required>
+                                <option>Seleccione</option>
+                                @foreach ($people as $person)
+                                @if($person->type === 'socio' )
+                                <option value="{{$person->id}}">{{$person->first_name .' ' .$person->last_name}}</option>
+                                @endif
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button class="btn btn-success" type="submit">
+                            Guardar
+                        </button>
+                        <button class="btn btn-warning" type="button" data-dismiss="modal">
+                            Cancelar
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -275,6 +328,10 @@
 <script src="https://unpkg.com/ionicons@5.4.0/dist/ionicons.js"></script>
 
 <script>
+    function showModalDirective() {
+        $('#directive').modal('show')
+    }
+
     function showModalCreate() {
         $('#create').modal('show')
         $('.form-horizontal').show()
@@ -326,7 +383,7 @@
                                 })
                                 .then((result) => {
                                     location.reload()
-                                });
+                                })
                         }
                     })
                 }

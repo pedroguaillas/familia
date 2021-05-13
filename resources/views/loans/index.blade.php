@@ -93,6 +93,9 @@
                                                     <button onclick='showModalNovacion("{{$loan->id}}")' class="dropdown-item">
                                                         <i class="far fa-edit"></i> Renovar
                                                     </button>
+                                                    <a href="{{ route('prestamo.renovaciones', $loan->id)}}" class="dropdown-item">
+                                                        <i class="far fa-list-alt"></i> Renovaciones
+                                                    </a>
                                                     <a href="{{ route('prestamos.solicitud', $loan->id)}}" class="dropdown-item" target="_blank">
                                                         <i class="far fa-file"></i> Solicitud
                                                     </a>

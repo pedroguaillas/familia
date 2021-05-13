@@ -5,7 +5,7 @@
 @section('content')
 <p style="text-align: right;">San Lucas, {{date('d')}} de abril de {{date('Y')}}</p>
 <br />
-<p>Jaime Ramiro Gualan Aguilar</p>
+<p>{{$directive->first_name .' ' .$directive->last_name}}</p>
 <strong>Gerente de la Caja de Ahorros y Prestamos Familiar (CAPFA).</strong>
 <br />
 <br />

@@ -209,7 +209,7 @@
                     <div class="form-group row add">
                         <label class="control-label col-sm-3" for="date_end">Fecha Fin</label>
                         <div class="col-sm-9">
-                            <input type="date" class="form-control form-control-sm" id="date_end" name="date_end">
+                            <input type="date" class="form-control form-control-sm" id="date_end" name="date_end" min="{{(int)date('m') < 12 ? date('Y-m-d', strtotime(date('Y-m-d'). ' +1 month')) : date('Y-m-d')}}">
                         </div>
                     </div>
                     <div class="form-group row add">
@@ -217,6 +217,10 @@
                         <div class="col-sm-9">
                             <textarea name="observation" class="form-control" rows="2"></textarea>
                         </div>
+                    </div>
+                    <div class="form-group row add">
+                        <label class="control-label col-sm-3" for="boservation">Total</label>
+                        <label id="total-create" class="control-label col-sm-3">{{number_format($person->actions * 10, 2, ',', '.')}}</label>
                     </div>
                     <div class="modal-footer">
                         <button class="btn btn-success" type="submit" id="add">
@@ -349,6 +353,49 @@
                     })
                 }
             })
+    }
+
+    $('#date_start').change(function() {
+        let date_str = $(this).val().substring(0, 10).split("-")
+        let month = parseInt(date_str[1])
+
+        if (month < 9) {
+            // Suma mes
+            date_str[1] = '0' + (month + 1)
+        } else {
+            if (month < 12) {
+                // Suma mes
+                date_str[1] = month + 1
+            }
+            if (month === 12) {
+                // Suma año
+                date_str[0] = parseInt(date_str[0]) + 1
+                // Pone el mes 1
+                date_str[1] = '0' + 1
+            }
+        }
+
+        var date = date_str.join('-')
+        $('#date_end').attr('min', date)
+    })
+
+    $('#date_end').change(function() {
+        let month_difference = calMonths($('#date_start').val(), $(this).val())
+        $('#total-create').text((Number($('#amount_insert').val()) * month_difference).toFixed(2))
+    })
+
+
+    function calMonths(date_start, date_end) {
+
+        // d(date)
+        let d_start = date_start.substring(0, 10).split("-")
+        let d_end = date_end.substring(0, 10).split("-")
+
+        // m(Month)
+        let m_start = parseInt(d_start[1])
+        let m_end = parseInt(d_end[1])
+
+        return m_end - m_start;
     }
 </script>
 @endpush

@@ -38,6 +38,9 @@ Route::post('loans/renovation/{loan}', 'LoanController@renovation');
 Route::get('prestamos/solicitud/{loan}', 'LoanController@solicitude')->name('prestamos.solicitud');
 Route::get('prestamos/pdf', 'LoanController@pdf')->name('loans.pdf');
 
+//LONAN_RENEWALS
+Route::get('prestamo/{loan}/renovaciones', 'LoanRenewalController@index2')->name('prestamo.renovaciones');
+
 //PAYMENT 
 Route::resource('payments', 'PaymentController');
 Route::get('prestamo/{id}/pagos', 'PaymentController@index2')->name('prestamo.pagos');
@@ -51,6 +54,9 @@ Route::get('people/index/json', 'PersonController@indexJson')->name('people.inde
 Route::post('/people/delete/{id}', 'PersonController@delete');
 Route::get('personas/reporte/{type}', 'PersonController@report')->name('personas.reporte');
 Route::post('people/purchaseactions', 'PersonController@purchaseactions')->name('people.purchaseactions');
+
+//DIRECTIVE
+Route::resource('directives', 'DirectiveController');
 
 //SPEND
 Route::resource('spends', 'SpendController');
