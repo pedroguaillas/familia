@@ -117,7 +117,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title" style="margin: auto;">Registrar Aportes Masiva</h4>
+                <h4 class="modal-title" style="margin: auto;">Registrar aportes masiva</h4>
             </div>
             <div class="modal-body">
                 <form class="form-horizontal" role="form" action="{{route('contributions.create2')}}" method="POST">
