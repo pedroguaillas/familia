@@ -35,9 +35,9 @@
                     <div class="card-header">
                         <h3 class="card-title">Aportes</h3>
                         <div class="card-tools">
-                            <div class="dt-buttons btn-group flex-wrap">
+                            <!-- <div class="dt-buttons btn-group flex-wrap">
                                 <input onchange="updateDate(this)" type="date" min="{{$date}}" value="{{$date}}" max="{{(new DateTime($date))->modify('last day of')->format('Y-m-d')}}">
-                            </div>
+                            </div> -->
                             <input type="hidden" id="type" value="{{$type}}">
                             <!-- <div class="dt-buttons btn-group flex-wrap" hidden>
                                 <select name="type" id="type" onchange="updateType(this)">

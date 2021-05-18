@@ -10,12 +10,12 @@
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h1>Registro de Prestamo</h1>
+                <h1>Registro de Préstamo</h1>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
-                    <li class="breadcrumb-item"><a href="{{ url('loans') }}">Prestamos</a></li>
-                    <li class="breadcrumb-item active">Registro de Prestamo</li>
+                    <li class="breadcrumb-item"><a href="{{ url('loans') }}">Préstamos</a></li>
+                    <li class="breadcrumb-item active">Registro de Préstamo</li>
                 </ol>
             </div>
         </div>
