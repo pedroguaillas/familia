@@ -100,7 +100,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title" style="margin: auto;">Registrar Gasto</h4>
+                <h4 class="modal-title" style="margin: auto;">Registrar gasto</h4>
             </div>
             <div class="modal-body">
                 <form class="form-horizontal" role="form" method="POST" action="{{route('spends.store')}}">
@@ -153,7 +153,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title" style="margin: auto;">Editar Gasto</h4>
+                <h4 class="modal-title" style="margin: auto;">Editar gasto</h4>
             </div>
             <div class="modal-body">
 

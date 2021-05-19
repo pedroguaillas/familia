@@ -198,37 +198,38 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title" style="margin: auto;">Registrar Nuevo Pago</h4>
+                <h4 class="modal-title" style="margin: auto;">Registrar nuevo pago</h4>
             </div>
             <div class="modal-body">
                 <form class="form-horizontal" role="form" method="POST" action="{{route('payments.store')}}">
                     {{ csrf_field() }}
 
                     <input type="hidden" id="loan_id" name="loan_id" value="{{$loan->id}}"> <!-- codigo del prestamo  -->
+                    <input type="hidden" id="debt" name="debt"> <!-- Deuda actual  -->
 
                     <div class="form-group row add">
                         <label class="control-label col-sm-3" for="debt "> Deuda </label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control form-control-sm" id="debt" name="debt" required>
+                            <input class="form-control form-control-sm" id="debt_input" required disabled>
                         </div>
                     </div>
                     <div class="form-group row add">
                         <label class="control-label col-sm-3" for="interest_amount "> Interés </label>
                         <div class="col-sm-9">
-                            <input type="number" class="form-control form-control-sm" id="interest_amount" step="0.01" name="interest_amount" required>
+                            <input onchange="sumtotal()" type="number" class="form-control form-control-sm" id="interest_amount" step="0.01" name="interest_amount" required>
                         </div>
                     </div>
                     <div class="form-group row add">
                         <label class="control-label col-sm-3" for="capital">Capital</label>
                         <div class="col-sm-9">
-                            <input type="number" class="form-control form-control-sm" id="capital" step="0.01" name="capital" value="0" maxlength="10" required>
+                            <input onchange="sumtotal()" type="number" class="form-control form-control-sm" id="capital" step="0.01" name="capital" value="0" maxlength="10" required>
                         </div>
                     </div>
 
                     <div class="form-group row add">
                         <label class="control-label col-sm-3" for="must">Mora</label>
                         <div class="col-sm-9">
-                            <input type="number" class="form-control form-control-sm" id="must" step="0.01" name="must" value="0" maxlength="10" required>
+                            <input onchange="sumtotal()" type="number" class="form-control form-control-sm" id="must" step="0.01" name="must" value="0" maxlength="10" required>
                         </div>
                     </div>
                     <div class="form-group row add">
@@ -272,7 +273,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title" style="margin: auto;">Editar Pago</h4>
+                <h4 class="modal-title" style="margin: auto;">Editar pago</h4>
             </div>
             <div class="modal-body">
 
@@ -395,6 +396,7 @@
     }
 
     let interest_amount = undefined
+    let loan_day = undefined
 
     function showModalCreate(loan_id) {
         $.ajax({
@@ -402,15 +404,27 @@
             url: "{{url('payments')}}/interestCalculate/" + loan_id,
             success: (response) => {
                 $('#debt').val(response.debt)
+                $('#debt_input').val(response.debt)
                 $('#interest_amount').val(response.interest)
+                let day = parseInt($('#date_start').val().substring(8, 10))
+                loan_day = response.day
+                $('#must').val((day - loan_day > 0) ? day - loan_day : 0)
+                $('#capital').val(0)
                 interest_amount = response.interest
-                $('#total-create').text(response.interest.toFixed(2))
+                sumtotal()
             },
             error: (error) => console.log(error)
         })
 
         $('#create-payment').modal('show')
         $('.form-horizontal').show()
+    }
+
+    function sumtotal() {
+        const interest = Number($('#interest_amount').val())
+        const must = Number($('#must').val())
+        const capital = Number($('#capital').val())
+        $('#total-create').text((interest + must + capital).toFixed(2))
     }
 
     $('#date_start').change(function() {
@@ -438,12 +452,20 @@
         $('#date_end').attr('min', date)
     })
 
-    $('#date_end').change(function() {
-        let day_difference = calDays($('#date_start').val(), $(this).val())
-        $('#total-create').text((interest_amount * day_difference).toFixed(2))
+    // Desabilita el teclado numerico para la fecha final
+    $('#date_end').on('keydown keypress', function(e) {
+        e.preventDefault()
     })
 
-    function calDays(date_start, date_end) {
+    $('#date_end').change(function() {
+        let moths_difference = calMonths($('#date_start').val(), $(this).val())
+        let interest = interest_amount * moths_difference
+        const must = Number($('#must').val())
+        const capital = Number($('#capital').val())
+        $('#total-create').text((interest + must + capital).toFixed(2))
+    })
+
+    function calMonths(date_start, date_end) {
 
         // d(date)
         let d_start = date_start.substring(0, 10).split("-")
@@ -453,7 +475,7 @@
         let m_start = parseInt(d_start[1])
         let m_end = parseInt(d_end[1])
 
-        return m_end - m_start;
+        return (m_end - m_start) + 1;
     }
 </script>
 @endpush

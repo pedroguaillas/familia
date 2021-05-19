@@ -10,12 +10,12 @@
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h1>Registro de Préstamo</h1>
+                <h1>Registro de préstamo</h1>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item"><a href="{{ url('loans') }}">Préstamos</a></li>
-                    <li class="breadcrumb-item active">Registro de Préstamo</li>
+                    <li class="breadcrumb-item active">Registro de préstamo</li>
                 </ol>
             </div>
         </div>
@@ -29,7 +29,7 @@
             <div class="col-md-6">
                 <div class="card card-primary">
                     <div class="card-header">
-                        <h3 class="card-title">Solicitante de Préstamo</h3>
+                        <h3 class="card-title">Solicitante de préstamo</h3>
                     </div>
                     <div class="card-body">
                         <div class="input-group">
@@ -46,7 +46,7 @@
                 <!-- /.card -->
                 <div id="card-guarantor" class="card card-primary" hidden>
                     <div class="card-header">
-                        <h3 class="card-title">Garante de Préstamo</h3>
+                        <h3 class="card-title">Garante de préstamo</h3>
                     </div>
                     <div class="card-body">
                         <div class="input-group">
@@ -69,7 +69,7 @@
                 <!-- card -->
                 <div class="card card-primary">
                     <div class="card-header">
-                        <h3 class="card-title">Monto y Porcentaje</h3>
+                        <h3 class="card-title">Monto y porcentaje</h3>
                     </div>
                     <div class="card-body">
                         <form class="form-horizontal" role="form" method="POST" action="{{ route('loans.store') }}">
@@ -79,7 +79,7 @@
                             <div class="form-group row add">
                                 <label class="control-label col-sm-2" for="amount ">Monto</label>
                                 <div class="col-sm-10">
-                                    <input type="number" onkeyup="keypressAmount(this)" max="10000" class="form-control" id="amount" name="amount" required>
+                                    <input type="number" onkeyup="keypressAmount(this)" max="10000" class="form-control" id="amount" name="amount" step="0.01" required>
                                 </div>
                             </div>
                             <div class="form-group row add">
@@ -154,13 +154,13 @@
     let people = undefined
     // Mostrar el modal para seleccionar la persona que solicita el prestamo
     function selectPersonApplicant() {
-        $('#modal-title').text('Seleccionar Solicitante');
+        $('#modal-title').text('Seleccionar solicitante')
         getPeople()
     }
 
     // Mostrar el modal para seleccionar el Garante del prestamo
     function selectGuarantorApplicant() {
-        $('#modal-title').text('Seleccionar Garante');
+        $('#modal-title').text('Seleccionar garante')
         // No se puede repetir el Solicitante con el Garante 
         // Por que solo cuando sea Particular requiere Garante y el Garante va ser socio
         // Para lo cual hay que filtrar solo socios
@@ -178,7 +178,7 @@
                 loadHml(people)
             },
             error: (error) => console.log(error)
-        });
+        })
     }
 
     // Load HTML with data in table
@@ -201,17 +201,17 @@
 
     // Selecciona la persona del modal y Oculta el Modal
     function select_person(id) {
-        let modal_title = $('.modal-title').text();
+        let modal_title = $('.modal-title').text()
         let person = people.filter(p => p.id === id)[0]
         let name = person.first_name + ' ' + person.last_name
-        if (modal_title === 'Seleccionar Solicitante') {
-            $('#person_id').val(id);
-            $('#name_person_loan').val(name);
+        if (modal_title === 'Seleccionar solicitante') {
+            $('#person_id').val(id)
+            $('#name_person_loan').val(name)
             if (person.type === 'particular') {
                 $('#card-guarantor').removeAttr('hidden')
             }
         } else {
-            $('#guarantor_id').val(id);
+            $('#guarantor_id').val(id)
             $('#name_guarantor_loan').val(name)
         }
         $('#select-person').modal('hide')

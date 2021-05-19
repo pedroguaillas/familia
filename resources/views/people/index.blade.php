@@ -188,7 +188,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title" style="margin: auto;">Registrar Personal</h4>
+                <h4 class="modal-title" style="margin: auto;">Registrar personal</h4>
             </div>
             <div class="modal-body">
                 <form class="form-horizontal" role="form" method="POST" action="/people">
@@ -196,19 +196,19 @@
                     <div class="form-group row add">
                         <label class="control-label col-sm-2" for="identification_card">Cédula</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control form-control-sm" id="identification_card" name="identification_card" onkeypress="return soloNumeros(event)" maxlength="10" required>
+                            <input type="text" class="form-control form-control-sm" id="identification_card" name="identification_card" maxlength="10" required>
                         </div>
                     </div>
                     <div class="form-group row add">
                         <label class="control-label col-sm-2" for="first_name"> Nombres </label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control form-control-sm" id="first_name" name="first_name" onkeypress="return soloLetras(event)" required>
+                            <input type="text" class="form-control form-control-sm" id="first_name" name="first_name" required>
                         </div>
                     </div>
                     <div class="form-group row add">
                         <label class="control-label col-sm-2" for="last_name "> Apellidos </label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control form-control-sm" id="last_name" name="last_name" onkeypress="return soloLetras(event);" required>
+                            <input type="text" class="form-control form-control-sm" id="last_name" name="last_name" required>
                         </div>
                     </div>
                     <div class="form-group row add">
@@ -225,13 +225,13 @@
                     <div class="form-group row add">
                         <label class="control-label col-sm-2" for="phone">Teléfono</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control form-control-sm" id="phone" name="phone" onkeypress="return soloNumeros(event)" maxlength="10">
+                            <input type="text" class="form-control form-control-sm" id="phone" name="phone" maxlength="10">
                         </div>
                     </div>
                     <div class="form-group row add">
                         <label class="control-label col-sm-2" for="email">Correo</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control form-control-sm" id="email" name="email">
+                            <input type="mail" class="form-control form-control-sm" id="email" name="email">
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -253,7 +253,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title" style="margin: auto;">Editar Personal</h4>
+                <h4 class="modal-title" style="margin: auto;">Editar personal</h4>
             </div>
             <div class="modal-body">
 
@@ -264,19 +264,19 @@
                     <div class="form-group row add">
                         <label class="control-label col-sm-2" for="identification_card">Cédula</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control form-control-sm" id="identification_card1" name="identification_card" onkeypress="return soloNumeros(event)" maxlength="10" required>
+                            <input type="text" class="form-control form-control-sm" id="identification_card1" name="identification_card" maxlength="10" required>
                         </div>
                     </div>
                     <div class="form-group row add">
                         <label class="control-label col-sm-2" for="first_name"> Nombres </label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control form-control-sm" id="first_name1" name="first_name" onkeypress="return soloLetras(event)" required>
+                            <input type="text" class="form-control form-control-sm" id="first_name1" name="first_name" required>
                         </div>
                     </div>
                     <div class="form-group row add">
                         <label class="control-label col-sm-2" for="last_name "> Apellidos </label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control form-control-sm" id="last_name1" name="last_name" onkeypress="return soloLetras(event);" required>
+                            <input type="text" class="form-control form-control-sm" id="last_name1" name="last_name" required>
                         </div>
                     </div>
                     <div class="form-group row add">
@@ -294,7 +294,7 @@
                     <div class="form-group row add">
                         <label class="control-label col-sm-2" for="phone">Teléfono</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control form-control-sm" id="phone1" name="phone" onkeypress="return soloNumeros(event)" maxlength="10">
+                            <input type="text" class="form-control form-control-sm" id="phone1" name="phone" maxlength="10">
                         </div>
                     </div>
 
