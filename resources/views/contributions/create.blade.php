@@ -76,13 +76,13 @@
                                     <td>{{$person['first_name'] . ' ' . $person['last_name']}}</td>
                                     <td style="text-align: center;">{{$person['actions']}}</td>
                                     <td style="text-align: center;">
-                                        <input type="number" value="{{$person['actions'] * ($type==='mensual' ? 10 : 50)}}">
+                                        <input type="number" value="{{$person['actions'] * ($type==='mensual' ? 10 : 50)}}" min="0" step="0.01">
                                     </td>
                                     <td style="text-align: center;">
-                                        <input type="number" value="0">
+                                        <input type="number" value="0" min="0" step="0.01">
                                     </td>
                                     <td style="text-align: center;">
-                                        <input type="date" min="{{$date}}" value="{{$date}}" max="{{(new DateTime($date))->modify('last day of')->format('Y-m-d')}}">
+                                        <input class="date-disable" type="date" min="{{$date}}" value="{{$date}}" max="{{(new DateTime($date))->modify('last day of')->format('Y-m-d')}}">
                                     </td>
                                 </tr>
                                 @php
@@ -140,6 +140,18 @@
             error: (error) => console.log(error)
         })
     }
+
+    // Desabilita el teclado numerico para la fecha
+    $('.date-disable').on('keydown keypress', function(e) {
+        e.preventDefault()
+    })
+
+    $('.date-disable').change(function(e) {
+        let day = Number(e.target.value.substring(8, 10))
+        if (day > 10) {
+            $(this).parent().parent().children('td:nth-last-child(2)').children().val((day - 10) * .25)
+        }
+    })
 
     function updateDate(e) {
         if (e.min <= e.value && e.value <= e.max) {

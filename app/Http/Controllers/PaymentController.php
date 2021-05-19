@@ -178,6 +178,7 @@ class PaymentController extends Controller
 
         return response()->json([
             'debt' => $debt,
+            'day' => (int)substr($loan->date, 8, 2),
             'interest' => round($debt * $loan->interest_percentage * 0.01, 2)
         ]);
     }

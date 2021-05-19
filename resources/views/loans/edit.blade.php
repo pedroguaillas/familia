@@ -10,12 +10,12 @@
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h1>Editar Préstamo</h1>
+                <h1>Editar préstamo</h1>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item"><a href="{{ url('loans') }}">Préstamos</a></li>
-                    <li class="breadcrumb-item active">Editar Préstamo</li>
+                    <li class="breadcrumb-item active">Editar préstamo</li>
                 </ol>
             </div>
         </div>
@@ -29,7 +29,7 @@
             <div class="col-md-6">
                 <div class="card card-primary">
                     <div class="card-header">
-                        <h3 class="card-title">Solicitante de Préstamo</h3>
+                        <h3 class="card-title">Solicitante de préstamo</h3>
                     </div>
                     <div class="card-body">
                         <div class="input-group">
@@ -46,7 +46,7 @@
                 <!-- /.card -->
                 <div id="card-guarantor" class="card card-primary" {{ $guarantor !== null ? null : 'hidden'}}>
                     <div class="card-header">
-                        <h3 class="card-title">Garante de Préstamo</h3>
+                        <h3 class="card-title">Garante de préstamo</h3>
                     </div>
                     <div class="card-body">
                         <div class="input-group">
@@ -69,7 +69,7 @@
                 <!-- card -->
                 <div class="card card-primary">
                     <div class="card-header">
-                        <h3 class="card-title">Monto y Porcentaje</h3>
+                        <h3 class="card-title">Monto y porcentaje</h3>
                     </div>
                     <div class="card-body">
                         <form class="form-horizontal" role="form" method="POST" action="{{ route('loans.update', $loan->id) }}">
@@ -153,13 +153,13 @@
     let people = undefined
     // Mostrar el modal para seleccionar la persona que solicita el prestamo
     function selectPersonApplicant(id) {
-        $('#modal-title').text('Seleccionar Solicitante')
+        $('#modal-title').text('Seleccionar solicitante')
         getPeople(id)
     }
 
     // Mostrar el modal para seleccionar el Garante del prestamo
     function selectGuarantorApplicant() {
-        $('#modal-title').text('Seleccionar Garante')
+        $('#modal-title').text('Seleccionar garante')
         // No se puede repetir el Solicitante con el Garante 
         // Por que solo cuando sea Particular requiere Garante y el Garante va ser socio
         // Para lo cual hay que filtrar solo socios
@@ -208,7 +208,7 @@
         let modal_title = $('.modal-title').text()
         let person = people.filter(p => p.id === id)[0]
         let name = person.first_name + ' ' + person.last_name
-        if (modal_title === 'Seleccionar Solicitante') {
+        if (modal_title === 'Seleccionar solicitante') {
             $('#person_id').val(id)
             $('#name_person_loan').val(name)
             if (person.type === 'particular') {

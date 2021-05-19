@@ -135,7 +135,7 @@
                     <div class="form-group row add">
                         <label class="control-label col-sm-3" for="date">Fecha</label>
                         <div class="col-sm-9">
-                            <input type="date" name="date" value="{{date('Y-m-d')}}" class="form-control form-control-sm">
+                            <input type="date" name="date" value="{{date('Y-m-10')}}" class="form-control form-control-sm">
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -228,8 +228,8 @@
     }
 
     let action = {
-        amount: 483,
-        quantity_action: 3
+        amount: 0,
+        quantity_action: 0
     }
 
     function showModalPurchaseActions(id) {

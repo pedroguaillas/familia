@@ -171,7 +171,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title" style="margin: auto;">Registrar Aporte</h4>
+                <h4 class="modal-title" style="margin: auto;">Registrar aporte</h4>
             </div>
             <div class="modal-body">
                 <form class="form-horizontal" role="form" action="{{route('contributions.store')}}" method="POST">
@@ -191,25 +191,25 @@
                     <div class="form-group row add">
                         <label class="control-label col-sm-3" for="amount">Monto</label>
                         <div class="col-sm-9">
-                            <input type="text" value="{{$person->actions * 10}}" class="form-control form-control-sm" id="amount_insert" name="amount" onkeypress="return soloNumeros(event);" required>
+                            <input type="number" onchange="sumtotal()" value="{{$person->actions * 10}}" class="form-control form-control-sm" id="amount_insert" name="amount" min="0" step="0.01" required>
                         </div>
                     </div>
                     <div class="form-group row add">
                         <label class="control-label col-sm-3" for="must">Mora</label>
                         <div class="col-sm-9">
-                            <input type="text" value="0" class="form-control form-control-sm" name="must" onkeypress="return soloNumeros(event);" required>
+                            <input type="number" onchange="sumtotal()" value="0" class="form-control form-control-sm" id="must_insert" name="must" min="0" step="0.01" required>
                         </div>
                     </div>
                     <div class="form-group row add">
                         <label class="control-label col-sm-3" for="date">Fecha Inicio</label>
                         <div class="col-sm-9">
-                            <input type="date" value="{{date('Y-m-d')}}" class="form-control form-control-sm" id="date_start" name="date" required>
+                            <input type="date" onchange="sumtotal()" value="{{date('Y-m-10')}}" class="form-control form-control-sm" id="date_start" name="date" required>
                         </div>
                     </div>
                     <div class="form-group row add">
                         <label class="control-label col-sm-3" for="date_end">Fecha Fin</label>
                         <div class="col-sm-9">
-                            <input type="date" class="form-control form-control-sm" id="date_end" name="date_end" min="{{(int)date('m') < 12 ? date('Y-m-d', strtotime(date('Y-m-d'). ' +1 month')) : date('Y-m-d')}}">
+                            <input type="date" onchange="sumtotal()" class="form-control form-control-sm" id="date_end" name="date_end" min="{{(int)date('m') < 12 ? date('Y-m-d', strtotime(date('Y-m-d'). ' +1 month')) : date('Y-m-d')}}">
                         </div>
                     </div>
                     <div class="form-group row add">
@@ -241,7 +241,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title" style="margin: auto;">Editar Aporte</h4>
+                <h4 class="modal-title" style="margin: auto;">Editar aporte</h4>
             </div>
             <div class="modal-body">
                 <form class="form-horizontal" role="form" method="POST" id="editForm">
@@ -348,7 +348,7 @@
                                 })
                                 .then((result) => {
                                     location.reload()
-                                });
+                                })
                         }
                     })
                 }
@@ -379,11 +379,19 @@
         $('#date_end').attr('min', date)
     })
 
-    $('#date_end').change(function() {
-        let month_difference = calMonths($('#date_start').val(), $(this).val())
-        $('#total-create').text((Number($('#amount_insert').val()) * month_difference).toFixed(2))
+    // Desabilita el teclado numerico para la fecha final
+    $('#date_end').on('keydown keypress', function(e) {
+        e.preventDefault()
     })
 
+    function sumtotal() {
+        let date_end = $('#date_end').val()
+        let month_difference = date_end !== '' ? calMonths($('#date_start').val(), date_end) : 1
+        const amount = Number($('#amount_insert').val())
+        const must = Number($('#must_insert').val())
+
+        $('#total-create').text((amount * month_difference + must).toFixed(2))
+    }
 
     function calMonths(date_start, date_end) {
 
@@ -395,7 +403,7 @@
         let m_start = parseInt(d_start[1])
         let m_end = parseInt(d_end[1])
 
-        return m_end - m_start;
+        return (m_end - m_start) + 1
     }
 </script>
 @endpush

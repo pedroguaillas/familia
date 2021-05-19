@@ -138,15 +138,20 @@ class ContributionController extends Controller
     {
         $contributions = $request->get('contributions');
         $contributions = json_decode($contributions);
+
+        $array = [];
         foreach ($contributions as $contribution) {
-            $contribution->type = (string)$request->get('type');
+            if ($contribution->amount > 0) {
+                $contribution->type = (string)$request->get('type');
+                array_push($array, $contribution);
+            }
         }
 
-        $contributions = json_decode(json_encode($contributions), true);
+        $array = json_decode(json_encode($array), true);
 
-        DB::table('contributions')->insert($contributions);
+        DB::table('contributions')->insert($array);
 
-        return response()->json(['msm' => 'bien desde el servidor', 'contributions' => $contributions]);
+        return response()->json(['msm' => 'Bien desde el servidor']);
     }
 
     public function history($person_id)
