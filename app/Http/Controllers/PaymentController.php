@@ -42,7 +42,7 @@ class PaymentController extends Controller
         //Se requiere de guarantor para mostrar el nombre en la cabecera
         $guarantor = Person::where('id', $loan->guarantor_id)->get()->first();
         // $payments = $loan->payments;
-        $payments = DB::table('payments')
+        $payments = \DB::table('payments')
             ->where([
                 'loan_id' => $id,
                 'state' => 'activo'
@@ -61,7 +61,7 @@ class PaymentController extends Controller
         //Se requiere de guarantor para mostrar el nombre en la cabecera
         $guarantor = Person::where('id', $loan->guarantor_id)->get()->first();
         // $payments = $loan->payments;
-        $payments = DB::table('payments')
+        $payments = \DB::table('payments')
             ->where([
                 'loan_id' => $loan->id,
                 'state' => 'activo'
@@ -163,7 +163,7 @@ class PaymentController extends Controller
     public function interestCalculate($loan_id)
     {
         $loan = Loan::findOrFail($loan_id);
-        $payment = Payment::select(DB::raw('SUM(capital) as paid'))
+        $payment = Payment::select(\DB::raw('SUM(capital) as paid'))
             ->where([
                 ['state', 'like', 'activo'],
                 ['loan_id', '=', $loan_id]
