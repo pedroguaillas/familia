@@ -35,13 +35,13 @@ class ContributionController extends Controller
 
     private function list()
     {
-        $contributions = DB::table('people')
+        $contributions = \DB::table('people')
             ->select(
                 'people.id as person_id',
                 'people.first_name',
                 'people.last_name',
                 'people.actions',
-                DB::raw('SUM(contributions.amount) as amount')
+                \DB::raw('SUM(contributions.amount) as amount')
             )->leftJoin('contributions', 'people.id', 'contributions.person_id')
             ->groupBy(
                 'people.id',
@@ -149,7 +149,7 @@ class ContributionController extends Controller
 
         $array = json_decode(json_encode($array), true);
 
-        DB::table('contributions')->insert($array);
+        \DB::table('contributions')->insert($array);
 
         return response()->json(['msm' => 'Bien desde el servidor']);
     }

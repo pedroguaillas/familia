@@ -27,7 +27,7 @@ class LoanController extends Controller
      */
     public function index()
     {
-        $loans = DB::table('loans')
+        $loans = \DB::table('loans')
             ->select(
                 'loans.id',
                 'loans.amount',
@@ -35,7 +35,7 @@ class LoanController extends Controller
                 'loans.date',
                 'people.first_name',
                 'people.last_name',
-                DB::raw('sum(payments.capital) as sum_capital_paid')
+                \DB::raw('sum(payments.capital) as sum_capital_paid')
             )
             ->join('people', 'people.id', 'loans.person_id')
             ->leftJoin('payments', 'payments.loan_id', 'loans.id')
@@ -48,7 +48,7 @@ class LoanController extends Controller
 
     public function pdf()
     {
-        $loans = DB::table('loans')
+        $loans = \DB::table('loans')
             ->select(
                 'loans.id',
                 'loans.amount',
@@ -56,7 +56,7 @@ class LoanController extends Controller
                 'loans.date',
                 'people.first_name',
                 'people.last_name',
-                DB::raw('sum(payments.capital) as sum_capital_paid')
+                \DB::raw('sum(payments.capital) as sum_capital_paid')
             )
             ->join('people', 'people.id', 'loans.person_id')
             ->leftJoin('payments', 'payments.loan_id', 'loans.id')
