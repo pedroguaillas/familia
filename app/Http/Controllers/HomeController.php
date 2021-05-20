@@ -3,11 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Contribution;
-use App\Loan;
 use App\Payment;
 use App\Person;
 use Carbon\Carbon;
-use Illuminate\Http\Request;
 use Illuminate\Support\facades\DB;
 
 class HomeController extends Controller
