@@ -203,7 +203,7 @@
                     <div class="form-group row add">
                         <label class="control-label col-sm-3" for="date">Fecha Inicio</label>
                         <div class="col-sm-9">
-                            <input type="date" onchange="sumtotal()" value="{{date('Y-m-10')}}" class="form-control form-control-sm" id="date_start" name="date" required>
+                            <input type="date" value="{{date('Y-m-10')}}" class="form-control form-control-sm" id="date_start" name="date" required>
                         </div>
                     </div>
                     <div class="form-group row add">
@@ -257,7 +257,7 @@
                     <div class="form-group row add">
                         <label class="control-label col-sm-3" for="must">Mora</label>
                         <div class="col-sm-9">
-                            <input type="text" value="0" class="form-control form-control-sm" id="must_edit" name="must" onkeypress="return soloNumeros(event);" required>
+                            <input type="text" value="0" class="form-control form-control-sm" id="must_edit" name="must" required>
                         </div>
                     </div>
                     <div class="form-group row add">
@@ -357,6 +357,7 @@
 
     $('#date_start').change(function() {
         let date_str = $(this).val().substring(0, 10).split("-")
+        let day = Number(date_str[2])
         let month = parseInt(date_str[1])
 
         if (month < 9) {
@@ -377,6 +378,13 @@
 
         var date = date_str.join('-')
         $('#date_end').attr('min', date)
+
+        if (day > 10) {
+            const amount = Number($('#amount_insert').val())
+            $('#must_insert').val((day - 10) * Math.round(amount / 10))
+        }
+
+        sumtotal()
     })
 
     // Desabilita el teclado numerico para la fecha final
@@ -389,6 +397,7 @@
         let month_difference = date_end !== '' ? calMonths($('#date_start').val(), date_end) : 1
         const amount = Number($('#amount_insert').val())
         const must = Number($('#must_insert').val())
+        console.log(must)
 
         $('#total-create').text((amount * month_difference + must).toFixed(2))
     }

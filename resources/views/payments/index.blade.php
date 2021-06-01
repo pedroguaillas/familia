@@ -208,50 +208,56 @@
                     <input type="hidden" id="debt" name="debt"> <!-- Deuda actual  -->
 
                     <div class="form-group row add">
-                        <label class="control-label col-sm-3" for="debt "> Deuda </label>
-                        <div class="col-sm-9">
+                        <label class="control-label col-sm-4" for="debt "> Deuda </label>
+                        <div class="col-sm-8">
                             <input class="form-control form-control-sm" id="debt_input" required disabled>
                         </div>
                     </div>
                     <div class="form-group row add">
-                        <label class="control-label col-sm-3" for="interest_amount "> Interés </label>
-                        <div class="col-sm-9">
+                        <label class="control-label col-sm-4" for="interest_amount "> Interés </label>
+                        <div class="col-sm-8">
                             <input onchange="sumtotal()" type="number" class="form-control form-control-sm" id="interest_amount" step="0.01" name="interest_amount" required>
                         </div>
                     </div>
                     <div class="form-group row add">
-                        <label class="control-label col-sm-3" for="capital">Capital</label>
-                        <div class="col-sm-9">
+                        <label class="control-label col-sm-4" for="capital">Capital</label>
+                        <div class="col-sm-8">
                             <input onchange="sumtotal()" type="number" class="form-control form-control-sm" id="capital" step="0.01" name="capital" value="0" maxlength="10" required>
                         </div>
                     </div>
 
                     <div class="form-group row add">
-                        <label class="control-label col-sm-3" for="must">Mora</label>
-                        <div class="col-sm-9">
+                        <label class="control-label col-sm-4" for="must">Mora</label>
+                        <div class="col-sm-8">
                             <input onchange="sumtotal()" type="number" class="form-control form-control-sm" id="must" step="0.01" name="must" value="0" maxlength="10" required>
                         </div>
                     </div>
                     <div class="form-group row add">
-                        <label class="control-label col-sm-3" for="date">Fecha Inicio</label>
-                        <div class="col-sm-9">
-                            <input type="date" value="{{date('Y-m-d')}}" class="form-control form-control-sm" id="date_start" name="date_start" required>
+                        <label class="control-label col-sm-4" for="date-loan">Fecha préstamo</label>
+                        <div class="col-sm-8">
+                            <input value="{{date('m/d/Y', strtotime(substr($loan->date, 0, 10)))}}" class="form-control form-control-sm" disabled>
                         </div>
                     </div>
                     <div class="form-group row add">
-                        <label class="control-label col-sm-3" for="date">Fecha Fin</label>
-                        <div class="col-sm-9">
-                            <input type="date" class="form-control form-control-sm" id="date_end" name="date_end" min="{{(int)date('m') < 12 ? date('Y-m-d', strtotime(date('Y-m-d'). ' +1 month')) : date('Y-m-d')}}">
+                        <label class="control-label col-sm-4" for="date">Fecha Inicio</label>
+                        <div class="col-sm-8">
+                            <input type="date" value="{{date('Y-m-' .substr($loan->date, 8, 2))}}" class="form-control form-control-sm" id="date_start" name="date_start" required>
                         </div>
                     </div>
                     <div class="form-group row add">
-                        <label class="control-label col-sm-3" for="boservation">Observación</label>
-                        <div class="col-sm-9">
+                        <label class="control-label col-sm-4" for="date">Fecha Fin</label>
+                        <div class="col-sm-8">
+                            <input type="date" class="form-control form-control-sm" id="date_end" name="date_end" min="{{(int)date('m') < 12 ? date('Y-m-' .substr($loan->date, 8, 2), strtotime(date('Y-m-d'). ' +1 month')) : date('Y-m-' .substr($loan->date, 8, 2))}}">
+                        </div>
+                    </div>
+                    <div class="form-group row add">
+                        <label class="control-label col-sm-4" for="boservation">Observación</label>
+                        <div class="col-sm-8">
                             <textarea name="observation" class="form-control" rows="2"></textarea>
                         </div>
                     </div>
                     <div class="form-group row add">
-                        <label class="control-label col-sm-3" for="boservation">Total</label>
+                        <label class="control-label col-sm-4" for="boservation">Total</label>
                         <label id="total-create" class="control-label col-sm-3">0.00</label>
                     </div>
                     <div class="modal-footer">
@@ -408,7 +414,7 @@
                 $('#interest_amount').val(response.interest)
                 let day = parseInt($('#date_start').val().substring(8, 10))
                 loan_day = response.day
-                $('#must').val((day - loan_day > 0) ? day - loan_day : 0)
+                $('#must').val((day - loan_day > 0) ? (day - loan_day) * .25 : 0)
                 $('#capital').val(0)
                 interest_amount = response.interest
                 sumtotal()
@@ -448,8 +454,13 @@
             }
         }
 
+        let day = Number(date_str[2])
+
         var date = date_str.join('-')
         $('#date_end').attr('min', date)
+        // le multiplica 0.25 ctv por cada dia de atraso  
+        $('#must').val((day - loan_day > 0) ? (day - loan_day) * .25 : 0)
+        sumtotal()
     })
 
     // Desabilita el teclado numerico para la fecha final

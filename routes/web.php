@@ -57,3 +57,6 @@ Route::resource('directives', 'DirectiveController');
 
 //SPEND
 Route::resource('spends', 'SpendController');
+
+//MANUAL
+Route::get('manual', 'HomeController@manual');

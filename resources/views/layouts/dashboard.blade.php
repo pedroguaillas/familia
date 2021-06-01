@@ -99,6 +99,12 @@
                                 <p>Gastos</p>
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a href="{{ url('manual') }}" class="nav-link" target="_blank">
+                                <i class="nav-icon far fa-file-pdf"></i>
+                                <p>Manual</p>
+                            </a>
+                        </li>
                     </ul>
                 </nav>
                 <!-- /.sidebar-menu -->
