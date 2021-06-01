@@ -149,7 +149,7 @@
     $('.date-disable').change(function(e) {
         let day = Number(e.target.value.substring(8, 10))
         if (day > 10) {
-            $(this).parent().parent().children('td:nth-last-child(2)').children().val((day - 10) * .25)
+            $(this).parent().parent().children('td:nth-last-child(2)').children().val((day - 10))
         }
     })
 
