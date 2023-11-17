@@ -61,19 +61,19 @@
                             <div class="col-sm-4" {{ $guarantor !== null ? null : 'hidden'}}>
                                 <p>
                                     <strong>Garante: </strong>
-                                    {{$guarantor === null ? null : $guarantor->first_name . ' ' . $guarantor->last_name}}
+                                    {{$guarantor === null ? null : $guarantor->first_name.' '.$guarantor->last_name}}
                                 </p>
                             </div>
                             <div class="col-sm-2">
                                 <p>
                                     <strong>Monto: </strong>
-                                    {{ number_format($loan->amount, 2, ',', '.') }}
+                                    {{number_format($loan->amount, 2, ',', '.')}}
                                 </p>
                             </div>
                             <div class="col-sm-2">
                                 <p>
                                     <strong>Interés: </strong>
-                                    {{ $loan->interest_percentage .'%' }}
+                                    {{$loan->interest_percentage .'%'}}
                                 </p>
                             </div>
                         </div>
@@ -91,12 +91,12 @@
                         <h3 class="card-title">PAGOS</h3>
                         <div class="card-tools">
                             <div class="dt-buttons btn-group flex-wrap">
-                                <a class="btn btn-secondary btn-sm" href="{{ route('prestamo.pagos.reporte', $loan->id) }}" target="_blank">
+                                <a class="btn btn-secondary btn-sm" href="{{route('prestamo.pagos.reporte', $loan->id)}}" target="_blank">
                                     <i class="far fa-file-pdf"></i>
                                 </a>
                             </div>
                             <div class="dt-buttons btn-group flex-wrap">
-                                <button onclick="showModalCreate('{{ $loan->id }}')" class="create-modal btn btn-success btn-sm">
+                                <button onclick="showModalCreate('{{$loan->id}}')" class="create-modal btn btn-success btn-sm">
                                     <i class="fas fa-plus"></i>
                                 </button>
                             </div>
@@ -113,37 +113,35 @@
                                     <th>PAGO CAPITAL</th>
                                     <th>PAGO INTERES</th>
                                     <th>PAGO MORA</th>
-                                    <th>PAGO TOTAL</th>
                                     <th>FECHA PAGO</th>
                                     <th colspan="2"></th>
                                 </tr>
                             </thead>
                             @php
-                            $i = 0;
-                            $sum_capital = 0;
-                            $sum_interest = 0;
-                            $sum_must = 0;
+                            $i=0;
+                            $sum_capital=0;
+                            $sum_interest=0;
+                            $sum_must=0;
                             @endphp
                             <tbody>
                                 @foreach ($payments as $payment)
                                 <tr>
                                     @php
                                     $i++;
-                                    $sum_capital += $payment->capital;
-                                    $sum_interest += $payment->interest_amount;
-                                    $sum_must += $payment->must;
+                                    $sum_capital+=$payment->capital;
+                                    $sum_interest+=$payment->interest_amount;
+                                    $sum_must+=$payment->must;
                                     @endphp
                                     <input type="hidden" class="serdelete_val" value="{{ $payment->id }}">
-                                    <td style="text-align: center;">{{ $i }}</td>
-                                    <td style="text-align: right;">{{ number_format($payment->debt, 2, ',', '.') }}</td>
-                                    <td style="text-align: right;">{{ number_format($payment->capital, 2, ',', '.') }}</td>
-                                    <td style="text-align: right;">{{ number_format($payment->interest_amount, 2, ',', '.') }}</td>
-                                    <td style="text-align: right;">{{ number_format($payment->must, 2, ',', '.') }}</td>
-                                    <td style="text-align: right;">{{ number_format($payment->capital + $payment->interest_amount + $payment->must, 2, ',', '.') }}</td>
-                                    <td style="text-align: center;">{{ substr($payment->date, 0, 10) }}</td>
+                                    <td style="text-align: center;">{{$i}}</td>
+                                    <td style="text-align: right;">{{number_format($payment->debt, 2, ',', '.')}}</td>
+                                    <td style="text-align: right;">{{number_format($payment->capital, 2, ',', '.')}}</td>
+                                    <td style="text-align: right;">{{number_format($payment->interest_amount, 2, ',', '.')}}</td>
+                                    <td style="text-align: right;">{{number_format($payment->must, 2, ',', '.')}}</td>
+                                    <td style="text-align: center;">{{substr($payment->date, 0, 10)}}</td>
                                     <td style="text-align: center;">
-                                        @if($payment->observation !== null)
-                                        <span class="badge bg-info" title="{{ $payment->observation }}"><i class="far fa-newspaper"></i></span>
+                                        @if($payment->observation!==null)
+                                        <span class="badge bg-info" title="{{$payment->observation}}"><i class="far fa-newspaper"></i></span>
                                         @endif
                                     </td>
                                     <td>
@@ -153,13 +151,13 @@
                                                     <i class="fa fa-angle-down"></i>
                                                 </a>
                                                 <div class="dropdown-menu dropdown-menu-md dropdown-menu-right">
-                                                    <a href="{{ route('prestamo.pago.comprobante', $payment->id) }}" class="dropdown-item" target="_blank">
+                                                    <a href="{{ route('prestamo.pago.comprobante', $payment->id)}}" class="dropdown-item" target="_blank">
                                                         <i class="far fa-file"></i> Imprimir
                                                     </a>
-                                                    <button class="dropdown-item" onclick='editPayment("{{ $payment->id }}")'>
+                                                    <button class="dropdown-item" onclick='editPayment("{{$payment->id}}")'>
                                                         <i class="far fa-edit"></i> Editar
                                                     </button>
-                                                    <button class="dropdown-item" onclick='paymentDelete("{{ $payment->id }}")'>
+                                                    <button class="dropdown-item" onclick='paymentDelete("{{$payment->id}}")'>
                                                         <i class="far fa-trash-alt"></i> Anular
                                                     </button>
                                                 </div>
@@ -173,12 +171,12 @@
                                 <tr>
                                     <th style="text-align: center;">TOTAL</th>
                                     <th style="text-align: right;">
-                                        {{ '$' . (count($payments) ? number_format($payments[count($payments)-1]->debt - $payments[count($payments)-1]->capital, 2, ',', '.') : number_format($loan->amount, 2, ',', '.')) }}
+                                        {{'$' .(count($payments) ? number_format($payments[count($payments)-1]->debt - $payments[count($payments)-1]->capital, 2, ',', '.') : number_format($loan->amount, 2, ',', '.'))}}
                                     </th>
-                                    <th style="text-align: right;">{{ number_format($sum_capital, 2, ',', '.') }}</th>
-                                    <th style="text-align: right;">{{ number_format($sum_interest, 2, ',', '.') }}</th>
-                                    <th style="text-align: right;">{{ number_format($sum_must, 2, ',', '.') }}</th>
-                                    <th style="text-align: right;">{{ number_format($sum_capital + $sum_interest + $sum_must, 2, ',', '.') }}</th>
+                                    <th style="text-align: right;">{{number_format($sum_capital, 2, ',', '.')}}</th>
+                                    <th style="text-align: right;">{{number_format($sum_interest, 2, ',', '.')}}</th>
+                                    <th style="text-align: right;">{{number_format($sum_must, 2, ',', '.')}}</th>
+                                    <th></th>
                                     <th colspan="2"></th>
                                 </tr>
                             </tfoot>
@@ -203,10 +201,10 @@
                 <h4 class="modal-title" style="margin: auto;">Registrar nuevo pago</h4>
             </div>
             <div class="modal-body">
-                <form class="form-horizontal" role="form" method="POST" action="{{ route('payments.store') }}">
+                <form class="form-horizontal" role="form" method="POST" action="{{route('payments.store')}}">
                     {{ csrf_field() }}
 
-                    <input type="hidden" id="loan_id" name="loan_id" value="{{ $loan->id }}"> <!-- codigo del prestamo  -->
+                    <input type="hidden" id="loan_id" name="loan_id" value="{{$loan->id}}"> <!-- codigo del prestamo  -->
                     <input type="hidden" id="debt" name="debt"> <!-- Deuda actual  -->
 
                     <div class="form-group row add">
@@ -216,7 +214,7 @@
                         </div>
                     </div>
                     <div class="form-group row add">
-                        <label class="control-label col-sm-4" for="interest_amount"> Interés </label>
+                        <label class="control-label col-sm-4" for="interest_amount "> Interés </label>
                         <div class="col-sm-8">
                             <input onchange="sumtotal()" type="number" class="form-control form-control-sm" id="interest_amount" step="0.01" name="interest_amount" required>
                         </div>
@@ -237,19 +235,19 @@
                     <div class="form-group row add">
                         <label class="control-label col-sm-4" for="date-loan">Fecha préstamo</label>
                         <div class="col-sm-8">
-                            <input value="{{ date('m/d/Y', strtotime(substr($loan->date, 0, 10))) }}" class="form-control form-control-sm" disabled>
+                            <input value="{{date('m/d/Y', strtotime(substr($loan->date, 0, 10)))}}" class="form-control form-control-sm" disabled>
                         </div>
                     </div>
                     <div class="form-group row add">
                         <label class="control-label col-sm-4" for="date">Fecha Inicio</label>
                         <div class="col-sm-8">
-                            <input type="date" value="{{ date('Y-m-' .substr($loan->date, 8, 2)) }}" class="form-control form-control-sm" id="date_start" name="date_start" required>
+                            <input type="date" value="{{date('Y-m-' .substr($loan->date, 8, 2))}}" class="form-control form-control-sm" id="date_start" name="date_start" required>
                         </div>
                     </div>
                     <div class="form-group row add">
                         <label class="control-label col-sm-4" for="date">Fecha Fin</label>
                         <div class="col-sm-8">
-                            <input type="date" class="form-control form-control-sm" id="date_end" name="date_end" min="{{ (int)date('m') < 12 ? date('Y-m-' .substr($loan->date, 8, 2), strtotime(date('Y-m-d'). ' +1 month')) : date('Y-m-' .substr($loan->date, 8, 2)) }}">
+                            <input type="date" class="form-control form-control-sm" id="date_end" name="date_end" min="{{(int)date('m') < 12 ? date('Y-m-' .substr($loan->date, 8, 2), strtotime(date('Y-m-d'). ' +1 month')) : date('Y-m-' .substr($loan->date, 8, 2))}}">
                         </div>
                     </div>
                     <div class="form-group row add">
@@ -287,7 +285,7 @@
 
                 <form class="form-horizontal" role="form" method="POST" id="editForm">
                     {{ csrf_field() }}
-                    {{ method_field('PUT') }}
+                    {{method_field('PUT')}}
 
                     <div class="form-group row add">
                         <label class="control-label col-sm-3" for="debt">Deuda</label>
@@ -384,7 +382,7 @@
                 if (willDelete) {
                     $.ajax({
                         type: "POST",
-                        url: "{{ url('payments') }}/" + id,
+                        url: "{{url('payments')}}/" + id,
                         data: {
                             "_token": $('meta[name="csrf-token"]').content,
                             "_method": "DELETE"
@@ -409,7 +407,7 @@
     function showModalCreate(loan_id) {
         $.ajax({
             type: 'GET',
-            url: "{{ url('payments') }}/interestCalculate/" + loan_id,
+            url: "{{url('payments')}}/interestCalculate/" + loan_id,
             success: (response) => {
                 $('#debt').val(response.debt)
                 $('#debt_input').val(response.debt)
@@ -417,7 +415,7 @@
                 let day = parseInt($('#date_start').val().substring(8, 10))
                 loan_day = response.day
                 $('#must').val((day - loan_day > 0) ? (day - loan_day) * .25 : 0)
-                $('#capital').val(response.capital)
+                $('#capital').val(0)
                 interest_amount = response.interest
                 sumtotal()
             },

@@ -10,7 +10,6 @@ use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade as PDF;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Validator;
 
 class LoanController extends Controller
 {
@@ -29,17 +28,19 @@ class LoanController extends Controller
     public function index()
     {
         $loans = \DB::table('loans')
-            ->selectRaw('loans.id,amount,interest_percentage,loans.date,method,first_name,last_name, sum(payments.capital) as sum_capital_paid')
-            ->join('people', 'people.id', 'person_id')
-            // ->leftJoin('payments', 'loan_id', 'loans.id')
-            ->leftJoin('payments', function ($join) {
-                $join->on('loans.id', '=', 'loan_id')
-                    ->where('payments.state', 'activo');
-            })
-            ->groupBy('loans.id', 'amount', 'interest_percentage', 'loans.date', 'method', 'first_name', 'last_name')
+            ->select(
+                'loans.id',
+                'loans.amount',
+                'loans.interest_percentage',
+                'loans.date',
+                'people.first_name',
+                'people.last_name',
+                \DB::raw('sum(payments.capital) as sum_capital_paid')
+            )
+            ->join('people', 'people.id', 'loans.person_id')
+            ->leftJoin('payments', 'payments.loan_id', 'loans.id')
+            ->groupBy('loans.id', 'loans.amount', 'loans.interest_percentage', 'loans.date', 'people.first_name', 'people.last_name')
             ->where('loans.state', 'activo')
-            // Nueva restrincion para mostrar solo los prestamos que falta concluir los pagos
-            // ->havingRaw('sum_capital_paid < amount')
             ->orderBy('loans.date')->get();
 
         return view('loans.index', compact('loans'));
@@ -48,13 +49,17 @@ class LoanController extends Controller
     public function pdf()
     {
         $loans = \DB::table('loans')
-            ->selectRaw('loans.id,amount,interest_percentage,loans.date,method,first_name,last_name, sum(payments.capital) as sum_capital_paid')
-            ->join('people', 'people.id', 'person_id')
-            // ->leftJoin('payments', 'loan_id', 'loans.id')
-            ->leftJoin('payments', function ($join) {
-                $join->on('loans.id', '=', 'loan_id')
-                    ->where('payments.state', 'activo');
-            })
+            ->select(
+                'loans.id',
+                'loans.amount',
+                'loans.interest_percentage',
+                'loans.date',
+                'people.first_name',
+                'people.last_name',
+                \DB::raw('sum(payments.capital) as sum_capital_paid')
+            )
+            ->join('people', 'people.id', 'loans.person_id')
+            ->leftJoin('payments', 'payments.loan_id', 'loans.id')
             ->groupBy('loans.id', 'loans.amount', 'loans.interest_percentage', 'loans.date', 'people.first_name', 'people.last_name')
             ->where('loans.state', 'activo')
             ->orderBy('loans.date')->get();
@@ -67,111 +72,35 @@ class LoanController extends Controller
         return $pdf->stream('prestamos.pdf');
     }
 
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function create()
     {
         $people = Person::where('state', 'activo')->get();
         return view('loans.create', compact('people'));
     }
 
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function store(Request $request)
     {
-        // Falta validar el garante si debe seleccionar
-        $validator = Validator::make($request->all(), [
-            'person_id' => 'required',
-            'amount' => 'required',
-            'interest_percentage' => 'required',
-            'date' => 'required',
-            'type' => 'required',
-            'period' => 'required',
-            'method' => 'required'
-        ], [
-            'person_id.required' => 'Debe seleccionar el solicitante',
-            'amount.required' => 'El monto es requerido',
-            'interest_percentage.required' => 'El interés es requerido',
-            'date.required' => 'La fecha es requerido',
-            'type.required' => 'El pago es requerido',
-            'period.required' => 'El periodo es requerido',
-            'method.required' => 'La tabla es requerido',
-        ]);
-
-        if ($validator->fails()) {
-            return redirect('loans/create')
-                ->withErrors($validator)
-                ->withInput();
-        }
-
-        $loan = Loan::create($request->all());
-
-        // Generar tabla de amortizacion
-        // Registrar en tabla de pagos como inactivos
-        $interes = $request->interest_percentage * 0.01;
-        $deudainicial = $request->amount;
-        $interescal = $request->amount * $interes;
-        $capital = 0;
-        $pago = 0;
-
-        if ($request->method === 'variable') {
-            $capital = $request->amount / $request->period;
-            $pago = $interescal + $capital;
-        } else {
-            // Pago con dos decimales para convertirle en fijo durante todo el periodo
-            $pago = round($interescal / (1 - pow(1 + $interes, -$request->period)), 2);
-            $capital = $pago - $interescal;
-        }
-
-        $deudafinal = $deudainicial - $capital;
-
-        $month = '';
-
-        switch ($request->type) {
-            case 'mensual':
-                $month = 1;
-                break;
-            case 'trimestral':
-                $month = 3;
-                break;
-            case 'semestral':
-                $month = 6;
-                break;
-            case 'anual':
-                $month = 12;
-                break;
-        }
-
-        $date = Carbon::createFromFormat('Y-m-d', $request->date);
-        $array = [];
-
-        for ($i = 0; $i < $request->period; $i++) {
-            if ($i > 0) {
-
-                $deudainicial = $deudafinal;
-                $interescal = $deudainicial * $interes;
-
-                if ($request->method === 'variable') {
-                    $pago = $interescal + $capital;
-                } else {
-                    $capital = $pago - $interescal;
-                }
-
-                $deudafinal = $deudainicial - $capital;
-            }
-
-            $array[] = [
-                'debt' => $deudainicial,
-                'interest_amount' => $interescal,
-                'capital' => $capital,
-                'date' => $date . '',
-                'state' => 'inactivo'
-            ];
-
-            $date->addMonth($month);
-        }
-
-        $loan->payments()->createMany($array);
-
+        Loan::create($request->all());
         return redirect()->route('loans.index')->with('success', 'Se registro un nuevo préstamo');
     }
 
+    /**
+     * Display the specified resource.
+     *
+     * @param  \App\Models\Loan  $loan
+     * @return \Illuminate\Http\Response
+     */
     public function show(Loan $loan)
     {
         //Usuda para mostrar renovacion de credito
@@ -205,6 +134,12 @@ class LoanController extends Controller
         return $pdf->stream('solicitud_prestamo.pdf');
     }
 
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  \App\Models\Loan  $loan
+     * @return \Illuminate\Http\Response
+     */
     public function edit(Loan $loan)
     {
         //Se requiere de person para mostrar el nombre en el formulario
@@ -215,6 +150,13 @@ class LoanController extends Controller
         return view('loans.edit', compact('loan', 'person', 'guarantor'));
     }
 
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\Loan  $loan
+     * @return \Illuminate\Http\Response
+     */
     public function update(Request $request, Loan $loan)
     {
         // $request->validate([
@@ -266,13 +208,19 @@ class LoanController extends Controller
         return redirect()->route('loans.index')->with('success', 'Se renovo el crédito de ' . $loan->person->first_name . ' ' . $loan->person->last_name);
     }
 
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \App\Models\Loan  $loan
+     * @return \Illuminate\Http\Response
+     */
     public function destroy(Loan $loan)
     {
-        // Antes pasaba a inactivo
-        // Ahora se elimina de manera física
-        Payment::where('loan_id', $loan->id)->delete();
+        $loan->state = 'inactivo';
+        $loan->save();
 
-        $loan->delete();
+        $update = Payment::where('loan_id', $loan->id)
+            ->update(['state' => 'inactivo']);
 
         return redirect()->route('loans.index')->with('danger', 'Se elimino un préstamo');
     }

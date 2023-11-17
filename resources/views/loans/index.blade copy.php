@@ -73,13 +73,13 @@
                                 @endphp
                                 @foreach ($loans as $loan)
                                 <tr>
-                                    <td style="text-align: center;">{{ $i }}</td>
-                                    <td>{{ $loan->first_name.' '. $loan->last_name }}</td>
-                                    <td style="text-align: right;">{{ number_format($loan->amount, 2, ',', '.') }}</td>
-                                    <td style="text-align: center;">{{ $loan->interest_percentage. '%' }}</td>
-                                    <td style="text-align: right;">{{ number_format($loan->sum_capital_paid, 2, ',', '.') }}</td>
-                                    <td style="text-align: right;">{{ number_format($loan->amount - $loan->sum_capital_paid, 2, ',', '.') }}</td>
-                                    <td style="text-align: center;">{{ substr($loan->date, 0, 10) }}</td>
+                                    <td style="text-align: center;">{{$i}}</td>
+                                    <td>{{$loan->first_name.' '. $loan->last_name}}</td>
+                                    <td style="text-align: right;">{{number_format($loan->amount, 2, ',', '.')}}</td>
+                                    <td style="text-align: center;">{{$loan->interest_percentage. '%'}}</td>
+                                    <td style="text-align: right;">{{number_format($loan->sum_capital_paid, 2, ',', '.')}}</td>
+                                    <td style="text-align: right;">{{number_format($loan->amount - $loan->sum_capital_paid, 2, ',', '.')}}</td>
+                                    <td style="text-align: center;">{{substr($loan->date, 0, 10)}}</td>
                                     <td>
                                         <ul class="navbar-nav ml-auto">
                                             <li class="nav-item dropdown">
@@ -90,19 +90,19 @@
                                                     <a href="{{ route('prestamo.pagos', $loan->id) }}" class="dropdown-item">
                                                         <i class="fa fa-money-bill"></i> Pagos
                                                     </a>
-                                                    <button onclick='showModalNovacion("{{ $loan->id }}")' class="dropdown-item">
+                                                    <button onclick='showModalNovacion("{{$loan->id}}")' class="dropdown-item">
                                                         <i class="far fa-edit"></i> Renovar
                                                     </button>
-                                                    <a href="{{ route('prestamo.renovaciones', $loan->id) }}" class="dropdown-item">
+                                                    <a href="{{ route('prestamo.renovaciones', $loan->id)}}" class="dropdown-item">
                                                         <i class="far fa-list-alt"></i> Renovaciones
                                                     </a>
-                                                    <a href="{{ route('prestamos.solicitud', $loan->id) }}" class="dropdown-item" target="_blank">
+                                                    <a href="{{ route('prestamos.solicitud', $loan->id)}}" class="dropdown-item" target="_blank">
                                                         <i class="far fa-file"></i> Solicitud
                                                     </a>
                                                     <a href="{{ route('loans.edit', $loan->id) }}" class="dropdown-item">
                                                         <i class="far fa-edit"></i> Editar
                                                     </a>
-                                                    <button onclick='deleteLoan("{{ $loan->id }}")' title="delete" class="dropdown-item" style="border: none; background-color:transparent;">
+                                                    <button onclick='deleteLoan("{{$loan->id}}")' title="delete" class="dropdown-item" style="border: none; background-color:transparent;">
                                                         <i class="fas fa-trash"></i> Anular
                                                     </button>
                                                 </div>
@@ -194,7 +194,7 @@
                     <div class="form-group row add">
                         <label class="control-label col-sm-4" for="date_renovation">Fecha de renovación</label>
                         <div class="col-sm-8">
-                            <input name="date" type="date" onchange="changeDate(this)" class="form-control form-control-sm" id="date-loan-renovation" value="{{ date('Y-m-d') }}" required>
+                            <input name="date" type="date" onchange="changeDate(this)" class="form-control form-control-sm" id="date-loan-renovation" value="{{date('Y-m-d')}}" required>
                         </div>
                     </div>
                     <div class="form-group row add">

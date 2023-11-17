@@ -13,12 +13,27 @@ use Barryvdh\DomPDF\Facade as PDF;
 
 class PaymentController extends Controller
 {
-
+    /**
+     * @return void
+     */
     public function __construct()
     {
         $this->middleware('auth');
     }
-
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
+    {
+        //
+    }
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index2($id)
     {
         $loan = Loan::findOrFail($id);
@@ -33,7 +48,6 @@ class PaymentController extends Controller
                 'state' => 'activo'
             ])
             ->orderBy('date', 'asc')
-            ->orderBy('capital')
             ->get();
 
         return view('payments.index', compact('person', 'guarantor', 'loan', 'payments'));
@@ -70,7 +84,22 @@ class PaymentController extends Controller
 
         return $pdf->stream('pago.pdf');
     }
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        //
+    }
 
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function store(Request $request)
     {
         $date_start = new \DateTime($request->get('date_start'));
@@ -110,63 +139,57 @@ class PaymentController extends Controller
         return redirect()->route('prestamo.pagos', $request->loan_id)->with('mensaje', 'Se agrego con éxito los pago');
     }
 
+    /**
+     * Display the specified resource.
+     *
+     * @param  \App\Models\Payment  $payment
+     * @return \Illuminate\Http\Response
+     */
     public function show(Payment $payment)
     {
         return response()->json(['payment' => $payment]);
     }
 
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  \App\Models\Payment  $payment
+     * @return \Illuminate\Http\Response
+     */
+    public function edit(Payment $payment)
+    {
+    }
+
     public function interestCalculate($loan_id)
     {
-        $debt = 0;
-        $capital = 0;
-        $day = '';
-        $interest = 0;
-
         $loan = Loan::findOrFail($loan_id);
-
-        // Inicio method Inicio
-        if ($loan->method === 'inicio') {
-            $payment = Payment::select(\DB::raw('SUM(capital) as paid'))
-                ->where([
-                    ['state', 'like', 'activo'],
-                    ['loan_id', '=', $loan_id]
-                ])
-                ->groupBy('loan_id')->first();
-
-            if ($payment !== null) {
-                $debt = $loan->amount - $payment->paid;
-            } else {
-                $debt = $loan->amount;
-            }
-            $day = (int)substr($loan->date, 8, 2);
-            $interest = round($debt * $loan->interest_percentage * 0.01, 2);
-            // Fin method Inicio
+        $payment = Payment::select(\DB::raw('SUM(capital) as paid'))
+            ->where([
+                ['state', 'like', 'activo'],
+                ['loan_id', '=', $loan_id]
+            ])
+            ->groupBy('loan_id')->first();
+        $debt = 0;
+        if ($payment !== null) {
+            $debt = $loan->amount - $payment->paid;
         } else {
-            // Inicio amortizacion
-
-            // Obterner todos los pagos
-            $payments = Payment::where('loan_id', $loan_id)
-                ->orderBy('capital')->get();
-
-            // Determinar el pago que se debe cobrar
-            $payment = $payments->first();
-
-            $capital = $payment->capital;
             $debt = $loan->amount;
-            $day = 0;
-            $interest = $payment->interest_amount;
-
-            // Fin amortizacion
         }
 
         return response()->json([
-            'capital' => $capital,
             'debt' => $debt,
-            'day' => $day,
-            'interest' => $interest
+            'day' => (int)substr($loan->date, 8, 2),
+            'interest' => round($debt * $loan->interest_percentage * 0.01, 2)
         ]);
     }
 
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\Payment  $payment
+     * @return \Illuminate\Http\Response
+     */
     public function update(Request $request, Payment $payment)
     {
         $payment->update($request->all());
@@ -174,10 +197,15 @@ class PaymentController extends Controller
         return redirect()->route('prestamo.pagos', $payment->loan_id)->with('success', 'Se ha modificado un pago');
     }
 
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \App\Models\Payment  $payment
+     * @return \Illuminate\Http\Response
+     */
     public function destroy(Payment $payment)
     {
-        $payment->delete();
-        // $payment->state = 'inactivo';
-        // $payment->save();
+        $payment->state = 'inactivo';
+        $payment->save();
     }
 }
