@@ -60,3 +60,7 @@ Route::resource('spends', 'SpendController');
 
 //MANUAL
 Route::get('manual', 'HomeController@manual');
+
+// REPORTES
+Route::get('reporte-anual', 'ChashClosingController@year')->name('reporte-anual');
+Route::get('{year}/reporte-mensual', 'ChashClosingController@month')->name('reporte-mensual');

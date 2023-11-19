@@ -77,7 +77,7 @@
                with font-awesome or any other icon font library -->
                         <li class="nav-item">
                             <a href="{{ url('loans') }}" class="nav-link">
-                                <i class="nav-icon fas fa-copy"></i>
+                                <i class="nav-icon fas fa-tree"></i>
                                 <p>Préstamos</p>
                             </a>
                         </li>
@@ -98,6 +98,22 @@
                                 <i class="nav-icon far fa-money-bill-alt"></i>
                                 <p>Gastos</p>
                             </a>
+                        </li>
+                        <li class="nav-item menu-is-opening menu-open">
+                            <a href="#" class="nav-link">
+                                <i class="nav-icon fas fa-copy"></i>
+                                <p>Reportes
+                                    <i class="fas fa-angle-left right"></i>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a href="{{ url('reporte-anual') }}" class="nav-link">
+                                        <i class="nav-icon fas fa-book"></i>
+                                        <p>Anual</p>
+                                    </a>
+                                </li>
+                            </ul>
                         </li>
                         <li class="nav-item">
                             <a href="{{ url('manual') }}" class="nav-link" target="_blank">

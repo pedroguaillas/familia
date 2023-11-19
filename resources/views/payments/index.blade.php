@@ -179,7 +179,7 @@
                                     <th style="text-align: right;">{{ number_format($sum_interest, 2, ',', '.') }}</th>
                                     <th style="text-align: right;">{{ number_format($sum_must, 2, ',', '.') }}</th>
                                     <th style="text-align: right;">{{ number_format($sum_capital + $sum_interest + $sum_must, 2, ',', '.') }}</th>
-                                    <th colspan="2"></th>
+                                    <th colspan="3"></th>
                                 </tr>
                             </tfoot>
                         </table>
@@ -208,6 +208,7 @@
 
                     <input type="hidden" id="loan_id" name="loan_id" value="{{ $loan->id }}"> <!-- codigo del prestamo  -->
                     <input type="hidden" id="debt" name="debt"> <!-- Deuda actual  -->
+                    <input type="hidden" id="payment_id" name="payment_id"> <!-- Deuda actual  -->
 
                     <div class="form-group row add">
                         <label class="control-label col-sm-4" for="debt "> Deuda </label>
@@ -237,16 +238,16 @@
                     <div class="form-group row add">
                         <label class="control-label col-sm-4" for="date-loan">Fecha préstamo</label>
                         <div class="col-sm-8">
-                            <input value="{{ date('m/d/Y', strtotime(substr($loan->date, 0, 10))) }}" class="form-control form-control-sm" disabled>
+                            <input value="{{ date('d/m/Y', strtotime(substr($loan->date, 0, 10))) }}" class="form-control form-control-sm" disabled>
                         </div>
                     </div>
                     <div class="form-group row add">
-                        <label class="control-label col-sm-4" for="date">Fecha Inicio</label>
+                        <label class="control-label col-sm-4" for="date">Fecha {{ $loan->method === 'inicio' ? 'Inicio' : 'Pago' }}</label>
                         <div class="col-sm-8">
-                            <input type="date" value="{{ date('Y-m-' .substr($loan->date, 8, 2)) }}" class="form-control form-control-sm" id="date_start" name="date_start" required>
+                            <input type="date" value="{{ date('Y-m-' . substr($loan->date, 8, 2)) }}" class="form-control form-control-sm" id="date_start" name="date_start" required>
                         </div>
                     </div>
-                    <div class="form-group row add">
+                    <div class="form-group row add" {{ $loan->method !== 'inicio' ? 'hidden' : null }}>
                         <label class="control-label col-sm-4" for="date">Fecha Fin</label>
                         <div class="col-sm-8">
                             <input type="date" class="form-control form-control-sm" id="date_end" name="date_end" min="{{ (int)date('m') < 12 ? date('Y-m-' .substr($loan->date, 8, 2), strtotime(date('Y-m-d'). ' +1 month')) : date('Y-m-' .substr($loan->date, 8, 2)) }}">
@@ -414,10 +415,14 @@
                 $('#debt').val(response.debt)
                 $('#debt_input').val(response.debt)
                 $('#interest_amount').val(response.interest)
+                if (response.method !== 'inicio') {
+                    // $('#date_start').val(response.day)
+                    $('#payment_id').val(response.payment_id)
+                }
                 let day = parseInt($('#date_start').val().substring(8, 10))
                 loan_day = response.day
                 $('#must').val((day - loan_day > 0) ? (day - loan_day) * .25 : 0)
-                $('#capital').val(response.capital)
+                $('#capital').val(response.method === 'inicio' ? 0 : response.capital)
                 interest_amount = response.interest
                 sumtotal()
             },

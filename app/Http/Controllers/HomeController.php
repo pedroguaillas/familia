@@ -10,21 +10,11 @@ use DB;
 
 class HomeController extends Controller
 {
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
     public function __construct()
     {
         $this->middleware('auth');
     }
 
-    /**
-     * Show the application dashboard.
-     *
-     * @return \Illuminate\Contracts\Support\Renderable
-     */
     public function index()
     {
         // Cuenta la cantidad de socios que tiene la caja
@@ -34,20 +24,7 @@ class HomeController extends Controller
             ->where([
                 ['state', '=', 'activo'],
                 ['type', '=', 'socio']
-                // ])->get()->first();
             ])->get()->first()->sum_actions;
-        // $countmembers = $person->count;
-        // $actions = $person->sum_actions;
-        // // Selecciona las persona que tienen creditos que aun no ha terminado de pagar
-        // $people = Loan::join('payments AS p', 'p.loan_id', 'loans.id')
-        //     ->select('person_id')
-        //     // Agrupa por prestamos para seleccionar las prestamos que aun no ha terminado de pagar
-        //     ->groupBy('loans.id', 'person_id')
-        //     ->havingRaw('SUM(p.capital) <> SUM(loans.amount)')
-        //     ->where('p.state', 'activo')->get();
-
-        // $countdebtors = Person::select(DB::raw('COUNT(id) AS count'))
-        //     ->whereIn('id', $people)->get()->first()->count;
 
         $contributions = null;
         $interest = 0;
@@ -140,11 +117,12 @@ class HomeController extends Controller
 
         $amount = $amount_current / $actions;
 
-        $person_actions = Person::findOrFail($person_id)->actions;
+        $person = Person::findOrFail($person_id);
 
         return response()->json([
             'amount' => round($amount, 2),
-            'person_actions' => $person_actions
+            'person' => $person,
+            'person_actions' => $person->actions,
         ]);
     }
 
@@ -156,16 +134,16 @@ class HomeController extends Controller
             ->groupBy('type')
             ->where([
                 ['state', '=', 'activo'],
-                ['date', '<', $date->format('Y-m-d')]
+                ['date', '<=', $date->format('Y-m-d')]
             ])
             ->orderBy('type', 'DESC')->get();
 
         $interest = Payment::select(DB::raw('SUM(interest_amount + must) AS sum'))
             ->where('state', 'activo')
-            // ->where([
-            //     ['state', '=', 'activo'],
-            //     ['date', '<', $date->format('Y-m-d')]
-            // ])
+            ->where([
+                ['state', '=', 'activo'],
+                ['date', '<=', $date->format('Y-m-d')]
+            ])
             ->get()->first()->sum;
     }
 }

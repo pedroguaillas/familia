@@ -54,7 +54,7 @@
                                     <div class="input-group-prepend">
                                         <span class="input-group-text">Presidente</span>
                                     </div>
-                                    <input value="{{$directive->person->first_name .' ' .$directive->person->last_name}}" class="form-control">
+                                    <input value="{{ $directive->person->first_name .' ' .$directive->person->last_name }}" class="form-control">
                                     <div class="input-group-append">
                                         <button onclick="showModalDirective()" class="input-group-text">
                                             <i class="fas fa-edit"></i>
@@ -69,10 +69,10 @@
                                             <i class="far fa-file-pdf"></i>
                                         </button>
                                         <div class="dropdown-menu dropdown-menu-md dropdown-menu-right">
-                                            <a href="{{ route('personas.reporte', 'socio')}}" class="dropdown-item" target="_blank">
+                                            <a href="{{ route('personas.reporte', 'socio') }}" class="dropdown-item" target="_blank">
                                                 <i class="fa fa-money-bill"></i> Socios
                                             </a>
-                                            <a href="{{ route('personas.reporte', 'particular')}}" class="dropdown-item" target="_blank">
+                                            <a href="{{ route('personas.reporte', 'particular') }}" class="dropdown-item" target="_blank">
                                                 <i class="far fa-file"></i> Particulares
                                             </a>
                                         </div>
@@ -103,18 +103,14 @@
                             <tbody>
                                 @foreach ($people as $person)
                                 <tr>
-                                    <td>{{$person->identification_card}}</td>
-                                    <td>{{$person->first_name}}</td>
-                                    <td>{{$person->last_name}}</td>
-                                    <td>
-                                        @if($person->type === 'socio' )
-                                        <span class="badge bg-success" style="font-size:0.9em">{{$person->type}}</span>
-                                        @else
-                                        <span class="badge bg-warning" style="font-size:0.9em">{{$person->type}}</span>
-                                        @endif
+                                    <td>{{ $person->identification_card }}</td>
+                                    <td>{{ $person->first_name }}</td>
+                                    <td>{{ $person->last_name }}</td>
+                                    <td style="text-align: center">
+                                        <span class="badge bg-{{ $person->type === 'socio' ? 'success' : 'warning' }}" style="font-size:0.9em">{{ $person->type }}</span>
                                     </td>
-                                    <td>{{$person->phone}}</td>
-                                    <td>{{$person->email}}</td>
+                                    <td>{{ $person->phone }}</td>
+                                    <td>{{ $person->email }}</td>
                                     <td>
                                         <ul class="navbar-nav ml-auto">
                                             <li class="nav-item dropdown">
@@ -122,12 +118,18 @@
                                                     <i class="fa fa-angle-down"></i>
                                                 </a>
                                                 <div class="dropdown-menu dropdown-menu-md dropdown-menu-right">
-                                                    <button class="dropdown-item" onclick='editPerson("{{$person->id}}")'>
+                                                    <button class="dropdown-item" onclick='editPerson("{{ $person->id }}")'>
                                                         <i class="far fa-edit"></i> Editar
                                                     </button>
-                                                    <button class="dropdown-item" onclick='deletePerson("{{$person->id}}")'>
+                                                    @if($person->type === 'socio')
+                                                    <button class="dropdown-item" onclick='showDialogDelete("{{ $person->id }}")'>
                                                         <i class="far fa-trash-alt"></i> Anular
                                                     </button>
+                                                    @else
+                                                    <button class="dropdown-item" onclick='deletePerson("{{ $person->id }}")'>
+                                                        <i class="far fa-trash-alt"></i> Anular
+                                                    </button>
+                                                    @endif
                                                 </div>
                                             </li>
                                         </ul>
@@ -138,6 +140,71 @@
                         </table>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- /.MODAL ELIMINAR SOCIO -->
+<div id="eliminar-socio" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" style="margin: auto;">Información para eliminar socio</h4>
+            </div>
+            <div class="modal-body">
+                <form action="#" class="form-horizontal" role="form" method="POST">
+                    {{ csrf_field() }}
+                    {{method_field('DELETE')}}
+
+                    <p id='socio-name-delete'></p>
+
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td>Valor de la acción</td>
+                                <td id="val-de-la-accion" style="width: 4em; text-align: right;"></td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: right;" colspan="2">*</td>
+                            </tr>
+                            <tr>
+                                <td>Acciones del socio</td>
+                                <td id="num-accion-socio" style="text-align: right;"></td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: right;" colspan="2">=</td>
+                            </tr>
+                            <tr>
+                                <td>TOTAL</td>
+                                <td id="total-accion-socio" style="text-align: right;"></td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: right;" colspan="2">-</td>
+                            </tr>
+                            <tr>
+                                <td>Aporte a caja</td>
+                                <td style="text-align: right;">50</td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: right;" colspan="2">=</td>
+                            </tr>
+                            <tr>
+                                <td>Valor para el socio</td>
+                                <td id="entregar-accion-socio" style="text-align: right;"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="modal-footer">
+                        <button class="btn btn-success" type="submit">
+                            Confirmar
+                        </button>
+                        <button class="btn btn-warning" type="button" data-dismiss="modal">
+                            Cancelar
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -357,6 +424,26 @@
             },
             error: (error) => console.log(error)
         })
+    }
+
+    function showDialogDelete(id) {
+        $.ajax({
+            type: 'GET',
+            url: "{{ url('home/reportcurrent') }}/" + id,
+            data: {
+                "_token": $('meta[name="csrf-token"]').content
+            },
+            success: (res) => {
+                $('#socio-name-delete').html(`<strong>Socio: </strong> ${res.person.first_name} ${res.person.last_name}`)
+                $('#val-de-la-accion').html(res.amount.toFixed(2))
+                $('#num-accion-socio').html(res.person.actions)
+                $('#total-accion-socio').html((res.amount * res.person.actions).toFixed(2))
+                $('#entregar-accion-socio').html((res.amount * res.person.actions - 50).toFixed(2))
+                $('#eliminar-socio').modal('show')
+            },
+            error: (error) => console.log(error)
+        })
+
     }
 
     function deletePerson(id) {

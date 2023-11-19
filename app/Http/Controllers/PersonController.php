@@ -11,19 +11,11 @@ use Barryvdh\DomPDF\Facade as PDF;
 
 class PersonController extends Controller
 {
-    /**
-     * @return void
-     */
     public function __construct()
     {
         $this->middleware('auth');
     }
 
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index()
     {
         $people = Person::where('state', 'activo')->get();
@@ -41,22 +33,6 @@ class PersonController extends Controller
         return response()->json(['people' => $people]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
         try {
@@ -88,24 +64,11 @@ class PersonController extends Controller
         return redirect()->route('contributions.index')->with('success', 'Se registro la compra de acciones del socio ' . $person->first_name . ' ' . $person->last_name);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Person  $person
-     * @return \Illuminate\Http\Response
-     */
     public function show(Person $person)
     {
         return response()->json(['person' => $person]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Person  $person
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, Person $person)
     {
         $person->update($request->all());
@@ -113,15 +76,18 @@ class PersonController extends Controller
         return redirect()->route('people.index')->with('info', 'Datos del personal actualizado.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Person  $person
-     * @return \Illuminate\Http\Response
-     */
     public function destroy(Person $person)
     {
+        // Para anular un socio se requiere lo siguiente
+        // Calcular el valor a devolver al socio saliente
+        // Multiplicar el numero de acciones por el valor de la accion
+        // A ese valor reducir los $50
+
+        // Inactivo porque se va eliminar
         $person->state = 'inactivo';
+        // Poner la identificacion = null
+        // porque si regresar a ser socio, no permitiria ya que se volveria aparecer ese ID
+        $person->identification_card = null;
         $person->save();
     }
 

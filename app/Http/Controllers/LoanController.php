@@ -14,18 +14,11 @@ use Illuminate\Support\Facades\Validator;
 
 class LoanController extends Controller
 {
-    /**
-     * @return void
-     */
     public function __construct()
     {
         $this->middleware('auth');
     }
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function index()
     {
         $loans = \DB::table('loans')
@@ -156,6 +149,8 @@ class LoanController extends Controller
                 $deudafinal = $deudainicial - $capital;
             }
 
+            $date->addMonth($month);
+
             $array[] = [
                 'debt' => $deudainicial,
                 'interest_amount' => $interescal,
@@ -163,8 +158,6 @@ class LoanController extends Controller
                 'date' => $date . '',
                 'state' => 'inactivo'
             ];
-
-            $date->addMonth($month);
         }
 
         $loan->payments()->createMany($array);

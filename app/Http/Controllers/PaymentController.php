@@ -13,7 +13,6 @@ use Barryvdh\DomPDF\Facade as PDF;
 
 class PaymentController extends Controller
 {
-
     public function __construct()
     {
         $this->middleware('auth');
@@ -33,7 +32,7 @@ class PaymentController extends Controller
                 'state' => 'activo'
             ])
             ->orderBy('date', 'asc')
-            ->orderBy('capital')
+            // ->orderBy('interest_amount')
             ->get();
 
         return view('payments.index', compact('person', 'guarantor', 'loan', 'payments'));
@@ -73,38 +72,54 @@ class PaymentController extends Controller
 
     public function store(Request $request)
     {
-        $date_start = new \DateTime($request->get('date_start'));
-        if (!is_null($request->get('date_end'))) {
-            $date_end = new \DateTime($request->get('date_end'));
-            $monthstart = $date_start->format('m');
-            $monthend = $date_end->format('m');
-            $payments = array();
-            $carbon = new Carbon($date_start, new DateTimeZone('America/Guayaquil'));
-            for ($i = $monthstart; $i <= $monthend; $i++) {
+        $loan = Loan::findOrFail($request->loan_id);
+
+        if ($loan->method === 'inicio') {
+            $date_start = new \DateTime($request->get('date_start'));
+            if (!is_null($request->get('date_end'))) {
+                $date_end = new \DateTime($request->get('date_end'));
+                $monthstart = $date_start->format('m');
+                $monthend = $date_end->format('m');
+                $payments = array();
+                $carbon = new Carbon($date_start, new DateTimeZone('America/Guayaquil'));
+                for ($i = $monthstart; $i <= $monthend; $i++) {
+                    $payment = [
+                        'debt' => $request->get('debt'),
+                        'interest_amount' => $request->get('interest_amount'),
+                        'capital' => 0,
+                        'must' => 0,
+                        'date' => $carbon->toDateTimeString(),
+                        'observation' => $request->get('observation')
+                    ];
+                    array_push($payments, $payment);
+                    $carbon->addMonth();
+                }
+
+                $loan->payments()->createMany($payments);
+            } else {
                 $payment = [
                     'debt' => $request->get('debt'),
                     'interest_amount' => $request->get('interest_amount'),
-                    'capital' => 0,
-                    'must' => 0,
-                    'date' => $carbon->toDateTimeString(),
+                    'capital' => $request->get('capital'),
+                    'must' => $request->get('must'),
+                    'date' => $request->get('date_start'),
                     'observation' => $request->get('observation')
                 ];
-                array_push($payments, $payment);
-                $carbon->addMonth();
+                $loan->payments()->create($payment);
             }
-            $loan = Loan::findOrFail($request->loan_id);
-            $loan->payments()->createMany($payments);
         } else {
-            $payment = [
+            $payment = Payment::find($request->payment_id);
+
+            // Actualizar el pago a activo y los demas campos
+            $payment->update([
+                'state' => 'activo',
                 'debt' => $request->get('debt'),
                 'interest_amount' => $request->get('interest_amount'),
                 'capital' => $request->get('capital'),
                 'must' => $request->get('must'),
                 'date' => $request->get('date_start'),
                 'observation' => $request->get('observation')
-            ];
-            $loan = Loan::findOrFail($request->loan_id);
-            $loan->payments()->create($payment);
+            ]);
         }
 
         return redirect()->route('prestamo.pagos', $request->loan_id)->with('mensaje', 'Se agrego con éxito los pago');
@@ -119,10 +134,11 @@ class PaymentController extends Controller
     {
         $debt = 0;
         $capital = 0;
-        $day = '';
         $interest = 0;
+        $payment_id = 0;
 
         $loan = Loan::findOrFail($loan_id);
+        $day = (int)substr($loan->date, 8, 2);
 
         // Inicio method Inicio
         if ($loan->method === 'inicio') {
@@ -138,23 +154,29 @@ class PaymentController extends Controller
             } else {
                 $debt = $loan->amount;
             }
-            $day = (int)substr($loan->date, 8, 2);
             $interest = round($debt * $loan->interest_percentage * 0.01, 2);
             // Fin method Inicio
         } else {
             // Inicio amortizacion
 
-            // Obterner todos los pagos
+            // Obtener todos los pagos pero inactivos
             $payments = Payment::where('loan_id', $loan_id)
-                ->orderBy('capital')->get();
+                // ordenados por monto de interes
+                ->orderBy('interest_amount', 'desc')
+                ->where('state', 'inactivo')->get();
 
-            // Determinar el pago que se debe cobrar
-            $payment = $payments->first();
+            // Si hay pagos inactivos
+            if ($payments->count()) {
 
-            $capital = $payment->capital;
-            $debt = $loan->amount;
-            $day = 0;
-            $interest = $payment->interest_amount;
+                // Determinar el pago que se debe cobrar
+                $payment = $payments->first();
+
+                $payment_id = $payment->id;
+                $capital = $payment->capital;
+                $debt = $loan->amount;
+                // $day = substr($payment->date, 0, 10);
+                $interest = $payment->interest_amount;
+            }
 
             // Fin amortizacion
         }
@@ -163,7 +185,9 @@ class PaymentController extends Controller
             'capital' => $capital,
             'debt' => $debt,
             'day' => $day,
-            'interest' => $interest
+            'interest' => $interest,
+            'method' => $loan->method,
+            'payment_id' => $payment_id
         ]);
     }
 
