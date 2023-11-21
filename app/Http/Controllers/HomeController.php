@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Contribution;
 use App\Payment;
 use App\Person;
+use App\Spend;
 use Carbon\Carbon;
 use DB;
 
@@ -94,11 +95,15 @@ class HomeController extends Controller
         $general_interest = Payment::select(DB::raw('SUM(interest_amount + must) AS sum'))
             ->where('state', 'activo')->get()->first()->sum;
 
+        // Gastos
+        $spend = Spend::selectRaw('SUM(amount) AS amount')
+            ->where('state', 'activo')->first()->amount;
+
         return response()->json([
             'current_contributions' => $current_contributions,
             'current_interest' => $current_interest,
             'general_contributions' => $general_contributions,
-            'general_interest' => $general_interest
+            'general_interest' => $general_interest - $spend
         ]);
     }
 
@@ -117,17 +122,21 @@ class HomeController extends Controller
 
         $amount = $amount_current / $actions;
 
-        $person = Person::findOrFail($person_id);
+        $person = null;
+
+        if ($person_id > 0) {
+            $person = Person::findOrFail($person_id);
+        }
 
         return response()->json([
             'amount' => round($amount, 2),
             'person' => $person,
-            'person_actions' => $person->actions,
+            'person_actions' => $person !== null ? $person->actions : 0
         ]);
     }
 
     //Reporte temporal
-    private function querys(&$contributions, &$interest)
+    public function querys(&$contributions, &$interest)
     {
         $date = Carbon::now();
         $contributions = Contribution::select('type', DB::raw('SUM(amount + must) AS sum'))
@@ -145,5 +154,9 @@ class HomeController extends Controller
                 ['date', '<=', $date->format('Y-m-d')]
             ])
             ->get()->first()->sum;
+
+        // Reducir a los intereses los gastos pero solo activos
+        $interest -= Spend::selectRaw('SUM(amount) AS amount')
+            ->where('state', 'activo')->first()->amount;
     }
 }

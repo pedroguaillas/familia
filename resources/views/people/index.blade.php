@@ -38,6 +38,17 @@
 </div>
 @endif
 <br>
+
+@if ($errors->any())
+<div class="alert alert-danger mx-3">
+    <ul>
+        @foreach ($errors->all() as $error)
+        <li>{{ $error }}</li>
+        @endforeach
+    </ul>
+</div>
+@endif
+
 <!-- Main content -->
 <div class="content">
     <div class="container-fluid">
@@ -153,9 +164,9 @@
                 <h4 class="modal-title" style="margin: auto;">Información para eliminar socio</h4>
             </div>
             <div class="modal-body">
-                <form action="#" class="form-horizontal" role="form" method="POST">
+                <form id="person-delete-form" action="#" class="form-horizontal" role="form" method="POST">
                     {{ csrf_field() }}
-                    {{method_field('DELETE')}}
+                    {{ method_field('DELETE') }}
 
                     <p id='socio-name-delete'></p>
 
@@ -170,7 +181,9 @@
                             </tr>
                             <tr>
                                 <td>Acciones del socio</td>
-                                <td id="num-accion-socio" style="text-align: right;"></td>
+                                <td style="text-align: right;">
+                                    <input id="num-accion-socio" style="text-align: right;" name="action_delete" type="number" value="1" step="1" min="1" />
+                                </td>
                             </tr>
                             <tr>
                                 <td style="text-align: right;" colspan="2">=</td>
@@ -225,7 +238,7 @@
                     <div class="form-group row add">
                         <label class="control-label col-sm-2" for="interest_percentage">Tipo</label>
                         <div class="col-sm-10">
-                            <select class="custom-select form-control form-control-sm" id="type" name="person_id" required>
+                            <select class="custom-select form-control form-control-sm" name="person_id" required>
                                 <option>Seleccione</option>
                                 @foreach ($people as $person)
                                 @if($person->type === 'socio' )
@@ -273,7 +286,7 @@
                         </div>
                     </div>
                     <div class="form-group row add">
-                        <label class="control-label col-sm-2" for="last_name "> Apellidos </label>
+                        <label class="control-label col-sm-2" for="last_name"> Apellidos </label>
                         <div class="col-sm-10">
                             <input type="text" class="form-control form-control-sm" id="last_name" name="last_name" required>
                         </div>
@@ -282,14 +295,20 @@
                         <label class="control-label col-sm-2" for="interest_percentage">Tipo</label>
                         <div class="col-sm-10">
                             <select class="custom-select form-control form-control-sm" id="type" name="type" required>
-                                <option>Seleccione</option>
+                                <option value="">Seleccione</option>
                                 <option value="socio">Socio</option>
                                 <option value="particular">Particular</option>
 
                             </select>
                         </div>
                     </div>
-                    <div class="form-group row add">
+                    <div id="hidden_val_contribution" class="form-group row add" hidden>
+                        <label id="lab_val_contribution" class="control-label col-sm-8" for="val_contribution"></label>
+                        <div class="col-sm-4">
+                            <input type="text" class="form-control form-control-sm" style="text-align: right;" id="val_contribution" name="val_contribution" />
+                        </div>
+                    </div>
+                    <div class="form-group row add" hidden>
                         <label class="control-label col-sm-2" for="phone">Teléfono</label>
                         <div class="col-sm-10">
                             <input type="text" class="form-control form-control-sm" id="phone" name="phone" maxlength="10">
@@ -400,8 +419,21 @@
     }
 
     function showModalCreate() {
-        $('#create').modal('show')
-        $('.form-horizontal').show()
+        $.ajax({
+            type: 'GET',
+            url: "{{ url('home/reportcurrent') }}/0",
+            data: {
+                "_token": $('meta[name="csrf-token"]').content
+            },
+            success: (res) => {
+                // let p = res.person
+                $('#lab_val_contribution').text(`Valor de la acción ($${res.amount}) + $50`)
+                $('#val_contribution').val(res.amount + 50)
+                $('#create').modal('show')
+                $('.form-horizontal').show()
+            },
+            error: (error) => console.log(error)
+        })
     }
 
     function editPerson(id) {
@@ -426,6 +458,8 @@
         })
     }
 
+    let resDelete = undefined
+
     function showDialogDelete(id) {
         $.ajax({
             type: 'GET',
@@ -434,17 +468,39 @@
                 "_token": $('meta[name="csrf-token"]').content
             },
             success: (res) => {
+                resDelete = res
                 $('#socio-name-delete').html(`<strong>Socio: </strong> ${res.person.first_name} ${res.person.last_name}`)
                 $('#val-de-la-accion').html(res.amount.toFixed(2))
-                $('#num-accion-socio').html(res.person.actions)
-                $('#total-accion-socio').html((res.amount * res.person.actions).toFixed(2))
-                $('#entregar-accion-socio').html((res.amount * res.person.actions - 50).toFixed(2))
+                $('#num-accion-socio').val(1)
+                $('#num-accion-socio').attr('max', res.person.actions)
+                $('#total-accion-socio').html((res.amount).toFixed(2))
+                $('#entregar-accion-socio').html((res.amount - 50).toFixed(2))
+                $('#person-delete-form').attr('action', "{{url('people')}}/" + id)
                 $('#eliminar-socio').modal('show')
             },
             error: (error) => console.log(error)
         })
-
     }
+
+    $('#num-accion-socio').change(function(e) {
+        e.preventDefault()
+
+        let actions = Number($(this).val())
+        console.log(resDelete.amount * actions)
+        $('#total-accion-socio').html((resDelete.amount * actions).toFixed(2))
+        $('#entregar-accion-socio').html((resDelete.amount * actions - 50).toFixed(2))
+    })
+
+    // Agregar o eliminar hidden
+    $('#type').change(function(e) {
+        e.preventDefault()
+
+        if ($(this).val() === 'socio') {
+            $('#hidden_val_contribution').removeAttr('hidden')
+        } else {
+            $('#hidden_val_contribution').attr('hidden')
+        }
+    })
 
     function deletePerson(id) {
         swal({
