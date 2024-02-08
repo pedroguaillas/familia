@@ -3,11 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Contribution;
+use App\Loan;
 use App\Payment;
 use App\Person;
 use App\Spend;
 use Carbon\Carbon;
-use DB;
 
 class HomeController extends Controller
 {
@@ -19,7 +19,7 @@ class HomeController extends Controller
     public function index()
     {
         // Cuenta la cantidad de socios que tiene la caja
-        $countactions = Person::select(DB::raw('SUM(actions) AS sum_actions'))
+        $countactions = Person::selectRaw('SUM(actions) AS sum_actions')
             // $countmembers = Person::select(DB::raw('COUNT(id) AS count'))
             ->groupBy('type')
             ->where([
@@ -39,15 +39,21 @@ class HomeController extends Controller
         }
 
         // Selecciona los montos prestamos
-        $sql = "SELECT l.amount as total_borrowed, ";
-        // Suma los capitales devueltos si ese pago esta activo
-        $sql .= "(SELECT SUM(p.capital) FROM payments AS p WHERE p.loan_id = l.id AND p.state = 'activo') AS total_returned ";
-        // Selecciona todos los registros de prestamos
-        $sql .= "FROM loans AS l ";
-        // Condiciona que el prestamos este activo
-        $sql .= "WHERE l.state = 'activo'";
+        // $sql = "SELECT l.amount as total_borrowed, ";
+        // // Suma los capitales devueltos si ese pago esta activo
+        // $sql .= "(SELECT SUM(p.capital) FROM payments AS p WHERE p.loan_id = l.id AND p.state = 'activo') AS total_returned ";
+        // // Selecciona todos los registros de prestamos
+        // $sql .= "FROM loans AS l ";
+        // // Condiciona que el prestamos este activo
+        // $sql .= "WHERE l.state = 'activo'";
 
-        $amounts_borrowed = DB::select($sql);
+        // $amounts_borrowed = DB::select($sql);
+        $amounts_borrowed = Loan::selectRaw('loans.amount As total_borrowed, SUM(p.capital) AS total_returned')
+            ->leftJoin('payments AS p', function ($query) {
+                $query->on('loan_id', 'loans.id')
+                    ->where('p.state', 'activo');
+            })->where('loans.state', 'activo')
+            ->groupBy('loans.id')->get();
 
         // Sumador de la deuda
         $total_borrowed = 0;
@@ -87,17 +93,17 @@ class HomeController extends Controller
 
         $this->querys($current_contributions, $current_interest);
 
-        $general_contributions = Contribution::select('type', DB::raw('SUM(amount + must) AS sum'))
+        $general_contributions = Contribution::selectRaw('type, SUM(amount + must) AS sum')
             ->groupBy('type')
             ->where('state', 'activo')
             ->orderBy('type', 'DESC')->get();
 
-        $general_interest = Payment::select(DB::raw('SUM(interest_amount + must) AS sum'))
+        $general_interest = Payment::selectRaw('SUM(interest_amount + must) AS sum')
             ->where('state', 'activo')->get()->first()->sum;
 
         // Gastos
         $spend = Spend::selectRaw('SUM(amount) AS amount')
-            ->where('state', 'activo')->first()->amount;
+            ->first()->amount;
 
         return response()->json([
             'current_contributions' => $current_contributions,
@@ -115,7 +121,7 @@ class HomeController extends Controller
 
         $this->querys($contributions, $interest);
 
-        $actions = Person::select(DB::raw('SUM(actions) AS sum'))
+        $actions = Person::selectRaw('SUM(actions) AS sum')
             ->where('state', 'activo')->get()->first()->sum;
 
         $amount_current = $contributions[0]->sum + $contributions[1]->sum + $interest;
@@ -125,7 +131,7 @@ class HomeController extends Controller
         $person = null;
 
         if ($person_id > 0) {
-            $person = Person::findOrFail($person_id);
+            $person = Person::find($person_id);
         }
 
         return response()->json([
@@ -139,7 +145,7 @@ class HomeController extends Controller
     public function querys(&$contributions, &$interest)
     {
         $date = Carbon::now();
-        $contributions = Contribution::select('type', DB::raw('SUM(amount + must) AS sum'))
+        $contributions = Contribution::selectRaw('type, SUM(amount + must) AS sum')
             ->groupBy('type')
             ->where([
                 ['state', '=', 'activo'],
@@ -147,7 +153,7 @@ class HomeController extends Controller
             ])
             ->orderBy('type', 'DESC')->get();
 
-        $interest = Payment::select(DB::raw('SUM(interest_amount + must) AS sum'))
+        $interest = Payment::selectRaw('SUM(interest_amount + must) AS sum')
             ->where('state', 'activo')
             ->where([
                 ['state', '=', 'activo'],
@@ -157,6 +163,6 @@ class HomeController extends Controller
 
         // Reducir a los intereses los gastos pero solo activos
         $interest -= Spend::selectRaw('SUM(amount) AS amount')
-            ->where('state', 'activo')->first()->amount;
+            ->first()->amount;
     }
 }

@@ -59,7 +59,7 @@
                                     <td style="text-align: right;">{{ number_format($payments[$i]->amount, 2, ',', '.') }}</td>
                                     <td style="text-align: right;">{{ number_format($contribution->must + $payments[$i]->must, 2, ',', '.') }}</td>
                                     <td style="width: 1em;">
-                                        <a class="btn btn-success btn-sm" href="{{ route('reporte-mensual', $contribution->year) }}" target="_blank">
+                                        <a class="btn btn-success btn-sm" href="{{ route('reporte-mensual', $contribution->year) }}">
                                             <i class="fa fa-eye"></i>
                                         </a>
                                     </td>

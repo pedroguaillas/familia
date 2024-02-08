@@ -37,13 +37,16 @@
     <div class="container-fluid">
         <div class="row">
             <!-- /.col-md-6 -->
-            <div class="col-md-6">
+            <div class="col-md-4">
                 <div class="card card-primary">
                     <div class="card-header">
-                        <h3 class="card-title">Solicitante de préstamo</h3>
+                        <h3 class="card-title">Formulario de préstamo</h3>
                     </div>
                     <div class="card-body">
-                        <div class="input-group">
+                        <div class="input-group input-group-md">
+                            <div style="width: 6em;" class="input-group-prepend">
+                                <span class="input-group-text">Solicitante</span>
+                            </div>
                             <input type="text" id="name_person_loan" class="form-control">
                             <span class="input-group-append">
                                 <button title="Buscar" type="button" onclick="selectPersonApplicant()" class="btn btn-secondary btn-flat">
@@ -51,16 +54,10 @@
                                 </button>
                             </span>
                         </div>
-                    </div>
-                    <!-- /.card-body -->
-                </div>
-                <!-- /.card -->
-                <div id="card-guarantor" class="card card-primary" hidden>
-                    <div class="card-header">
-                        <h3 class="card-title">Garante de préstamo</h3>
-                    </div>
-                    <div class="card-body">
-                        <div class="input-group">
+                        <div id="card-guarantor" class="input-group input-group-md mt-3" hidden>
+                            <div class="input-group-prepend">
+                                <span style="width: 6em;" class="input-group-text">Garante</span>
+                            </div>
                             <input type="text" id="name_guarantor_loan" class="form-control">
                             <span class="input-group-append">
                                 <button title="Buscar" type="button" onclick="selectGuarantorApplicant()" class="btn btn-secondary btn-flat">
@@ -68,94 +65,80 @@
                                 </button>
                             </span>
                         </div>
-                    </div>
-                    <!-- /.card-body -->
-                </div>
-                <!-- /.card -->
-            </div>
-            <!-- /.col-md-6 -->
 
-            <!-- col-md-6 -->
-            <div class="col-md-6">
-                <!-- card -->
-                <div class="card card-primary">
-                    <div class="card-header">
-                        <h3 class="card-title">Monto y porcentaje</h3>
-                    </div>
-                    <div class="card-body">
                         <form class="form-horizontal" role="form" method="POST" action="{{ route('loans.store') }}">
 
                             {{ csrf_field() }}
                             <input type="hidden" id="person_id" name="person_id" required>
                             <input type="hidden" id="guarantor_id" name="guarantor_id" required>
 
-                            <div class="form-group row add">
-                                <label class="control-label col-sm-2" for="amount">Monto</label>
-                                <div class="col-sm-10">
-                                    <input type="number" max="10000" class="form-control" id="amount" name="amount" step="0.01" value="{{ old('amount') }}" required>
-                                    <!-- <input type="number" onkeyup="keypressAmount(this)" max="10000" class="form-control" id="amount" name="amount" step="0.01" required> -->
+                            <div class="input-group input-group-md mt-3">
+                                <div class="input-group-prepend">
+                                    <span style="width: 6em;" class="input-group-text">Monto</span>
                                 </div>
+                                <input type="number" max="10000" class="form-control" id="amount" name="amount" step="0.01" value="{{ old('amount') }}" required>
+                                <!-- <input type="number" onkeyup="keypressAmount(this)" max="10000" class="form-control" id="amount" name="amount" step="0.01" required> -->
                             </div>
 
-                            <div class="form-group row add">
-                                <label class="control-label col-sm-2" for="interest_percentage">Porcentaje</label>
-                                <div class="col-sm-10">
-                                    <input type="number" min="0.5" max="3.0" class="form-control" id="interest_percentage" name="interest_percentage" step="0.01" value="{{ old('interest_percentage') }}" required>
-                                    <!-- <select class="custom-select form-control" id="interest_percentage" name="interest_percentage" required>
+                            <div class="input-group input-group-md mt-3">
+                                <div class="input-group-prepend">
+                                    <span style="width: 6em;" class="input-group-text">Interes (%)</span>
+                                </div>
+                                <input type="number" min="0.5" max="3.0" class="form-control" id="interest_percentage" name="interest_percentage" step="0.01" value="{{ old('interest_percentage') }}" required>
+                                <!-- <select class="custom-select form-control" id="interest_percentage" name="interest_percentage" required>
                                         <option>Seleccione</option>
                                         <option value="0.9">0.9%</option>
                                         <option value="1">1%</option>
                                         <option value="2">2%</option>
                                     </select> -->
-                                </div>
                             </div>
 
-                            <div class="form-group row add">
-                                <label class="control-label col-sm-2" for="date">Fecha</label>
-                                <div class="col-sm-10">
-                                    <input type="date" class="form-control" id="date-loans" name="date" value="{{ old('date') ?? date('Y-m-d') }}" required>
+                            <div class="input-group input-group-md mt-3">
+                                <div class="input-group-prepend">
+                                    <span style="width: 6em;" class="input-group-text">Fecha</span>
                                 </div>
+                                <input type="date" class="form-control" id="date-loans" name="date" value="{{ old('date') ?? date('Y-m-d') }}" required>
                             </div>
 
-                            <div class="form-group row add">
-                                <label class="control-label col-sm-2" for="type">Pago</label>
-                                <div class="col-sm-10">
-                                    <select class="custom-select form-control" id="type" name="type" required>
-                                        <option value="">Seleccione</option>
-                                        <option value="mensual" {{ old('type') === 'mensual' ? 'selected' : '' }}>Mensual</option>
-                                        <option value="trimestral" {{ old('type') === 'trimestral' ? 'selected' : '' }}>Trimestral</option>
-                                        <option value="semestral" {{ old('type') === 'semestral' ? 'selected' : '' }}>Semestral</option>
-                                        <option value="anual" {{ old('type') === 'anual' ? 'selected' : '' }}>Anual</option>
-                                    </select>
+                            <div class="input-group input-group-md mt-3">
+                                <div class="input-group-prepend">
+                                    <span style="width: 6em;" class="input-group-text">Pago</span>
                                 </div>
+                                <select class="custom-select form-control" id="type" name="type" required>
+                                    <option value="">Seleccione</option>
+                                    <option value="mensual" {{ old('type') === 'mensual' ? 'selected' : '' }}>Mensual</option>
+                                    <option value="trimestral" {{ old('type') === 'trimestral' ? 'selected' : '' }}>Trimestral</option>
+                                    <option value="semestral" {{ old('type') === 'semestral' ? 'selected' : '' }}>Semestral</option>
+                                    <option value="anual" {{ old('type') === 'anual' ? 'selected' : '' }}>Anual</option>
+                                </select>
                             </div>
 
-                            <div class="form-group row add">
-                                <label class="control-label col-sm-2" for="deadline">Período</label>
-                                <div class="col-sm-10">
-                                    <input type="number" min="1" max="120" class="form-control  @error('period') is-invalid @enderror" id="deadline" name="period" step="1" value="{{ old('period') }}" required>
+                            <div class="input-group input-group-md mt-3">
+                                <div class="input-group-prepend">
+                                    <span style="width: 6em;" class="input-group-text">N° pagos</span>
                                 </div>
+                                <input type="number" min="1" max="120" class="form-control  @error('period') is-invalid @enderror" id="deadline" name="period" step="1" value="{{ old('period') }}" required>
                             </div>
 
-                            <div class="form-group row add">
-                                <label class="control-label col-sm-2" for="typetable">Tabla</label>
-                                <div class="col-sm-10">
-                                    <select class="custom-select form-control" id="typetable" name="method" required>
-                                        <option value="">Seleccione</option>
-                                        <option value="fija" {{ old('method') === 'fija' ? 'selected' : '' }}>Fija</option>
-                                        <option value="variable" {{ old('method') === 'variable' ? 'selected' : '' }}>Variable</option>
-                                    </select>
+                            <div class="input-group input-group-md my-3">
+                                <div class="input-group-prepend">
+                                    <span style="width: 6em;" class="input-group-text">Tipo tabla</span>
                                 </div>
+                                <select class="custom-select form-control" id="typetable" name="method" required>
+                                    <option value="">Seleccione</option>
+                                    <option value="fija" {{ old('method') === 'fija' ? 'selected' : '' }}>Fija</option>
+                                    <option value="variable" {{ old('method') === 'variable' ? 'selected' : '' }}>Variable</option>
+                                </select>
                             </div>
 
+                            <button class="btn btn-warning" type="button">
+                                <span class="glyphicon glyphicon-remove"></span> Cancelar
+                            </button>
                             <button onclick="creartablaamortizacion()" class="btn btn-info" type="button">
-                                <span class="glyphicon glyphicon-plus"></span> Calcular
+                                <span class="glyphicon glyphicon-plus"></span> Simular
                             </button>
                             <button class="btn btn-success" type="submit">
                                 <span class="glyphicon glyphicon-plus"></span> Guardar
-                            </button>
-                            <button class="btn btn-warning" type="button">
-                                <span class="glyphicon glyphicon-remove"></span> Cancelar
                             </button>
 
                         </form>
@@ -163,7 +146,38 @@
                     <!-- /.card-body -->
                 </div>
                 <!-- /.card -->
+
             </div>
+
+            <!-- col -->
+            <div class="col-md-8">
+                <!-- card -->
+                <div class="card card-primary">
+                    <div class="card-header">
+                        <h3 class="card-title">Tabla de amortización</h3>
+                    </div>
+                    <div class="card-body">
+
+                        <table id="example1" class="table table-bordered table-sm table-striped" style="width:100%">
+                            <thead>
+                                <tr style="text-align: center;">
+                                    <th style="width: 1em;">Nº</th>
+                                    <th>D. Inicio</th>
+                                    <th>Capital</th>
+                                    <th>Int</th>
+                                    <th>Pago</th>
+                                    <th>Feha</th>
+                                    <th>D. Final</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbodymodalamortizacion"></tbody>
+                            <tfoot id="tfootmodalamortizacion"></tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <!-- /.col -->
+
         </div>
         <!-- /.row -->
     </div>
@@ -209,21 +223,6 @@
                 </button>
             </div>
             <div class="modal-body">
-                <table id="example1" class="table table-bordered table-sm table-striped" style="width:100%">
-                    <thead>
-                        <tr style="text-align: center;">
-                            <th style="width: 1em;">Nº</th>
-                            <th>D. Inicio</th>
-                            <th>Capital</th>
-                            <th>Int</th>
-                            <th>Pago</th>
-                            <th>Feha</th>
-                            <th>D. Final</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tbodymodalamortizacion"></tbody>
-                    <tfoot id="tfootmodalamortizacion"></tfoot>
-                </table>
             </div>
         </div>
     </div>
@@ -393,7 +392,7 @@
         tfoot += '</tr>'
 
         $('#tfootmodalamortizacion').html(tfoot)
-        $('#modalamortizacion').modal('show')
+        // $('#modalamortizacion').modal('show')
     }
 </script>
 @endpush

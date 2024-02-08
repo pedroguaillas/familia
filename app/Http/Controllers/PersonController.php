@@ -55,7 +55,7 @@ class PersonController extends Controller
                 'nullable' => 'No es requerido el teléfono.',
                 'digits' => 'El teléfono solo debe contener 10 dígitos.'
             ],
-            'phone' => [
+            'mail' => [
                 'nullable' => 'No es requerido el correo.',
                 'email' => 'El correo no contiene un formato de correo electrónico.'
             ],
@@ -67,21 +67,27 @@ class PersonController extends Controller
                 ->withInput();
         }
 
-        // try {
-        $person =  Person::create($request->except('val_contribution'));
+        $inputs = $request->except('val_contribution');
+        $inputs += ['actions' => 1];
+        $person =  Person::create($inputs);
+
+        $carbon = Carbon::now();
+
+        $person->contributions()->create([
+            'amount' => $request->val_contribution,
+            'date' => $carbon->format('Y-m-d'),
+            'type' => 'mensual',
+            'state' => 'activo',
+            'observation' => 'Registro de un nuevo socio'
+        ]);
+
         return redirect()->route('people.index')->with('info', (($request->type === 'socio') ? 'Socio' : 'Persona particular') . ' agregado con éxito.');
-        // } catch (\Illuminate\Database\QueryException $e) {
-        //     $errorcode = $e->errorInfo[1];
-        //     if ($errorcode === 1062) {
-        //         return redirect()->route('people.index')->with('warning', 'Ya se ha registrado una persona con la cédula ' . $request->identification_card);
-        //     }
-        // }
     }
 
     public function purchaseActions(Request $request)
     {
         $person = Person::findOrFail($request->person_id);
-        $person->actions = $request->quantity_action_purchase + 1;
+        $person->actions += $request->quantity_action_purchase;
 
         if ($person->save()) {
             $date = Carbon::now();

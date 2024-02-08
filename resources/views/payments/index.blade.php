@@ -90,31 +90,56 @@
                     <div class="card-header">
                         <h3 class="card-title">PAGOS</h3>
                         <div class="card-tools">
-                            <div class="dt-buttons btn-group flex-wrap">
-                                <a class="btn btn-secondary btn-sm" href="{{ route('prestamo.pagos.reporte', $loan->id) }}" target="_blank">
+                            <div class="dt-buttons btn-group nav-item dropdown show flex-wrap">
+                                <a class="btn btn-secondary btn-sm" data-toggle="dropdown" href="#" aria-expanded="true">
                                     <i class="far fa-file-pdf"></i>
                                 </a>
+                                <div class="dropdown-menu dropdown-menu-md dropdown-menu-right">
+                                    <a class="dropdown-item" href="{{ route('prestamo.pagos.reporte', $loan->id) }}" target="_blank">
+                                        Pagos
+                                    </a>
+                                    @if($loan->method !== 'inicio')
+                                    <a class="dropdown-item" href="{{ route('prestamo.tablaamortizacion', $loan->id) }}" target="_blank">
+                                        Tabla de amortización
+                                    </a>
+                                    @endif
+                                </div>
                             </div>
-                            <div class="dt-buttons btn-group flex-wrap">
+                            <div class="dt-buttons btn-group nav-item dropdown show flex-wrap">
+                                <a class="btn btn-secondary btn-success btn-sm" data-toggle="dropdown" href="#" aria-expanded="true">
+                                    <i class="fas fa-plus"></i>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-md dropdown-menu-right">
+                                    <a class="dropdown-item" onclick="showModalCreate('{{ $loan->id }}')" href="#">
+                                        Pago normal
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                        Delantar pagos
+                                    </a>
+                                    <a class="dropdown-item" onclick="showModalLiquidacion('{{ $loan->id }}')" href="#">
+                                        Liquidación de crédito
+                                    </a>
+                                </div>
+                            </div>
+                            <!-- <div class="dt-buttons btn-group flex-wrap">
                                 <button onclick="showModalCreate('{{ $loan->id }}')" class="create-modal btn btn-success btn-sm">
                                     <i class="fas fa-plus"></i>
                                 </button>
-                            </div>
+                            </div> -->
                         </div>
                     </div>
 
                     <div class="card-body">
-                        <table id="example1" class="table table-striped table-bordered table-sm" style="width:100%">
+                        <table id="example1" class="table table-bordered table-sm" style="width:100%">
                             <thead>
                                 <tr style="text-align: center;">
                                     <th>Nº</th>
-                                    <!-- <th>Saldo Actual</th> -->
                                     <th>DEUDA</th>
                                     <th>PAGO CAPITAL</th>
                                     <th>PAGO INTERES</th>
                                     <th>PAGO MORA</th>
                                     <th>PAGO TOTAL</th>
-                                    <th>FECHA PAGO</th>
+                                    <th>PAGO FECHA</th>
                                     <th colspan="2"></th>
                                 </tr>
                             </thead>
@@ -126,7 +151,7 @@
                             @endphp
                             <tbody>
                                 @foreach ($payments as $payment)
-                                <tr>
+                                <tr style="background-color: {{ $payment->state === 'activo' ? '#eee' : '' }};">
                                     @php
                                     $i++;
                                     $sum_capital += $payment->capital;
@@ -209,6 +234,7 @@
                     <input type="hidden" id="loan_id" name="loan_id" value="{{ $loan->id }}"> <!-- codigo del prestamo  -->
                     <input type="hidden" id="debt" name="debt"> <!-- Deuda actual  -->
                     <input type="hidden" id="payment_id" name="payment_id"> <!-- Deuda actual  -->
+                    <input type="hidden" id="payment_type" name="payment_type" value="inicio"> <!-- Deuda actual  -->
 
                     <div class="form-group row add">
                         <label class="control-label col-sm-4" for="debt "> Deuda </label>
@@ -423,6 +449,33 @@
                 loan_day = response.day
                 $('#must').val((day - loan_day > 0) ? (day - loan_day) * .25 : 0)
                 $('#capital').val(response.method === 'inicio' ? 0 : response.capital)
+                interest_amount = response.interest
+                sumtotal()
+            },
+            error: (error) => console.log(error)
+        })
+
+        $('#create-payment').modal('show')
+        $('.form-horizontal').show()
+    }
+
+    function showModalLiquidacion(loan_id) {
+        $.ajax({
+            type: 'GET',
+            url: "{{ url('payments') }}/liquidacionCalculate/" + loan_id,
+            success: (response) => {
+                $('#debt').val(response.debt)
+                $('#debt_input').val(response.debt)
+                $('#payment_type').val('liquidacion')
+                $('#interest_amount').val(response.interest)
+                if (response.method !== 'inicio') {
+                    // $('#date_start').val(response.day)
+                    $('#payment_id').val(response.payment_id)
+                }
+                let day = parseInt($('#date_start').val().substring(8, 10))
+                loan_day = response.day
+                $('#must').val((day - loan_day > 0) ? (day - loan_day) * .25 : 0)
+                $('#capital').val(response.debt)
                 interest_amount = response.interest
                 sumtotal()
             },

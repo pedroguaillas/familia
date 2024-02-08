@@ -20,16 +20,16 @@ class PaymentController extends Controller
 
     public function index2($id)
     {
-        $loan = Loan::findOrFail($id);
+        $loan = Loan::find($id);
         //Se requiere de person para mostrar el nombre en la cabecera
         $person = $loan->person;
         //Se requiere de guarantor para mostrar el nombre en la cabecera
         $guarantor = Person::where('id', $loan->guarantor_id)->get()->first();
         // $payments = $loan->payments;
-        $payments = \DB::table('payments')
+        $payments = DB::table('payments')
             ->where([
                 'loan_id' => $id,
-                'state' => 'activo'
+                // 'state' => 'activo'
             ])
             ->orderBy('date', 'asc')
             // ->orderBy('interest_amount')
@@ -40,21 +40,41 @@ class PaymentController extends Controller
 
     public function report(Loan $loan)
     {
-        // $loan = Loan::findOrFail($id);
         //Se requiere de person para mostrar el nombre en la cabecera
         $person = $loan->person;
         //Se requiere de guarantor para mostrar el nombre en la cabecera
         $guarantor = Person::where('id', $loan->guarantor_id)->get()->first();
         // $payments = $loan->payments;
-        $payments = \DB::table('payments')
-            ->where([
-                'loan_id' => $loan->id,
-                'state' => 'activo'
-            ])
+        $payments = Payment::where([
+            'loan_id' => $loan->id,
+            'state' => 'activo'
+        ])
             ->orderBy('date', 'asc')
             ->get();
 
-        $pdf = PDF::loadView('payments.report', compact('person', 'guarantor', 'loan', 'payments'));
+        $title = 'PAGOS';
+
+        $pdf = PDF::loadView('payments.report', compact('person', 'guarantor', 'loan', 'payments', 'title'));
+
+        (new PdfController())->loadTempleate($pdf);
+
+        return $pdf->stream('pagosprestamo.pdf');
+    }
+
+    public function amortizationTable(Loan $loan)
+    {
+        //Se requiere de person para mostrar el nombre en la cabecera
+        $person = $loan->person;
+        //Se requiere de guarantor para mostrar el nombre en la cabecera
+        $guarantor = Person::where('id', $loan->guarantor_id)->get()->first();
+        // $payments = $loan->payments;
+        $payments = Payment::where('loan_id', $loan->id)
+            ->orderBy('date', 'asc')
+            ->get();
+
+        $title = 'TABLA DE AMORTIZACIÓN';
+
+        $pdf = PDF::loadView('payments.report', compact('person', 'guarantor', 'loan', 'payments', 'title'));
 
         (new PdfController())->loadTempleate($pdf);
 
@@ -72,7 +92,7 @@ class PaymentController extends Controller
 
     public function store(Request $request)
     {
-        $loan = Loan::findOrFail($request->loan_id);
+        $loan = Loan::find($request->loan_id);
 
         if ($loan->method === 'inicio') {
             $date_start = new \DateTime($request->get('date_start'));
@@ -120,6 +140,10 @@ class PaymentController extends Controller
                 'date' => $request->get('date_start'),
                 'observation' => $request->get('observation')
             ]);
+
+            if ($request->payment_type === 'liquidacion') {
+                Payment::where('state', 'inactivo')->delete();
+            }
         }
 
         return redirect()->route('prestamo.pagos', $request->loan_id)->with('mensaje', 'Se agrego con éxito los pago');
@@ -130,37 +154,30 @@ class PaymentController extends Controller
         return response()->json(['payment' => $payment]);
     }
 
-    public function interestCalculate($loan_id)
+    public function interestCalculate(Loan $loan)
     {
         $debt = 0;
         $capital = 0;
         $interest = 0;
         $payment_id = 0;
 
-        $loan = Loan::findOrFail($loan_id);
         $day = (int)substr($loan->date, 8, 2);
 
         // Inicio method Inicio
         if ($loan->method === 'inicio') {
-            $payment = Payment::select(\DB::raw('SUM(capital) as paid'))
-                ->where([
-                    ['state', 'like', 'activo'],
-                    ['loan_id', '=', $loan_id]
-                ])
-                ->groupBy('loan_id')->first();
+            $debt = $loan->amount - Payment::where([
+                ['state', 'like', 'activo'],
+                ['loan_id', '=', $loan->id]
+            ])
+                ->groupBy('loan_id')->sum('capital');
 
-            if ($payment !== null) {
-                $debt = $loan->amount - $payment->paid;
-            } else {
-                $debt = $loan->amount;
-            }
             $interest = round($debt * $loan->interest_percentage * 0.01, 2);
             // Fin method Inicio
         } else {
             // Inicio amortizacion
 
             // Obtener todos los pagos pero inactivos
-            $payments = Payment::where('loan_id', $loan_id)
+            $payments = Payment::where('loan_id', $loan->id)
                 // ordenados por monto de interes
                 ->orderBy('interest_amount', 'desc')
                 ->where('state', 'inactivo')->get();
@@ -173,7 +190,7 @@ class PaymentController extends Controller
 
                 $payment_id = $payment->id;
                 $capital = $payment->capital;
-                $debt = $loan->amount;
+                $debt = $payment->debt;
                 // $day = substr($payment->date, 0, 10);
                 $interest = $payment->interest_amount;
             }
@@ -183,6 +200,54 @@ class PaymentController extends Controller
 
         return response()->json([
             'capital' => $capital,
+            'debt' => $debt,
+            'day' => $day,
+            'interest' => $interest,
+            'method' => $loan->method,
+            'payment_id' => $payment_id
+        ]);
+    }
+
+    public function liquidacionCalculate(Loan $loan)
+    {
+        $interest = 0;
+        $payment_id = 0;
+
+        $day = (int)substr($loan->date, 8, 2);
+
+        $debt = $loan->amount - Payment::where('state', 'activo')
+            ->where('loan_id', $loan->id)->sum('capital');
+
+        // Inicio method Inicio
+        if ($loan->method === 'inicio') {
+
+            $interest = round($debt * $loan->interest_percentage * 0.01, 2);
+            // Fin method Inicio
+
+        } else {
+            // Inicio amortizacion
+
+            // Obtener todos los pagos pero inactivos
+            $payments = Payment::where('loan_id', $loan->id)
+                // ordenados por monto de interes
+                ->orderBy('interest_amount', 'desc')
+                ->where('state', 'inactivo')->get();
+
+            // Si hay pagos inactivos
+            if ($payments->count()) {
+
+                // Determinar el pago que se debe cobrar
+                $payment = $payments->first();
+
+                $payment_id = $payment->id;
+
+                $interest = $payment->interest_amount;
+            }
+
+            // Fin amortizacion
+        }
+
+        return response()->json([
             'debt' => $debt,
             'day' => $day,
             'interest' => $interest,
@@ -201,7 +266,5 @@ class PaymentController extends Controller
     public function destroy(Payment $payment)
     {
         $payment->delete();
-        // $payment->state = 'inactivo';
-        // $payment->save();
     }
 }

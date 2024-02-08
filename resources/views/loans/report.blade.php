@@ -18,7 +18,8 @@
     </thead>
     <tbody>
         @php
-        $i=1;
+        $i = 1;
+        $sumDebt = 0;
         @endphp
         @foreach ($loans as $loan)
         <tr>
@@ -31,9 +32,17 @@
             <td>{{substr($loan['date'], 0, 10)}}</td>
         </tr>
         @php
-        $i+=1;
+        $i += 1;
+        $sumDebt += $loan['amount'] - $loan['sum_capital_paid'];
         @endphp
         @endforeach
     </tbody>
+    <tfoot>
+        <tr>
+            <th colspan="5">MONTO PRESTADO</th>
+            <th style="text-align: right; padding-right: .5em;">{{number_format($sumDebt, 2, ',', '.')}}</th>
+            <td></td>
+        </tr>
+    </tfoot>
 </table>
 @endsection

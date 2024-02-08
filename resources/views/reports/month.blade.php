@@ -54,7 +54,8 @@
                             <tbody>
                                 @foreach ($contributions as $contribution)
                                 <tr>
-                                    <td style="text-align: center;">{{ $contribution->month }}</td>
+                                    <td style="text-align: center;">{{ $months[$contribution->month - 1] }}</td>
+                                    <!-- <td style="text-align: center;">{{ strftime('%B', strtotime($contribution->month . '/01/2023')) }}</td> -->
                                     <td style="text-align: right;">{{ number_format($contribution->amount, 2, ',', '.') }}</td>
                                     <td style="text-align: right;">{{ number_format($payments[$i]->amount, 2, ',', '.') }}</td>
                                     <td style="text-align: right;">{{ number_format($contribution->must + $payments[$i]->must, 2, ',', '.') }}</td>

@@ -7,7 +7,6 @@ use App\Payment;
 
 class ChashClosingController extends Controller
 {
-
     public function __construct()
     {
         $this->middleware('auth');
@@ -42,6 +41,8 @@ class ChashClosingController extends Controller
             ->whereYear('date', $year)
             ->get();
 
-        return view('reports.month', compact('contributions', 'payments', 'year'));
+        $months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+
+        return view('reports.month', compact('contributions', 'payments', 'year', 'months'));
     }
 }

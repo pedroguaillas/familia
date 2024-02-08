@@ -152,7 +152,7 @@
     </div>
 </div>
 
-<!-- /.Aporte CREATE MASIVE -->
+<!-- /.Comprar acciones -->
 <div class="modal fade" id="purchaseActionsModal" role="dialog">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -190,7 +190,7 @@
                         </div>
                     </div>
                     <div class="form-group row add">
-                        <label class="control-label col-sm-6" for="amount_to_pay">Monto a pagar</label>
+                        <label class="control-label col-sm-6" for="amount_to_pay">Monto a pagar + $50</label>
                         <div class="col-sm-6">
                             <input id="amount_to_pay" name="amount_to_pay" class="form-control form-control-sm">
                         </div>
@@ -244,7 +244,7 @@
                 $("#quantity_action").val(action.quantity_action)
                 $("#quantity_action_purchase").val(1)
                 $("#total_action").val(res.person_actions + 1)
-                $("#amount_to_pay").val(action.amount)
+                $("#amount_to_pay").val(action.amount + 50)
                 $('#purchaseActionsModal').modal('show')
             },
             error: (error) => console.log(error)
@@ -254,7 +254,7 @@
     function AmountActions(e) {
         let value = Number(e.value)
         $("#total_action").val(value + action.quantity_action)
-        $("#amount_to_pay").val(value * action.amount)
+        $("#amount_to_pay").val(value * action.amount + 50)
     }
 </script>
 @endpush

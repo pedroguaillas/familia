@@ -15,7 +15,9 @@ class AddStateToSpends extends Migration
     {
         Schema::table('spends', function (Blueprint $table) {
             // Se agrega el campo state para considerar si afecta o no al monto de las acciones
-            $table->string('state')->nullable()->default(null)->after('observation');
+            $table->string('impact')->nullable()->default(null)->after('observation');
+
+            $table->softDeletes();
         });
     }
 

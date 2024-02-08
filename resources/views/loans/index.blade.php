@@ -90,9 +90,11 @@
                                                     <a href="{{ route('prestamo.pagos', $loan->id) }}" class="dropdown-item">
                                                         <i class="fa fa-money-bill"></i> Pagos
                                                     </a>
+                                                    @if($loan->method !== 'inicio')
                                                     <button onclick='showModalNovacion("{{ $loan->id }}")' class="dropdown-item">
                                                         <i class="far fa-edit"></i> Renovar
                                                     </button>
+                                                    @endif
                                                     <a href="{{ route('prestamo.renovaciones', $loan->id) }}" class="dropdown-item">
                                                         <i class="far fa-list-alt"></i> Renovaciones
                                                     </a>
