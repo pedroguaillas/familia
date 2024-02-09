@@ -110,6 +110,7 @@ class LoanController extends Controller
 
         if ($request->method === 'variable') {
             $capital = round($request->amount / $request->period, 2);
+            // Ajuste de amortización variable
             if ($capital * $request->period < $request->amount) {
                 $capital += 0.01;
             }
@@ -161,8 +162,9 @@ class LoanController extends Controller
 
             $date->addMonth($month);
 
-            $sumCapital += $capital;
+            $sumCapital += round($capital, 2);
 
+            // Ajuste de amortización fija
             if ($i === $request->period - 1 && $sumCapital < $request->amount) {
                 $capital += $request->amount - $sumCapital;
                 $interescal = $pago - $capital;
