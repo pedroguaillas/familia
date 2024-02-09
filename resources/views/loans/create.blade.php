@@ -325,7 +325,10 @@
         let pago = 0
 
         if (tipo === 'variable') {
-            capital = monto / periodo
+            capital = Number((monto / periodo).toFixed(2))
+            if (capital * periodo < monto) {
+                capital += 0.01
+            }
             pago = interescal + capital
         } else {
             // Pago con dos decimales para convertirle en fijo durante todo el periodo

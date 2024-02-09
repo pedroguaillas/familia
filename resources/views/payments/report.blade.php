@@ -8,7 +8,7 @@
     <tbody>
         <tr>
             <td style="width: 105px; text-align: left;">Deudor</td>
-            <td style="text-align: left;">{{$person->first_name .' ' .$person->last_name}}</td>
+            <td style="width: 500px; text-align: left;">{{$person->first_name .' ' .$person->last_name}}</td>
         </tr>
         <tr>
             <td style="width: 105px; text-align: left;">Monto</td>

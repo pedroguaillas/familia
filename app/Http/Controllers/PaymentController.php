@@ -18,9 +18,8 @@ class PaymentController extends Controller
         $this->middleware('auth');
     }
 
-    public function index2($id)
+    public function index(Loan $loan)
     {
-        $loan = Loan::find($id);
         //Se requiere de person para mostrar el nombre en la cabecera
         $person = $loan->person;
         //Se requiere de guarantor para mostrar el nombre en la cabecera
@@ -28,7 +27,7 @@ class PaymentController extends Controller
         // $payments = $loan->payments;
         $payments = DB::table('payments')
             ->where([
-                'loan_id' => $id,
+                'loan_id' => $loan->id,
                 // 'state' => 'activo'
             ])
             ->orderBy('date', 'asc')
@@ -199,7 +198,7 @@ class PaymentController extends Controller
         }
 
         return response()->json([
-            'capital' => $capital,
+            'capital' => round($capital, 2),
             'debt' => $debt,
             'day' => $day,
             'interest' => $interest,
@@ -248,7 +247,7 @@ class PaymentController extends Controller
         }
 
         return response()->json([
-            'debt' => $debt,
+            'debt' => round($debt, 2),
             'day' => $day,
             'interest' => $interest,
             'method' => $loan->method,

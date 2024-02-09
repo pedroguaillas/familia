@@ -440,6 +440,7 @@
             success: (response) => {
                 $('#debt').val(response.debt)
                 $('#debt_input').val(response.debt)
+                $('#payment_type').val('inicio')
                 $('#interest_amount').val(response.interest)
                 if (response.method !== 'inicio') {
                     // $('#date_start').val(response.day)

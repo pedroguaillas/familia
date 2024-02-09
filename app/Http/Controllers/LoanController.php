@@ -109,7 +109,10 @@ class LoanController extends Controller
         $pago = 0;
 
         if ($request->method === 'variable') {
-            $capital = $request->amount / $request->period;
+            $capital = round($request->amount / $request->period, 2);
+            if ($capital * $request->period < $request->amount) {
+                $capital += 0.01;
+            }
             $pago = $interescal + $capital;
         } else {
             // Pago con dos decimales para convertirle en fijo durante todo el periodo
@@ -139,6 +142,8 @@ class LoanController extends Controller
         $date = Carbon::createFromFormat('Y-m-d', $request->date);
         $array = [];
 
+        $sumCapital = 0;
+
         for ($i = 0; $i < $request->period; $i++) {
             if ($i > 0) {
 
@@ -155,6 +160,13 @@ class LoanController extends Controller
             }
 
             $date->addMonth($month);
+
+            $sumCapital += $capital;
+
+            if ($i === $request->period - 1 && $sumCapital < $request->amount) {
+                $capital += $request->amount - $sumCapital;
+                $interescal = $pago - $capital;
+            }
 
             $array[] = [
                 'debt' => $deudainicial,
