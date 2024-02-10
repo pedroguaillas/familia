@@ -105,7 +105,7 @@
                                     @endif
                                 </div>
                             </div>
-                            <div class="dt-buttons btn-group nav-item dropdown show flex-wrap">
+                            <!-- <div class="dt-buttons btn-group nav-item dropdown show flex-wrap">
                                 <a class="btn btn-secondary btn-success btn-sm" data-toggle="dropdown" href="#" aria-expanded="true">
                                     <i class="fas fa-plus"></i>
                                 </a>
@@ -120,12 +120,12 @@
                                         Liquidación de crédito
                                     </a>
                                 </div>
-                            </div>
-                            <!-- <div class="dt-buttons btn-group flex-wrap">
+                            </div> -->
+                            <div class="dt-buttons btn-group flex-wrap">
                                 <button onclick="showModalCreate('{{ $loan->id }}')" class="create-modal btn btn-success btn-sm">
                                     <i class="fas fa-plus"></i>
                                 </button>
-                            </div> -->
+                            </div>
                         </div>
                     </div>
 
@@ -231,10 +231,12 @@
                 <form class="form-horizontal" role="form" method="POST" action="{{ route('payments.store') }}">
                     {{ csrf_field() }}
 
-                    <input type="hidden" id="loan_id" name="loan_id" value="{{ $loan->id }}"> <!-- codigo del prestamo  -->
-                    <input type="hidden" id="debt" name="debt"> <!-- Deuda actual  -->
-                    <input type="hidden" id="payment_id" name="payment_id"> <!-- Deuda actual  -->
-                    <input type="hidden" id="payment_type" name="payment_type" value="inicio"> <!-- Deuda actual  -->
+                    <!-- id del prestamo  -->
+                    <input type="hidden" id="loan_id" name="loan_id" value="{{ $loan->id }}">
+                    <!-- Deuda actual  -->
+                    <input type="hidden" id="debt" name="debt">
+                    <input type="hidden" id="payment_id" name="payment_id">
+                    <!-- <input type="hidden" id="payment_type" name="payment_type" value="inicio"> -->
 
                     <div class="form-group row add">
                         <label class="control-label col-sm-4" for="debt "> Deuda </label>
@@ -243,7 +245,7 @@
                         </div>
                     </div>
                     <div class="form-group row add">
-                        <label class="control-label col-sm-4" for="interest_amount"> Interés </label>
+                        <label class="control-label col-sm-4" for="interest_amount">Interés</label>
                         <div class="col-sm-8">
                             <input onchange="sumtotal()" type="number" class="form-control form-control-sm" id="interest_amount" step="0.01" name="interest_amount" required>
                         </div>
@@ -251,14 +253,14 @@
                     <div class="form-group row add">
                         <label class="control-label col-sm-4" for="capital">Capital</label>
                         <div class="col-sm-8">
-                            <input onchange="sumtotal()" type="number" class="form-control form-control-sm" id="capital" step="0.01" name="capital" value="0" maxlength="10" required>
+                            <input onchange="sumtotal()" type="number" class="form-control form-control-sm" id="capital" step="0.01" name="capital" required>
                         </div>
                     </div>
 
                     <div class="form-group row add">
                         <label class="control-label col-sm-4" for="must">Mora</label>
                         <div class="col-sm-8">
-                            <input onchange="sumtotal()" type="number" class="form-control form-control-sm" id="must" step="0.01" name="must" value="0" maxlength="10" required>
+                            <input onchange="sumtotal()" type="number" class="form-control form-control-sm" id="must" step="0.01" name="must" min="0" required>
                         </div>
                     </div>
                     <div class="form-group row add">
@@ -440,8 +442,9 @@
             success: (response) => {
                 $('#debt').val(response.debt)
                 $('#debt_input').val(response.debt)
-                $('#payment_type').val('inicio')
+                // $('#payment_type').val('inicio')
                 $('#interest_amount').val(response.interest)
+                $('#interest_amount').attr('min', response.interest)
                 if (response.method !== 'inicio') {
                     // $('#date_start').val(response.day)
                     $('#payment_id').val(response.payment_id)
@@ -450,6 +453,8 @@
                 loan_day = response.day
                 $('#must').val((day - loan_day > 0) ? (day - loan_day) * .25 : 0)
                 $('#capital').val(response.method === 'inicio' ? 0 : response.capital)
+                $('#capital').attr('min', response.method === 'inicio' ? 0 : response.capital)
+                $('#capital').attr('max', response.debt)
                 interest_amount = response.interest
                 sumtotal()
             },
@@ -467,7 +472,7 @@
             success: (response) => {
                 $('#debt').val(response.debt)
                 $('#debt_input').val(response.debt)
-                $('#payment_type').val('liquidacion')
+                // $('#payment_type').val('liquidacion')
                 $('#interest_amount').val(response.interest)
                 if (response.method !== 'inicio') {
                     // $('#date_start').val(response.day)

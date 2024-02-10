@@ -158,7 +158,10 @@ class PaymentController extends Controller
                     // De los pagos inactivos solo no elimino el pago a modificar
                     Payment::where('id', '<>', $payment->id)
                         ->where('state', 'inactivo')->delete();
-                    (new LoanController())->loadAmortizacion($loan);
+                    // Si el monto es mayo a 0 debe generar la nueva tabla
+                    if ($loan->amount) {
+                        (new LoanController())->loadAmortizacion($loan);
+                    }
                 } else {
                     // Si es IGUAL Solo eliminar registros de pagos
                     Payment::whereIn('id', $array)->delete();
@@ -175,10 +178,9 @@ class PaymentController extends Controller
                 'observation' => $request->get('observation')
             ]);
 
-
-            if ($request->payment_type === 'liquidacion') {
-                Payment::where('state', 'inactivo')->delete();
-            }
+            // if ($request->payment_type === 'liquidacion') {
+            //     Payment::where('state', 'inactivo')->delete();
+            // }
         }
 
         return redirect()->route('prestamo.pagos', $request->loan_id)->with('mensaje', 'Se agrego con éxito los pagos');

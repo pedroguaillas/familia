@@ -81,7 +81,7 @@
 
                             <div class="input-group input-group-md mt-3">
                                 <div class="input-group-prepend">
-                                    <span style="width: 10em;" class="input-group-text"><strong>Fecha:</strong>&nbsp; {{ substr($loan->date, 0, 10) }}</span>
+                                    <span style="width: 10em;" class="input-group-text"><strong>Fecha:</strong>&nbsp; {{ date('d/m/Y', strtotime(substr($loan->date, 0, 10))) }}</span>
                                 </div>
                                 <input type="date" class="form-control" id="date-loans" name="date" value="{{ date('Y-m-d') }}" required>
                             </div>
