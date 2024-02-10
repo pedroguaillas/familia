@@ -84,7 +84,6 @@ class PaymentController extends Controller
     {
         $pdf = PDF::loadView('payments.voucher', compact('payment'));
         $pdf->setPaper('a6');
-        // (new PdfController())->loadTempleate($pdf);
 
         return $pdf->stream('pago.pdf');
     }
@@ -129,7 +128,43 @@ class PaymentController extends Controller
         } else {
             $payment = Payment::find($request->payment_id);
 
-            // Actualizar el pago a activo y los demas campos
+            // 1. Si el monto del pago es igual al monto del formulario solo pasar a ACTIVO el pago
+            if ($request->capital > $payment->capital) {
+                // 2. a. Extraer todos los pagos inactivos ordenados por la fecha
+                $payments = Payment::where([
+                    'state' => 'inactivo',
+                    'loan_id' => $loan->id,
+                ])
+                    ->orderBy('date', 'asc')->get();
+
+                // 2. b. 1. Crear un SUMADOR
+                $sum = $payment->capital;
+                $i = 1;
+                $array = [];
+                // 2. b. Recorrer los pagos
+                while ($i < $payments->count() && $sum + $payments[$i]->capital <= $request->capital) {
+                    // 2. b. 2. Verificar que el SUMADOR < al monto del formulario
+                    $sum += $payments[$i]->capital;
+                    $array[] = $payments[$i]->id;
+                    $i++;
+                }
+
+                if ($request->capital > $sum) {
+                    $array[] = $payments[$i]->id;
+
+                    $loan->amount = $payment->debt - $request->capital;
+                    $loan->period = $payments->count() - $i;
+                    $loan->date = $request->date_start;
+                    // De los pagos inactivos solo no elimino el pago a modificar
+                    Payment::where('id', '<>', $payment->id)
+                        ->where('state', 'inactivo')->delete();
+                    (new LoanController())->loadAmortizacion($loan);
+                } else {
+                    // Si es IGUAL Solo eliminar registros de pagos
+                    Payment::whereIn('id', $array)->delete();
+                }
+            }
+
             $payment->update([
                 'state' => 'activo',
                 'debt' => $request->get('debt'),
@@ -140,12 +175,13 @@ class PaymentController extends Controller
                 'observation' => $request->get('observation')
             ]);
 
+
             if ($request->payment_type === 'liquidacion') {
                 Payment::where('state', 'inactivo')->delete();
             }
         }
 
-        return redirect()->route('prestamo.pagos', $request->loan_id)->with('mensaje', 'Se agrego con éxito los pago');
+        return redirect()->route('prestamo.pagos', $request->loan_id)->with('mensaje', 'Se agrego con éxito los pagos');
     }
 
     public function show(Payment $payment)

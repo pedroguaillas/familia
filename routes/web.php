@@ -36,6 +36,8 @@ Route::get('prestamos/solicitud/{loan}', 'LoanController@solicitude')->name('pre
 Route::get('prestamos/pdf', 'LoanController@pdf')->name('loans.pdf');
 
 //LONAN_RENEWALS
+Route::get('préstamo/{loan}/renovación', 'RenovationController@show')->name('prestamo.renovacion');
+Route::put('loan/{loan}/renew', 'RenovationController@update')->name('loan.renew');
 Route::get('prestamo/{loan}/renovaciones', 'LoanRenewalController@index2')->name('prestamo.renovaciones');
 
 //PAYMENT 

@@ -91,9 +91,12 @@
                                                         <i class="fa fa-money-bill"></i> Pagos
                                                     </a>
                                                     @if($loan->method !== 'inicio')
-                                                    <button onclick='showModalNovacion("{{ $loan->id }}")' class="dropdown-item">
+                                                    <a href="{{ route('prestamo.renovacion', $loan->id) }}" class="dropdown-item">
+                                                        <i class="far fa-list-alt"></i> Renovar
+                                                    </a>
+                                                    <!-- <button onclick='showModalNovacion("{{ $loan->id }}")' class="dropdown-item">
                                                         <i class="far fa-edit"></i> Renovar
-                                                    </button>
+                                                    </button> -->
                                                     @endif
                                                     <a href="{{ route('prestamo.renovaciones', $loan->id) }}" class="dropdown-item">
                                                         <i class="far fa-list-alt"></i> Renovaciones

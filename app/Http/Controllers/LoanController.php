@@ -101,23 +101,29 @@ class LoanController extends Controller
         $loan = Loan::create($request->all());
 
         // Generar tabla de amortizacion
-        // Registrar en tabla de pagos como inactivos
-        $interes = $request->interest_percentage * 0.01;
-        $deudainicial = $request->amount;
-        $interescal = $request->amount * $interes;
+        $this->loadAmortizacion($loan);
+
+        return redirect()->route('loans.index')->with('success', 'Se registro un nuevo préstamo');
+    }
+
+    public function loadAmortizacion(Loan $loan)
+    {
+        $interes = $loan->interest_percentage * 0.01;
+        $deudainicial = $loan->amount;
+        $interescal = $loan->amount * $interes;
         $capital = 0;
         $pago = 0;
 
-        if ($request->method === 'variable') {
-            $capital = round($request->amount / $request->period, 2);
+        if ($loan->method === 'variable') {
+            $capital = round($loan->amount / $loan->period, 2);
             // Ajuste de amortización variable
-            if ($capital * $request->period < $request->amount) {
+            if ($capital * $loan->period < $loan->amount) {
                 $capital += 0.01;
             }
             $pago = $interescal + $capital;
         } else {
             // Pago con dos decimales para convertirle en fijo durante todo el periodo
-            $pago = round($interescal / (1 - pow(1 + $interes, -$request->period)), 2);
+            $pago = round($interescal / (1 - pow(1 + $interes, -$loan->period)), 2);
             $capital = $pago - $interescal;
         }
 
@@ -125,7 +131,7 @@ class LoanController extends Controller
 
         $month = '';
 
-        switch ($request->type) {
+        switch ($loan->type) {
             case 'mensual':
                 $month = 1;
                 break;
@@ -140,18 +146,18 @@ class LoanController extends Controller
                 break;
         }
 
-        $date = Carbon::createFromFormat('Y-m-d', $request->date);
+        $date = Carbon::createFromFormat('Y-m-d', $loan->date);
         $array = [];
 
         $sumCapital = 0;
 
-        for ($i = 0; $i < $request->period; $i++) {
+        for ($i = 0; $i < $loan->period; $i++) {
             if ($i > 0) {
 
                 $deudainicial = $deudafinal;
                 $interescal = $deudainicial * $interes;
 
-                if ($request->method === 'variable') {
+                if ($loan->method === 'variable') {
                     $pago = $interescal + $capital;
                 } else {
                     $capital = $pago - $interescal;
@@ -164,9 +170,9 @@ class LoanController extends Controller
 
             $sumCapital += round($capital, 2);
 
-            // Ajuste de amortización fija
-            if ($i === $request->period - 1 && $sumCapital < $request->amount) {
-                $capital += $request->amount - $sumCapital;
+            // Ajuste de amortización FIJA
+            if ($i === $loan->period - 1 && $sumCapital < $loan->amount) {
+                $capital += $loan->amount - $sumCapital;
                 $interescal = $pago - $capital;
             }
 
@@ -180,13 +186,11 @@ class LoanController extends Controller
         }
 
         $loan->payments()->createMany($array);
-
-        return redirect()->route('loans.index')->with('success', 'Se registro un nuevo préstamo');
     }
 
     public function show(Loan $loan)
     {
-        //Usuda para mostrar renovacion de credito
+        //Usada para mostrar renovacion de credito
         $person = $loan->person;
 
         $payments = $loan->payments;
@@ -198,8 +202,6 @@ class LoanController extends Controller
                 $loan->debt += $item->capital;
             }
         }
-
-        $today = Carbon::now();
 
         return response()->json(['loan' => $loan, 'person' => $person]);
     }
