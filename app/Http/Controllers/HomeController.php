@@ -8,6 +8,7 @@ use App\Payment;
 use App\Person;
 use App\Spend;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class HomeController extends Controller
 {
@@ -102,7 +103,8 @@ class HomeController extends Controller
             ->where('state', 'activo')->get()->first()->sum;
 
         // Gastos
-        $spend = Spend::selectRaw('SUM(amount) AS amount')
+        $spend = DB::table('spends')->selectRaw('SUM(amount) AS amount')
+            ->whereNotNull('impact')
             ->first()->amount;
 
         return response()->json([

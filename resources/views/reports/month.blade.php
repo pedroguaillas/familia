@@ -52,18 +52,18 @@
                             $must = 0;
                             @endphp
                             <tbody>
-                                @foreach ($contributions as $contribution)
+                                @foreach ($data as $contribution)
                                 <tr>
-                                    <td style="text-align: center;">{{ $months[$contribution->month - 1] }}</td>
+                                    <td style="text-align: center;">{{ $contribution->month }}</td>
                                     <!-- <td style="text-align: center;">{{ strftime('%B', strtotime($contribution->month . '/01/2023')) }}</td> -->
-                                    <td style="text-align: right;">{{ number_format($contribution->amount, 2, ',', '.') }}</td>
-                                    <td style="text-align: right;">{{ number_format($payments[$i]->amount, 2, ',', '.') }}</td>
-                                    <td style="text-align: right;">{{ number_format($contribution->must + $payments[$i]->must, 2, ',', '.') }}</td>
+                                    <td style="text-align: right;">{{ number_format($contribution->contribution, 2, ',', '.') }}</td>
+                                    <td style="text-align: right;">{{ number_format($contribution->interest, 2, ',', '.') }}</td>
+                                    <td style="text-align: right;">{{ number_format($contribution->must, 2, ',', '.') }}</td>
                                 </tr>
                                 @php
-                                $sum_contributions += $contribution->amount;
-                                $sum_interest += $payments[$i]->amount;
-                                $must += $contribution->must + $payments[$i]->must;
+                                $sum_contributions += $contribution->contribution;
+                                $sum_interest += $contribution->interest;
+                                $must += $contribution->must;
                                 $i ++;
                                 @endphp
                                 @endforeach
