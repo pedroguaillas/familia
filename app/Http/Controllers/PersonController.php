@@ -143,7 +143,8 @@ class PersonController extends Controller
                 'amount' => $val_gasto,
                 'date' => $carbon->format('Y-m-d'),
                 'observation' => $person->identification_card . ' ' . $person->first_name . ' ' . $person->last_name,
-                'state' => 'activo'
+                // 'state' => 'activo',
+                'impact' => 'capital'
             ]);
 
             if ($request->action_delete === $person->actions) {

@@ -7,6 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 class Spend extends Model
 {
     protected $fillable = [
-        'name', 'amount', 'date', 'observation', 'state'
+        'name', 'amount', 'date', 'observation', 'state', 'impact'
     ];
 }

@@ -177,10 +177,6 @@ class PaymentController extends Controller
                 'date' => $request->get('date_start'),
                 'observation' => $request->get('observation')
             ]);
-
-            // if ($request->payment_type === 'liquidacion') {
-            //     Payment::where('state', 'inactivo')->delete();
-            // }
         }
 
         return redirect()->route('prestamo.pagos', $request->loan_id)->with('mensaje', 'Se agrego con éxito los pagos');

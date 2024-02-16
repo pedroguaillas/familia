@@ -103,11 +103,12 @@
                 <h4 class="modal-title" style="margin: auto;">Registrar gasto</h4>
             </div>
             <div class="modal-body">
-                <form class="form-horizontal" role="form" method="POST" action="{{route('spends.store')}}">
+                <form class="form-horizontal" role="form" method="POST" action="{{ route('spends.store') }}">
+
                     {{ csrf_field() }}
 
                     <div class="form-group row add">
-                        <label class="control-label col-sm-3" for="name"> Nombre </label>
+                        <label class="control-label col-sm-3" for="name">Nombre</label>
                         <div class="col-sm-9">
                             <input type="text" class="form-control form-control-sm" name="name" required>
                         </div>
@@ -116,21 +117,32 @@
                     <div class="form-group row add">
                         <label class="control-label col-sm-3" for="amount">Monto</label>
                         <div class="col-sm-9">
-                            <input type="number" class="form-control form-control-sm" step="0.01" name="amount" value="0" maxlength="10" required>
+                            <input type="number" class="form-control form-control-sm" step="0.01" name="amount" value="0" min="0.01" maxlength="10" required>
                         </div>
                     </div>
 
                     <div class="form-group row add">
                         <label class="control-label col-sm-3" for="date">Fecha</label>
                         <div class="col-sm-9">
-                            <input type="date" value="{{date('Y-m-d')}}" class="form-control form-control-sm" name="date" required>
+                            <input type="date" value="{{ date('Y-m-d') }}" class="form-control form-control-sm" name="date" required>
                         </div>
                     </div>
 
                     <div class="form-group row add">
-                        <label class="control-label col-sm-3" for="boservation">Observación</label>
+                        <label class="control-label col-sm-3" for="observation">Observación</label>
                         <div class="col-sm-9">
                             <textarea name="observation" class="form-control" rows="2"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-group row add">
+                        <label class="control-label col-sm-3" for="impact">Afecta</label>
+                        <div class="col-sm-9">
+                            <select name="impact" class="form-control" required>
+                                <option value="">Seleccione</option>
+                                <option value="capital">Capital</option>
+                                <option value="interés">Interés</option>
+                            </select>
                         </div>
                     </div>
 
@@ -189,6 +201,17 @@
                         </div>
                     </div>
 
+                    <div class="form-group row add">
+                        <label class="control-label col-sm-3" for="impact">Afecta</label>
+                        <div class="col-sm-9">
+                            <select name="impact" id="impact-edit" class="form-control" required>
+                                <option value="">Seleccione</option>
+                                <option value="capital">Capital</option>
+                                <option value="interés">Interés</option>
+                            </select>
+                        </div>
+                    </div>
+
                     <div class="modal-footer">
                         <button class="btn btn-success" type="submit">
                             Guardar
@@ -228,9 +251,10 @@
             success: (res) => {
                 let s = res.spend
                 $('#name_edit').val(s.name)
-                $('#amount_edit').val(s.amount)
+                $('#amount_edit').val(parseFloat(s.amount))
                 $('#date_edit').val(s.date.substring(0, 10))
                 $('#observation_edit').val(s.observation)
+                $('#impact-edit').val(s.impact)
                 $('#edit-form').attr('action', "{{url('spends')}}/" + id)
                 $('#edit-modal').modal('show')
             },
@@ -241,7 +265,7 @@
     function deleted(id) {
         swal({
                 title: "¿Esta seguro?",
-                text: "Eliminar este fasto",
+                text: "Eliminar el gasto",
                 icon: "warning",
                 buttons: ["Cancelar", "Ok"],
                 dangerMode: true,

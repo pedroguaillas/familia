@@ -211,28 +211,28 @@
                 // General -----------------------------
 
                 data[0].data = res.general_contributions[0].sum
-                data[1].data = res.general_contributions[1].sum
+                data[1].data = Number(res.general_contributions[1].sum) - res.spend_capital
                 data[2].data = res.general_interest
 
                 loadChart(data, 'donut-chart-general')
 
-                let total = Number(res.general_contributions[0].sum) + Number(res.general_contributions[1].sum) + Number(res.general_interest)
+                let total = Number(res.general_contributions[0].sum) + Number(res.general_contributions[1].sum) + Number(res.general_interest) - Number(res.spend_capital)
                 $('#general_total').text(formatter.format(total))
-                $('#general_c_months').text(formatter.format(res.general_contributions[1].sum))
+                $('#general_c_months').text(formatter.format(Number(res.general_contributions[1].sum) - res.spend_capital))
                 $('#general_interest').text(formatter.format(res.general_interest))
                 $('#general_c_year').text(formatter.format(res.general_contributions[0].sum))
 
                 // Current ----------------------------
 
                 data[0].data = res.current_contributions[0].sum
-                data[1].data = res.current_contributions[1].sum
+                data[1].data = Number(res.current_contributions[1].sum) - res.spend_capital
                 data[2].data = res.current_interest
 
                 loadChart(data, 'donut-chart-current')
 
-                let members_total = Number(res.current_contributions[0].sum) + Number(res.current_contributions[1].sum) + Number(res.current_interest)
+                let members_total = Number(res.current_contributions[0].sum) + Number(res.current_contributions[1].sum) + Number(res.current_interest) - Number(res.spend_capital)
                 $('#members_total').text(formatter.format(members_total))
-                $('#members_c_months').text(formatter.format(res.current_contributions[1].sum))
+                $('#members_c_months').text(formatter.format(Number(res.current_contributions[1].sum) - res.spend_capital))
                 $('#members_interest').text(formatter.format(res.current_interest))
                 $('#members_c_year').text(formatter.format(res.current_contributions[0].sum))
             },
