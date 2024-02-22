@@ -23,7 +23,7 @@
                     <div class="icon">
                         <i class="ion ion-person-stalker"></i>
                     </div>
-                    <a href="{{url('people')}}" class="small-box-footer">Mas info <i class="fas fa-arrow-circle-right"></i></a>
+                    <a href="{{ url('people') }}" class="small-box-footer">Mas info <i class="fas fa-arrow-circle-right"></i></a>
                 </div>
             </div>
             <!-- ./col -->
@@ -38,7 +38,7 @@
                     <div class="icon">
                         <i class="ion ion-person"></i>
                     </div>
-                    <a href="{{url('loans')}}" class="small-box-footer">Mas info <i class="fas fa-arrow-circle-right"></i></a>
+                    <a href="{{ url('loans') }}" class="small-box-footer">Mas info <i class="fas fa-arrow-circle-right"></i></a>
                 </div>
             </div>
             <!-- ./col -->
@@ -46,7 +46,7 @@
                 <!-- small box -->
                 <div class="small-box bg-warning">
                     <div class="inner">
-                        <h3>{{number_format($total, 2, ',', '.')}}</h3>
+                        <h3>{{ number_format($total, 2, ',', '.') }}</h3>
 
                         <p>Valor de cada acción</p>
                     </div>
@@ -61,7 +61,7 @@
                 <!-- small box -->
                 <div class="small-box bg-danger">
                     <div class="inner">
-                        <h3>{{number_format($total_borrowed, 2, ',', '.')}}</h3>
+                        <h3>{{ number_format($total_borrowed, 2, ',', '.') }}</h3>
 
                         <p>Monto prestado</p>
                     </div>
@@ -217,7 +217,8 @@
                 loadChart(data, 'donut-chart-general')
 
                 let total = Number(res.general_contributions[0].sum) + Number(res.general_contributions[1].sum) + Number(res.general_interest) - Number(res.spend_capital)
-                $('#general_total').text(formatter.format(total))
+                let expenses = total - res.total_borrowed
+                $('#general_total').text(`${formatter.format(total)} Saldo actual en caja ${formatter.format(expenses)}`)
                 $('#general_c_months').text(formatter.format(Number(res.general_contributions[1].sum) - res.spend_capital))
                 $('#general_interest').text(formatter.format(res.general_interest))
                 $('#general_c_year').text(formatter.format(res.general_contributions[0].sum))

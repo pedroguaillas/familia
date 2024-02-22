@@ -8,7 +8,6 @@ use App\Payment;
 use App\Person;
 use App\Spend;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
 
 class HomeController extends Controller
 {
@@ -19,14 +18,10 @@ class HomeController extends Controller
 
     public function index()
     {
-        // Cuenta la cantidad de socios que tiene la caja
-        $countactions = Person::selectRaw('SUM(actions) AS sum_actions')
-            // $countmembers = Person::select(DB::raw('COUNT(id) AS count'))
-            ->groupBy('type')
-            ->where([
-                ['state', '=', 'activo'],
-                ['type', '=', 'socio']
-            ])->get()->first()->sum_actions;
+        // Cuenta la cantidad accioens de los socios que tiene la caja
+        $countactions = Person::where('state', 'activo')
+            ->where('type', 'socio')
+            ->sum('actions');
 
         $contributions = null;
         $interest = 0;
@@ -39,9 +34,7 @@ class HomeController extends Controller
             $total += $c->sum;
         }
 
-        $spendCapital = Spend::selectRaw('SUM(amount) AS amount')
-            ->where('impact', 'capital')
-            ->first()->amount;
+        $spendCapital = Spend::where('impact', 'capital')->sum('amount');
 
         // Reducir a los aportes los gastos de capital
         $total -= $spendCapital;
@@ -66,10 +59,10 @@ class HomeController extends Controller
                 $countdebtors++;
             }
         }
+
         $total = round($total / $countactions, 2);
 
         return view('start', compact('countactions', 'countdebtors', 'total', 'total_borrowed'));
-        // return view('home');
     }
 
     public function manual()
@@ -97,16 +90,21 @@ class HomeController extends Controller
             ->orderBy('type', 'DESC')->get();
 
         $general_interest = Payment::selectRaw('SUM(interest_amount + must) AS sum')
-            ->where('state', 'activo')->get()->first()->sum;
+            ->where('state', 'activo')->first()->sum;
 
         // Gastos
-        $spend = DB::table('spends')->selectRaw('SUM(amount) AS amount')
-            ->where('impact', 'interés')
-            ->first()->amount;
+        $spend = Spend::where('impact', 'interés')->sum('amount');
 
-        $spendCapital = Spend::selectRaw('SUM(amount) AS amount')
-            ->where('impact', 'capital')
-            ->first()->amount;
+        $spendCapital = Spend::where('impact', 'capital')->sum('amount');
+
+        $amounts_borrowed = Loan::selectRaw('(loans.amount - SUM(p.capital)) AS debt')
+            ->leftJoin('payments AS p', function ($query) {
+                $query->on('loan_id', 'loans.id')
+                    ->where('p.state', 'activo');
+            })->where('loans.state', 'activo')
+            ->groupBy('loans.id')->get();
+
+        $amounts_borrowed = json_decode(json_encode($amounts_borrowed));
 
         return response()->json([
             'current_contributions' => $current_contributions,
@@ -114,6 +112,9 @@ class HomeController extends Controller
             'general_contributions' => $general_contributions,
             'general_interest' => $general_interest - $spend,
             'spend_capital' => $spendCapital,
+            'total_borrowed' => array_reduce($amounts_borrowed, function ($sum, $ele) {
+                return $sum + $ele->debt;
+            }, 0),
         ]);
     }
 
@@ -125,12 +126,9 @@ class HomeController extends Controller
 
         $this->querys($contributions, $interest);
 
-        $actions = Person::selectRaw('SUM(actions) AS sum')
-            ->where('state', 'activo')->get()->first()->sum;
+        $actions = Person::where('state', 'activo')->sum('actions');
 
-        $spendCapital = Spend::selectRaw('SUM(amount) AS amount')
-            ->where('impact', 'capital')
-            ->first()->amount;
+        $spendCapital = Spend::where('impact', 'capital')->sum('amount');
 
         $amount_current = $contributions[0]->sum + $contributions[1]->sum + $interest - $spendCapital;
 
@@ -163,15 +161,8 @@ class HomeController extends Controller
 
         $interest = Payment::selectRaw('SUM(interest_amount + must) AS sum')
             ->where('state', 'activo')
-            ->where([
-                ['state', '=', 'activo'],
-                ['date', '<=', $date->format('Y-m-d')]
-            ])
-            ->get()->first()->sum;
+            ->first()->sum;
 
-        // Reducir a los intereses los gastos pero solo activos
-        $interest -= Spend::selectRaw('SUM(amount) AS amount')
-            ->where('impact', 'interés')
-            ->first()->amount;
+        $interest -= Spend::where('impact', 'interés')->sum('amount');
     }
 }
