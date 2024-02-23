@@ -15,19 +15,27 @@
     </thead>
     <tbody>
         @php
-        $i=1;
+        $i = 1;
+        $sum = 0;
         @endphp
         @foreach ($contributions as $contribution)
         <tr>
-            <td>{{$i}}</td>
-            <td style="text-align: left;">{{$contribution->first_name . ' ' . $contribution->last_name}}</td>
-            <td>{{$contribution->actions}}</td>
-            <td style="text-align: right;">{{number_format($contribution->amount, 2, ',', '.')}}</td>
+            <td>{{ $i }}</td>
+            <td style="text-align: left;">{{ $contribution->first_name . ' ' . $contribution->last_name }}</td>
+            <td>{{ $contribution->actions }}</td>
+            <td style="text-align: right;">{{ number_format($contribution->amount, 2, ',', '.') }}</td>
         </tr>
         @php
-        $i+=1;
+        $i += 1;
+        $sum += $contribution->amount;
         @endphp
         @endforeach
     </tbody>
+    <tfoot>
+        <tr>
+            <th colspan="3">TOTAL</th>
+            <th style="text-align: right; padding-right: .5em;">{{ number_format($sum, 2, ',', '.') }}</th>
+        </tr>
+    </tfoot>
 </table>
 @endsection
