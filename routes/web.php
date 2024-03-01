@@ -65,6 +65,10 @@ Route::resource('spends', 'SpendController');
 //MANUAL
 Route::get('manual', 'HomeController@manual');
 
+// Cambiar contraseña
+Route::get('cambiar-contraseña', 'Auth\SetPasswordController@reset');
+Route::post('setpass', 'Auth\SetPasswordController@set')->name('setpass');
+
 // REPORTES
 Route::get('reporte-anual', 'ChashClosingController@year')->name('reporte-anual');
 Route::get('{year}/reporte-mensual', 'ChashClosingController@month')->name('reporte-mensual');
