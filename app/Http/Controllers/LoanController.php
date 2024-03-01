@@ -46,11 +46,11 @@ class LoanController extends Controller
 
     public function pdf()
     {
-        $loans = Loan::selectRaw('loans.id,amount,interest_percentage,loans.date,method,first_name,last_name, sum(payments.capital) as sum_capital_paid')
+        $loans = Loan::selectRaw('loans.id,amount,interest_percentage,loans.date,method,first_name,last_name, sum(payments.capital) as sum_capital_paid, sum(payments.interest_amount) as interest_amount, sum(payments.must) as must')
             ->join('people', 'people.id', 'person_id')
             // ->leftJoin('payments', 'loan_id', 'loans.id')
             ->leftJoin('payments', function ($join) {
-                $join->on('loans.id', '=', 'loan_id')
+                $join->on('loans.id', 'loan_id')
                     ->where('payments.state', 'activo');
             })
             ->groupBy('loans.id', 'loans.amount', 'loans.interest_percentage', 'loans.date', 'people.first_name', 'people.last_name')

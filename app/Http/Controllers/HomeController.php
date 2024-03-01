@@ -62,7 +62,9 @@ class HomeController extends Controller
 
         $total = round($total / $countactions, 2);
 
-        return view('start', compact('countactions', 'countdebtors', 'total', 'total_borrowed'));
+        $spends = Spend::sum('amount');
+
+        return view('start', compact('countactions', 'countdebtors', 'total', 'total_borrowed', 'spends'));
     }
 
     public function manual()

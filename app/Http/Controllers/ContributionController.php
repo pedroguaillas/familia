@@ -13,19 +13,12 @@ use Barryvdh\DomPDF\Facade as PDF;
 
 class ContributionController extends Controller
 {
-    /**
-     * @return void
-     */
+
     public function __construct()
     {
         $this->middleware('auth');
     }
 
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index()
     {
         $contributions = $this->list();
@@ -35,37 +28,16 @@ class ContributionController extends Controller
 
     private function list()
     {
-        $contributions = \DB::table('people')
-            ->select(
-                'people.id as person_id',
-                'people.first_name',
-                'people.last_name',
-                'people.actions',
-                \DB::raw('SUM(contributions.amount) as amount')
-            )->leftJoin('contributions', 'people.id', 'contributions.person_id')
-            ->groupBy(
-                'people.id',
-                'people.first_name',
-                'people.last_name',
-                'people.actions'
-            )
+        $contributions = Person::selectRaw('people.id as person_id,first_name,last_name,actions,SUM(amount) as amount,SUM(must) as must')
+            ->leftJoin('contributions', 'people.id', 'person_id')
+            ->groupBy('people.id', 'first_name', 'last_name', 'actions')
             ->where([
                 ['people.state', 'activo'],
                 ['people.type', 'socio']
             ])
             ->get();
-        // $contributions = json_decode(json_encode($contributions), true);
 
         return $contributions;
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
     }
 
     public function create2(Request $request)
@@ -102,12 +74,7 @@ class ContributionController extends Controller
 
         return view('contributions/create', compact('people', 'date', 'type'));
     }
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+
     public function store(Request $request)
     {
         $person = Person::findOrFail($request->get('person_id'));
@@ -188,35 +155,11 @@ class ContributionController extends Controller
         }
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Contribution  $contribution
-     * @return \Illuminate\Http\Response
-     */
     public function show(Contribution $contribution)
     {
         return response()->json(['contribution' => $contribution]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Contribution  $contribution
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Contribution $contribution)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Contribution  $contribution
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, Contribution $contribution)
     {
         $contribution->update($request->all());
@@ -224,12 +167,6 @@ class ContributionController extends Controller
         return redirect()->route('aportes.historial', $contribution->person->id)->with('success', 'Se modifico un aporte');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Contribution  $contribution
-     * @return \Illuminate\Http\Response
-     */
     public function destroy(Contribution $contribution)
     {
         $contribution->state = 'inactivo';

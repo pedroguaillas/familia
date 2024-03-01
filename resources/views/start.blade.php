@@ -75,6 +75,12 @@
         </div>
         <!-- /.row -->
         <div class="row">
+            <div class="col">
+                <p>Gastos de la caja {{ number_format($spends, 2, ',', '.') }}</p>
+            </div>
+        </div>
+        <!-- /.row -->
+        <div class="row">
             <!-- /.col-md-6 -->
             <div class="col-lg-6">
                 <!-- card -->
