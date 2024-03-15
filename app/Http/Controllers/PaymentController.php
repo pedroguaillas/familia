@@ -7,7 +7,6 @@ use App\Person;
 use App\Payment;
 use DateTimeZone;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Carbon;
 use Barryvdh\DomPDF\Facade as PDF;
 
@@ -24,17 +23,25 @@ class PaymentController extends Controller
         $person = $loan->person;
         //Se requiere de guarantor para mostrar el nombre en la cabecera
         $guarantor = Person::where('id', $loan->guarantor_id)->get()->first();
-        // $payments = $loan->payments;
-        $payments = DB::table('payments')
-            ->where([
-                'loan_id' => $loan->id,
-                // 'state' => 'activo'
-            ])
-            ->orderBy('date', 'asc')
-            // ->orderBy('interest_amount')
-            ->get();
+        // $payments = DB::table('payments')
+        //     ->where([
+        //         'loan_id' => $loan->id,
+        //         // 'state' => 'activo'
+        //     ])
+        //     ->orderBy('date', 'DESC')
+        //     // ->orderBy('interest_amount')
+        //     ->get();
 
-        return view('payments.index', compact('person', 'guarantor', 'loan', 'payments'));
+        $payments = Payment::where('loan_id', $loan->id)
+            ->orderBy('date', 'ASC')->get();
+
+        $payments = json_decode(json_encode($payments));
+
+        $debt = $loan->amount - array_reduce($payments, function ($sum, $ele) {
+            return $sum + ($ele->state === 'activo' ? $ele->capital : 0);
+        }, 0);
+
+        return view('payments.index', compact('person', 'guarantor', 'loan', 'payments', 'debt'));
     }
 
     public function report(Loan $loan)
@@ -233,7 +240,7 @@ class PaymentController extends Controller
 
         return response()->json([
             'capital' => round($capital, 2),
-            'debt' => $debt,
+            'debt' => floatval(round($debt, 2)),
             'day' => $day,
             'interest' => $interest,
             'method' => $loan->method,

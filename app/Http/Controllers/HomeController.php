@@ -99,7 +99,7 @@ class HomeController extends Controller
 
         $spendCapital = Spend::where('impact', 'capital')->sum('amount');
 
-        $amounts_borrowed = Loan::selectRaw('(loans.amount - SUM(p.capital)) AS debt')
+        $amounts_borrowed = Loan::selectRaw('loans.amount, SUM(p.capital) AS debt')
             ->leftJoin('payments AS p', function ($query) {
                 $query->on('loan_id', 'loans.id')
                     ->where('p.state', 'activo');
@@ -115,7 +115,7 @@ class HomeController extends Controller
             'general_interest' => $general_interest - $spend,
             'spend_capital' => $spendCapital,
             'total_borrowed' => array_reduce($amounts_borrowed, function ($sum, $ele) {
-                return $sum + $ele->debt;
+                return $sum + ($ele->amount - $ele->debt);
             }, 0),
         ]);
     }

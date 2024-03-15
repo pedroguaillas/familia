@@ -164,13 +164,12 @@ class ContributionController extends Controller
     {
         $contribution->update($request->all());
 
-        return redirect()->route('aportes.historial', $contribution->person->id)->with('success', 'Se modifico un aporte');
+        return redirect()->route('aporte.historial', $contribution->person->id)->with('success', 'Se modifico un aporte');
     }
 
     public function destroy(Contribution $contribution)
     {
-        $contribution->state = 'inactivo';
-        $contribution->save();
+        $contribution->delete();
 
         return response()->json(['msm' => "Se elimino un aporte"]);
     }

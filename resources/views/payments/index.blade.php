@@ -47,26 +47,26 @@
 
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="card-title">DATOS DEL PRESTAMO</h3>
+                        <h3 class="card-title">DATOS DEL PRÉSTAMO</h3>
                     </div>
 
                     <div class="card-body">
                         <div class="row">
-                            <div class="col-sm-4">
+                            <div class="col-sm-3">
                                 <p>
                                     <strong>Deudor: </strong>
-                                    {{$person->first_name.' '.$person->last_name}}
+                                    {{ $person->first_name.' '.$person->last_name }}
                                 </p>
                             </div>
-                            <div class="col-sm-4" {{ $guarantor !== null ? null : 'hidden'}}>
+                            <div class="col-sm-3" {{ $guarantor !== null ? null : 'hidden' }}>
                                 <p>
                                     <strong>Garante: </strong>
-                                    {{$guarantor === null ? null : $guarantor->first_name . ' ' . $guarantor->last_name}}
+                                    {{ $guarantor === null ? null : $guarantor->first_name . ' ' . $guarantor->last_name }}
                                 </p>
                             </div>
                             <div class="col-sm-2">
                                 <p>
-                                    <strong>Monto: </strong>
+                                    <strong>Crédito: </strong>
                                     {{ number_format($loan->amount, 2, ',', '.') }}
                                 </p>
                             </div>
@@ -74,6 +74,12 @@
                                 <p>
                                     <strong>Interés: </strong>
                                     {{ $loan->interest_percentage .'%' }}
+                                </p>
+                            </div>
+                            <div class="col-sm-2">
+                                <p>
+                                    <strong>Deuda: </strong>
+                                    {{ number_format($debt, 2, ',', '.') }}
                                 </p>
                             </div>
                         </div>
@@ -105,22 +111,6 @@
                                     @endif
                                 </div>
                             </div>
-                            <!-- <div class="dt-buttons btn-group nav-item dropdown show flex-wrap">
-                                <a class="btn btn-secondary btn-success btn-sm" data-toggle="dropdown" href="#" aria-expanded="true">
-                                    <i class="fas fa-plus"></i>
-                                </a>
-                                <div class="dropdown-menu dropdown-menu-md dropdown-menu-right">
-                                    <a class="dropdown-item" onclick="showModalCreate('{{ $loan->id }}')" href="#">
-                                        Pago normal
-                                    </a>
-                                    <a class="dropdown-item" href="#">
-                                        Delantar pagos
-                                    </a>
-                                    <a class="dropdown-item" onclick="showModalLiquidacion('{{ $loan->id }}')" href="#">
-                                        Liquidación de crédito
-                                    </a>
-                                </div>
-                            </div> -->
                             <div class="dt-buttons btn-group flex-wrap">
                                 <button onclick="showModalCreate('{{ $loan->id }}')" class="create-modal btn btn-success btn-sm">
                                     <i class="fas fa-plus"></i>
@@ -174,7 +164,7 @@
                                     <td>
                                         <ul class="navbar-nav ml-auto">
                                             <li class="nav-item dropdown">
-                                                <a class="nav-link" data-toggle="dropdown" href="#">
+                                                <a class="nav-link py-0" data-toggle="dropdown" href="#">
                                                     <i class="fa fa-angle-down"></i>
                                                 </a>
                                                 <div class="dropdown-menu dropdown-menu-md dropdown-menu-right">
@@ -236,7 +226,6 @@
                     <!-- Deuda actual  -->
                     <input type="hidden" id="debt" name="debt">
                     <input type="hidden" id="payment_id" name="payment_id">
-                    <!-- <input type="hidden" id="payment_type" name="payment_type" value="inicio"> -->
 
                     <div class="form-group row add">
                         <label class="control-label col-sm-4" for="debt "> Deuda </label>
@@ -455,33 +444,6 @@
                 $('#capital').val(response.method === 'inicio' ? 0 : response.capital)
                 $('#capital').attr('min', response.method === 'inicio' ? 0 : response.capital)
                 $('#capital').attr('max', response.debt)
-                interest_amount = response.interest
-                sumtotal()
-            },
-            error: (error) => console.log(error)
-        })
-
-        $('#create-payment').modal('show')
-        $('.form-horizontal').show()
-    }
-
-    function showModalLiquidacion(loan_id) {
-        $.ajax({
-            type: 'GET',
-            url: "{{ url('payments') }}/liquidacionCalculate/" + loan_id,
-            success: (response) => {
-                $('#debt').val(response.debt)
-                $('#debt_input').val(response.debt)
-                // $('#payment_type').val('liquidacion')
-                $('#interest_amount').val(response.interest)
-                if (response.method !== 'inicio') {
-                    // $('#date_start').val(response.day)
-                    $('#payment_id').val(response.payment_id)
-                }
-                let day = parseInt($('#date_start').val().substring(8, 10))
-                loan_day = response.day
-                $('#must').val((day - loan_day > 0) ? (day - loan_day) * .25 : 0)
-                $('#capital').val(response.debt)
                 interest_amount = response.interest
                 sumtotal()
             },
