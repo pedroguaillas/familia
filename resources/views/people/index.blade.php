@@ -38,6 +38,17 @@
 </div>
 @endif
 <br>
+
+@if ($errors->any())
+<div class="alert alert-danger mx-3">
+    <ul>
+        @foreach ($errors->all() as $error)
+        <li>{{ $error }}</li>
+        @endforeach
+    </ul>
+</div>
+@endif
+
 <!-- Main content -->
 <div class="content">
     <div class="container-fluid">
@@ -54,7 +65,7 @@
                                     <div class="input-group-prepend">
                                         <span class="input-group-text">Presidente</span>
                                     </div>
-                                    <input value="{{$directive->person->first_name .' ' .$directive->person->last_name}}" class="form-control">
+                                    <input value="{{ $directive->person->first_name .' ' .$directive->person->last_name }}" class="form-control">
                                     <div class="input-group-append">
                                         <button onclick="showModalDirective()" class="input-group-text">
                                             <i class="fas fa-edit"></i>
@@ -69,10 +80,10 @@
                                             <i class="far fa-file-pdf"></i>
                                         </button>
                                         <div class="dropdown-menu dropdown-menu-md dropdown-menu-right">
-                                            <a href="{{ route('personas.reporte', 'socio')}}" class="dropdown-item" target="_blank">
+                                            <a href="{{ route('personas.reporte', 'socio') }}" class="dropdown-item" target="_blank">
                                                 <i class="fa fa-money-bill"></i> Socios
                                             </a>
-                                            <a href="{{ route('personas.reporte', 'particular')}}" class="dropdown-item" target="_blank">
+                                            <a href="{{ route('personas.reporte', 'particular') }}" class="dropdown-item" target="_blank">
                                                 <i class="far fa-file"></i> Particulares
                                             </a>
                                         </div>
@@ -103,18 +114,14 @@
                             <tbody>
                                 @foreach ($people as $person)
                                 <tr>
-                                    <td>{{$person->identification_card}}</td>
-                                    <td>{{$person->first_name}}</td>
-                                    <td>{{$person->last_name}}</td>
-                                    <td>
-                                        @if($person->type === 'socio' )
-                                        <span class="badge bg-success" style="font-size:0.9em">{{$person->type}}</span>
-                                        @else
-                                        <span class="badge bg-warning" style="font-size:0.9em">{{$person->type}}</span>
-                                        @endif
+                                    <td>{{ $person->identification_card }}</td>
+                                    <td>{{ $person->first_name }}</td>
+                                    <td>{{ $person->last_name }}</td>
+                                    <td style="text-align: center">
+                                        <span class="badge bg-{{ $person->type === 'socio' ? 'success' : 'warning' }}" style="font-size:0.9em">{{ $person->type }}</span>
                                     </td>
-                                    <td>{{$person->phone}}</td>
-                                    <td>{{$person->email}}</td>
+                                    <td>{{ $person->phone }}</td>
+                                    <td>{{ $person->email }}</td>
                                     <td>
                                         <ul class="navbar-nav ml-auto">
                                             <li class="nav-item dropdown">
@@ -122,12 +129,18 @@
                                                     <i class="fa fa-angle-down"></i>
                                                 </a>
                                                 <div class="dropdown-menu dropdown-menu-md dropdown-menu-right">
-                                                    <button class="dropdown-item" onclick='editPerson("{{$person->id}}")'>
+                                                    <button class="dropdown-item" onclick='editPerson("{{ $person->id }}")'>
                                                         <i class="far fa-edit"></i> Editar
                                                     </button>
-                                                    <button class="dropdown-item" onclick='deletePerson("{{$person->id}}")'>
+                                                    @if($person->type === 'socio')
+                                                    <button class="dropdown-item" onclick='showDialogDelete("{{ $person->id }}")'>
                                                         <i class="far fa-trash-alt"></i> Anular
                                                     </button>
+                                                    @else
+                                                    <button class="dropdown-item" onclick='deletePerson("{{ $person->id }}")'>
+                                                        <i class="far fa-trash-alt"></i> Anular
+                                                    </button>
+                                                    @endif
                                                 </div>
                                             </li>
                                         </ul>
@@ -138,6 +151,73 @@
                         </table>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- /.MODAL ELIMINAR SOCIO -->
+<div id="eliminar-socio" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" style="margin: auto;">Información para eliminar socio</h4>
+            </div>
+            <div class="modal-body">
+                <form id="person-delete-form" action="#" class="form-horizontal" role="form" method="POST">
+                    {{ csrf_field() }}
+                    {{ method_field('DELETE') }}
+
+                    <p id='socio-name-delete'></p>
+
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td>Valor de la acción</td>
+                                <td id="val-de-la-accion" style="width: 4em; text-align: right;"></td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: right;" colspan="2">*</td>
+                            </tr>
+                            <tr>
+                                <td>Acciones del socio</td>
+                                <td style="text-align: right;">
+                                    <input id="num-accion-socio" style="text-align: right;" name="action_delete" type="number" value="1" step="1" min="1" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: right;" colspan="2">=</td>
+                            </tr>
+                            <tr>
+                                <td>TOTAL</td>
+                                <td id="total-accion-socio" style="text-align: right;"></td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: right;" colspan="2">-</td>
+                            </tr>
+                            <tr>
+                                <td>Aporte a caja</td>
+                                <td style="text-align: right;">50</td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: right;" colspan="2">=</td>
+                            </tr>
+                            <tr>
+                                <td>Valor para el socio</td>
+                                <td id="entregar-accion-socio" style="text-align: right;"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="modal-footer">
+                        <button class="btn btn-success" type="submit">
+                            Confirmar
+                        </button>
+                        <button class="btn btn-warning" type="button" data-dismiss="modal">
+                            Cancelar
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -158,7 +238,7 @@
                     <div class="form-group row add">
                         <label class="control-label col-sm-2" for="interest_percentage">Tipo</label>
                         <div class="col-sm-10">
-                            <select class="custom-select form-control form-control-sm" id="type" name="person_id" required>
+                            <select class="custom-select form-control form-control-sm" name="person_id" required>
                                 <option>Seleccione</option>
                                 @foreach ($people as $person)
                                 @if($person->type === 'socio' )
@@ -206,7 +286,7 @@
                         </div>
                     </div>
                     <div class="form-group row add">
-                        <label class="control-label col-sm-2" for="last_name "> Apellidos </label>
+                        <label class="control-label col-sm-2" for="last_name"> Apellidos </label>
                         <div class="col-sm-10">
                             <input type="text" class="form-control form-control-sm" id="last_name" name="last_name" required>
                         </div>
@@ -215,14 +295,20 @@
                         <label class="control-label col-sm-2" for="interest_percentage">Tipo</label>
                         <div class="col-sm-10">
                             <select class="custom-select form-control form-control-sm" id="type" name="type" required>
-                                <option>Seleccione</option>
+                                <option value="">Seleccione</option>
                                 <option value="socio">Socio</option>
                                 <option value="particular">Particular</option>
 
                             </select>
                         </div>
                     </div>
-                    <div class="form-group row add">
+                    <div id="hidden_val_contribution" class="form-group row add" hidden>
+                        <label id="lab_val_contribution" class="control-label col-sm-8" for="val_contribution"></label>
+                        <div class="col-sm-4">
+                            <input type="text" class="form-control form-control-sm" style="text-align: right;" id="val_contribution" name="val_contribution" />
+                        </div>
+                    </div>
+                    <div class="form-group row add" hidden>
                         <label class="control-label col-sm-2" for="phone">Teléfono</label>
                         <div class="col-sm-10">
                             <input type="text" class="form-control form-control-sm" id="phone" name="phone" maxlength="10">
@@ -333,8 +419,21 @@
     }
 
     function showModalCreate() {
-        $('#create').modal('show')
-        $('.form-horizontal').show()
+        $.ajax({
+            type: 'GET',
+            url: "{{ url('home/reportcurrent') }}/0",
+            data: {
+                "_token": $('meta[name="csrf-token"]').content
+            },
+            success: (res) => {
+                // let p = res.person
+                $('#lab_val_contribution').text(`Valor de la acción ($${res.amount}) + $50`)
+                $('#val_contribution').val(res.amount + 50)
+                $('#create').modal('show')
+                $('.form-horizontal').show()
+            },
+            error: (error) => console.log(error)
+        })
     }
 
     function editPerson(id) {
@@ -358,6 +457,50 @@
             error: (error) => console.log(error)
         })
     }
+
+    let resDelete = undefined
+
+    function showDialogDelete(id) {
+        $.ajax({
+            type: 'GET',
+            url: "{{ url('home/reportcurrent') }}/" + id,
+            data: {
+                "_token": $('meta[name="csrf-token"]').content
+            },
+            success: (res) => {
+                resDelete = res
+                $('#socio-name-delete').html(`<strong>Socio: </strong> ${res.person.first_name} ${res.person.last_name}`)
+                $('#val-de-la-accion').html(res.amount.toFixed(2))
+                $('#num-accion-socio').val(1)
+                $('#num-accion-socio').attr('max', res.person.actions)
+                $('#total-accion-socio').html((res.amount).toFixed(2))
+                $('#entregar-accion-socio').html((res.amount - 50).toFixed(2))
+                $('#person-delete-form').attr('action', "{{url('people')}}/" + id)
+                $('#eliminar-socio').modal('show')
+            },
+            error: (error) => console.log(error)
+        })
+    }
+
+    $('#num-accion-socio').change(function(e) {
+        e.preventDefault()
+
+        let actions = Number($(this).val())
+        console.log(resDelete.amount * actions)
+        $('#total-accion-socio').html((resDelete.amount * actions).toFixed(2))
+        $('#entregar-accion-socio').html((resDelete.amount * actions - 50).toFixed(2))
+    })
+
+    // Agregar o eliminar hidden
+    $('#type').change(function(e) {
+        e.preventDefault()
+
+        if ($(this).val() === 'socio') {
+            $('#hidden_val_contribution').removeAttr('hidden')
+        } else {
+            $('#hidden_val_contribution').attr('hidden')
+        }
+    })
 
     function deletePerson(id) {
         swal({

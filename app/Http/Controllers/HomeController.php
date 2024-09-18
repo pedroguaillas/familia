@@ -3,51 +3,25 @@
 namespace App\Http\Controllers;
 
 use App\Contribution;
+use App\Loan;
 use App\Payment;
 use App\Person;
+use App\Spend;
 use Carbon\Carbon;
-use DB;
 
 class HomeController extends Controller
 {
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
     public function __construct()
     {
         $this->middleware('auth');
     }
 
-    /**
-     * Show the application dashboard.
-     *
-     * @return \Illuminate\Contracts\Support\Renderable
-     */
     public function index()
     {
-        // Cuenta la cantidad de socios que tiene la caja
-        $countactions = Person::select(DB::raw('SUM(actions) AS sum_actions'))
-            // $countmembers = Person::select(DB::raw('COUNT(id) AS count'))
-            ->groupBy('type')
-            ->where([
-                ['state', '=', 'activo'],
-                ['type', '=', 'socio']
-                // ])->get()->first();
-            ])->get()->first()->sum_actions;
-        // $countmembers = $person->count;
-        // $actions = $person->sum_actions;
-        // // Selecciona las persona que tienen creditos que aun no ha terminado de pagar
-        // $people = Loan::join('payments AS p', 'p.loan_id', 'loans.id')
-        //     ->select('person_id')
-        //     // Agrupa por prestamos para seleccionar las prestamos que aun no ha terminado de pagar
-        //     ->groupBy('loans.id', 'person_id')
-        //     ->havingRaw('SUM(p.capital) <> SUM(loans.amount)')
-        //     ->where('p.state', 'activo')->get();
-
-        // $countdebtors = Person::select(DB::raw('COUNT(id) AS count'))
-        //     ->whereIn('id', $people)->get()->first()->count;
+        // Cuenta la cantidad accioens de los socios que tiene la caja
+        $countactions = Person::where('state', 'activo')
+            ->where('type', 'socio')
+            ->sum('actions');
 
         $contributions = null;
         $interest = 0;
@@ -60,16 +34,17 @@ class HomeController extends Controller
             $total += $c->sum;
         }
 
-        // Selecciona los montos prestamos
-        $sql = "SELECT l.amount as total_borrowed, ";
-        // Suma los capitales devueltos si ese pago esta activo
-        $sql .= "(SELECT SUM(p.capital) FROM payments AS p WHERE p.loan_id = l.id AND p.state = 'activo') AS total_returned ";
-        // Selecciona todos los registros de prestamos
-        $sql .= "FROM loans AS l ";
-        // Condiciona que el prestamos este activo
-        $sql .= "WHERE l.state = 'activo'";
+        $spendCapital = Spend::where('impact', 'capital')->sum('amount');
 
-        $amounts_borrowed = DB::select($sql);
+        // Reducir a los aportes los gastos de capital
+        $total -= $spendCapital;
+
+        $amounts_borrowed = Loan::selectRaw('loans.amount As total_borrowed, SUM(p.capital) AS total_returned')
+            ->leftJoin('payments AS p', function ($query) {
+                $query->on('loan_id', 'loans.id')
+                    ->where('p.state', 'activo');
+            })->where('loans.state', 'activo')
+            ->groupBy('loans.id')->get();
 
         // Sumador de la deuda
         $total_borrowed = 0;
@@ -84,10 +59,12 @@ class HomeController extends Controller
                 $countdebtors++;
             }
         }
+
         $total = round($total / $countactions, 2);
 
-        return view('start', compact('countactions', 'countdebtors', 'total', 'total_borrowed'));
-        // return view('home');
+        $spends = Spend::sum('amount');
+
+        return view('start', compact('countactions', 'countdebtors', 'total', 'total_borrowed', 'spends'));
     }
 
     public function manual()
@@ -109,19 +86,37 @@ class HomeController extends Controller
 
         $this->querys($current_contributions, $current_interest);
 
-        $general_contributions = Contribution::select('type', DB::raw('SUM(amount + must) AS sum'))
+        $general_contributions = Contribution::selectRaw('type, SUM(amount + must) AS sum')
             ->groupBy('type')
             ->where('state', 'activo')
             ->orderBy('type', 'DESC')->get();
 
-        $general_interest = Payment::select(DB::raw('SUM(interest_amount + must) AS sum'))
-            ->where('state', 'activo')->get()->first()->sum;
+        $general_interest = Payment::selectRaw('SUM(interest_amount + must) AS sum')
+            ->where('state', 'activo')->first()->sum;
+
+        // Gastos
+        $spend = Spend::where('impact', 'interés')->sum('amount');
+
+        $spendCapital = Spend::where('impact', 'capital')->sum('amount');
+
+        $amounts_borrowed = Loan::selectRaw('loans.amount, SUM(p.capital) AS debt')
+            ->leftJoin('payments AS p', function ($query) {
+                $query->on('loan_id', 'loans.id')
+                    ->where('p.state', 'activo');
+            })->where('loans.state', 'activo')
+            ->groupBy('loans.id')->get();
+
+        $amounts_borrowed = json_decode(json_encode($amounts_borrowed));
 
         return response()->json([
             'current_contributions' => $current_contributions,
             'current_interest' => $current_interest,
             'general_contributions' => $general_contributions,
-            'general_interest' => $general_interest
+            'general_interest' => $general_interest - $spend,
+            'spend_capital' => $spendCapital,
+            'total_borrowed' => array_reduce($amounts_borrowed, function ($sum, $ele) {
+                return $sum + ($ele->amount - $ele->debt);
+            }, 0),
         ]);
     }
 
@@ -133,39 +128,43 @@ class HomeController extends Controller
 
         $this->querys($contributions, $interest);
 
-        $actions = Person::select(DB::raw('SUM(actions) AS sum'))
-            ->where('state', 'activo')->get()->first()->sum;
+        $actions = Person::where('state', 'activo')->sum('actions');
 
-        $amount_current = $contributions[0]->sum + $contributions[1]->sum + $interest;
+        $spendCapital = Spend::where('impact', 'capital')->sum('amount');
+
+        $amount_current = $contributions[0]->sum + $contributions[1]->sum + $interest - $spendCapital;
 
         $amount = $amount_current / $actions;
 
-        $person_actions = Person::findOrFail($person_id)->actions;
+        $person = null;
+
+        if ($person_id > 0) {
+            $person = Person::find($person_id);
+        }
 
         return response()->json([
             'amount' => round($amount, 2),
-            'person_actions' => $person_actions
+            'person' => $person,
+            'person_actions' => $person !== null ? $person->actions : 0
         ]);
     }
 
     //Reporte temporal
-    private function querys(&$contributions, &$interest)
+    public function querys(&$contributions, &$interest)
     {
         $date = Carbon::now();
-        $contributions = Contribution::select('type', DB::raw('SUM(amount + must) AS sum'))
+        $contributions = Contribution::selectRaw('type, SUM(amount + must) AS sum')
             ->groupBy('type')
             ->where([
                 ['state', '=', 'activo'],
-                ['date', '<', $date->format('Y-m-d')]
+                ['date', '<=', $date->format('Y-m-d')]
             ])
             ->orderBy('type', 'DESC')->get();
 
-        $interest = Payment::select(DB::raw('SUM(interest_amount + must) AS sum'))
+        $interest = Payment::selectRaw('SUM(interest_amount + must) AS sum')
             ->where('state', 'activo')
-            // ->where([
-            //     ['state', '=', 'activo'],
-            //     ['date', '<', $date->format('Y-m-d')]
-            // ])
-            ->get()->first()->sum;
+            ->first()->sum;
+
+        $interest -= Spend::where('impact', 'interés')->sum('amount');
     }
 }

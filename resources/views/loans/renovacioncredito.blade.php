@@ -10,12 +10,12 @@
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h1>Registro de préstamo</h1>
+                <h1>Renovación de préstamo</h1>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item"><a href="{{ url('loans') }}">Préstamos</a></li>
-                    <li class="breadcrumb-item active">Registro de préstamo</li>
+                    <li class="breadcrumb-item active">Renovación de préstamo</li>
                 </ol>
             </div>
         </div>
@@ -40,94 +40,78 @@
             <div class="col-md-4">
                 <div class="card card-primary">
                     <div class="card-header">
-                        <h3 class="card-title">Formulario de préstamo</h3>
+                        <h3 class="card-title">Formulario de renovación de préstamo</h3>
                     </div>
                     <div class="card-body">
                         <div class="input-group input-group-md">
-                            <div style="width: 6em;" class="input-group-prepend">
-                                <span class="input-group-text">Solicitante</span>
-                            </div>
-                            <input type="text" id="name_person_loan" class="form-control">
-                            <span class="input-group-append">
-                                <button title="Buscar" type="button" onclick="selectPersonApplicant()" class="btn btn-secondary btn-flat">
-                                    <i class="fas fa-search"></i>
-                                </button>
-                            </span>
-                        </div>
-                        <div id="card-guarantor" class="input-group input-group-md mt-3" hidden>
-                            <div class="input-group-prepend">
-                                <span style="width: 6em;" class="input-group-text">Garante</span>
-                            </div>
-                            <input type="text" id="name_guarantor_loan" class="form-control">
-                            <span class="input-group-append">
-                                <button title="Buscar" type="button" onclick="selectGuarantorApplicant()" class="btn btn-secondary btn-flat">
-                                    <i class="fas fa-search"></i>
-                                </button>
+                            <span style="width: 100%;" class="input-group-text">
+                                <strong>Solicitante:</strong>&nbsp; {{ $loan->person->first_name . ' ' . $loan->person->last_name }}
                             </span>
                         </div>
 
-                        <form class="form-horizontal" role="form" method="POST" action="{{ route('loans.store') }}">
+                        <input type="hidden" id="debt" value="{{ round($loan->amount - $pagado, 2) }}">
+
+                        <form class="form-horizontal" role="form" method="POST" action="{{ route('loan.renew', $loan->id) }}">
 
                             {{ csrf_field() }}
-                            <input type="hidden" id="person_id" name="person_id" required>
-                            <input type="hidden" id="guarantor_id" name="guarantor_id" required>
+                            @method('PUT')
 
                             <div class="input-group input-group-md mt-3">
-                                <div class="input-group-prepend">
-                                    <span style="width: 6em;" class="input-group-text">Monto</span>
-                                </div>
-                                <input type="number" max="10000" class="form-control" id="amount" name="amount" step="0.01" value="{{ old('amount') }}" required>
-                                <!-- <input type="number" onkeyup="keypressAmount(this)" max="10000" class="form-control" id="amount" name="amount" step="0.01" required> -->
+                                <span style="width: 100%;" class="input-group-text">
+                                    <strong>Préstamo</strong>&nbsp; ({{ $loan->amount }})&nbsp; - &nbsp;<strong>Pagado</strong>&nbsp; ({{ $pagado }})&nbsp; = &nbsp; {{ $loan->amount - $pagado }}
+                                </span>
                             </div>
 
                             <div class="input-group input-group-md mt-3">
                                 <div class="input-group-prepend">
-                                    <span style="width: 6em;" class="input-group-text">Interes (%)</span>
+                                    <span style="width: 10em;" class="input-group-text"><strong>Deuda:</strong>&nbsp; {{ $loan->amount - $pagado }}</span>
                                 </div>
-                                <input type="number" min="0.5" max="3.0" class="form-control" id="interest_percentage" name="interest_percentage" step="0.01" value="{{ old('interest_percentage') }}" required>
-                                <!-- <select class="custom-select form-control" id="interest_percentage" name="interest_percentage" required>
-                                        <option>Seleccione</option>
-                                        <option value="0.9">0.9%</option>
-                                        <option value="1">1%</option>
-                                        <option value="2">2%</option>
-                                    </select> -->
+                                <input type="number" min="0.01" max="20000" class="form-control" name="amount" id="newDebt" onkeyup="keypressAmount(this)" step="0.01" value="{{ old('amount') }}" placeholder="monto" required>
+                                <div class="input-group-append">
+                                    <span style="width: 6em;" class="input-group-text text-right" id="amount">{{ $loan->amount - $pagado }}</span>
+                                </div>
                             </div>
 
                             <div class="input-group input-group-md mt-3">
                                 <div class="input-group-prepend">
-                                    <span style="width: 6em;" class="input-group-text">Fecha</span>
+                                    <span style="width: 10em;" class="input-group-text"><strong>Interes:</strong>&nbsp; {{ ' ' . $loan->interest_percentage . '%' }}</span>
                                 </div>
-                                <input type="date" class="form-control" id="date-loans" name="date" value="{{ old('date') ?? date('Y-m-d') }}" required>
+                                <input type="number" min="0.5" max="3.0" class="form-control" id="interest_percentage" name="interest_percentage" step="0.01" value="{{ $loan->interest_percentage }}" required>
                             </div>
 
                             <div class="input-group input-group-md mt-3">
                                 <div class="input-group-prepend">
-                                    <span style="width: 6em;" class="input-group-text">Pago</span>
+                                    <span style="width: 10em;" class="input-group-text"><strong>Fecha:</strong>&nbsp; {{ date('d/m/Y', strtotime(substr($loan->date, 0, 10))) }}</span>
+                                </div>
+                                <input type="date" class="form-control" id="date-loans" name="date" value="{{ date('Y-m-d') }}" required>
+                            </div>
+
+                            <div class="input-group input-group-md mt-3">
+                                <div class="input-group-prepend">
+                                    <span style="width: 10em;" class="input-group-text"><strong>Pago:</strong>&nbsp; {{ $loan->type }}</span>
                                 </div>
                                 <select class="custom-select form-control" id="type" name="type" required>
-                                    <option value="">Seleccione</option>
-                                    <option value="mensual" {{ old('type') === 'mensual' ? 'selected' : '' }}>Mensual</option>
-                                    <option value="trimestral" {{ old('type') === 'trimestral' ? 'selected' : '' }}>Trimestral</option>
-                                    <option value="semestral" {{ old('type') === 'semestral' ? 'selected' : '' }}>Semestral</option>
-                                    <option value="anual" {{ old('type') === 'anual' ? 'selected' : '' }}>Anual</option>
+                                    <option value="mensual" {{ $loan->type === 'mensual' ? 'selected' : '' }}>Mensual</option>
+                                    <option value="trimestral" {{ $loan->type === 'trimestral' ? 'selected' : '' }}>Trimestral</option>
+                                    <option value="semestral" {{ $loan->type === 'semestral' ? 'selected' : '' }}>Semestral</option>
+                                    <option value="anual" {{ $loan->type === 'anual' ? 'selected' : '' }}>Anual</option>
                                 </select>
                             </div>
 
                             <div class="input-group input-group-md mt-3">
                                 <div class="input-group-prepend">
-                                    <span style="width: 6em;" class="input-group-text">N° pagos</span>
+                                    <span style="width: 10em;" class="input-group-text"><strong>N° pagos:</strong>&nbsp; {{ $loan->period }}</span>
                                 </div>
-                                <input type="number" min="1" max="120" class="form-control  @error('period') is-invalid @enderror" id="deadline" name="period" step="1" value="{{ old('period') }}" required>
+                                <input type="number" min="1" max="120" class="form-control @error('period') is-invalid @enderror" id="deadline" name="period" step="1" value="{{ $loan->period - $cantPagados }}" required>
                             </div>
 
                             <div class="input-group input-group-md my-3">
                                 <div class="input-group-prepend">
-                                    <span style="width: 6em;" class="input-group-text">Tipo tabla</span>
+                                    <span style="width: 10em;" class="input-group-text"><strong>Tipo tabla:</strong>&nbsp; {{ $loan->method }}</span>
                                 </div>
                                 <select class="custom-select form-control" id="typetable" name="method" required>
-                                    <option value="">Seleccione</option>
-                                    <option value="fija" {{ old('method') === 'fija' ? 'selected' : '' }}>Fija</option>
-                                    <option value="variable" {{ old('method') === 'variable' ? 'selected' : '' }}>Variable</option>
+                                    <option value="fija" {{ $loan->method === 'fija' ? 'selected' : '' }}>Fija</option>
+                                    <option value="variable" {{ $loan->method === 'variable' ? 'selected' : '' }}>Variable</option>
                                 </select>
                             </div>
 
@@ -138,7 +122,7 @@
                                 <span class="glyphicon glyphicon-plus"></span> Simular
                             </button>
                             <button class="btn btn-success" type="submit">
-                                <span class="glyphicon glyphicon-plus"></span> Guardar
+                                <span class="glyphicon glyphicon-plus"></span> Renovar
                             </button>
 
                         </form>
@@ -231,87 +215,15 @@
 
 @push('scripts')
 <script>
-    let people = undefined
-    // Mostrar el modal para seleccionar la persona que solicita el prestamo
-    function selectPersonApplicant() {
-        $('#modal-title').text('Seleccionar solicitante')
-        getPeople()
-    }
-
-    // Mostrar el modal para seleccionar el Garante del prestamo
-    function selectGuarantorApplicant() {
-        $('#modal-title').text('Seleccionar garante')
-        // No se puede repetir el Solicitante con el Garante 
-        // Por que solo cuando sea Particular requiere Garante y el Garante va ser socio
-        // Para lo cual hay que filtrar solo socios
-        let garantors = people.filter(p => p.type === 'socio')
-        loadHml(garantors)
-    }
-
-    // Petition Ajax
-    function getPeople() {
-        $.ajax({
-            type: 'GET',
-            url: "{{route('people.index.json')}}",
-            success: (response) => {
-                people = response.people
-                loadHml(people)
-            },
-            error: (error) => console.log(error)
-        })
-    }
-
-    // Load HTML with data in table
-    function loadHml(people) {
-        let html = ''
-        people.map((person, index) => {
-            html += '<tr onclick=select_person(' + person.id + ')>'
-            html += '<td style="text-align: center;">' + (person.identification_card ?? '') + '</td>'
-            html += '<td>' + person.first_name + '</td>'
-            html += '<td>' + person.last_name + '</td>'
-            html += '<td style="text-align: center;">'
-            html += '<span class="badge ' + (person.type === 'socio' ? 'bg-success' : 'bg-warning') + '" style="font-size:0.9em">' + person.type + '</span>'
-            html += '</td>'
-            html += "</tr>"
-        })
-        $('#tbody-rows-modal').html(html)
-        $('#select-person').modal('show')
-        $('.form-horizontal').show()
-    }
-
-    // Selecciona la persona del modal y Oculta el Modal
-    function select_person(id) {
-        let modal_title = $('#modal-title').text()
-        let person = people.filter(p => p.id === id)[0]
-        let name = person.first_name + ' ' + person.last_name
-        if (modal_title === 'Seleccionar solicitante') {
-            $('#person_id').val(id)
-            $('#name_person_loan').val(name)
-            if (person.type === 'particular') {
-                $('#card-guarantor').removeAttr('hidden')
-            }
-        } else {
-            $('#guarantor_id').val(id)
-            $('#name_guarantor_loan').val(name)
-        }
-        $('#select-person').modal('hide')
-    }
-
     // Selecciona la persona del modal y Oculta el Modal
     function keypressAmount(e) {
-        let person = people.filter(p => Number(p.id) === Number($('#person_id').val()))[0]
-
-        if (person.type === 'socio') {
-            $('#interest_percentage').val(Number(e.value) > 999 ? 0.9 : 1)
-        } else {
-            $('#interest_percentage').val(2)
-        }
+        $('#amount').text((Number(e.value) + Number($('#debt').val())).toFixed(2))
     }
 
     // Crear la tabla de amortización
     function creartablaamortizacion() {
 
-        let monto = Number($('#amount').val())
+        let monto = Number($('#newDebt').val()) + Number($('#debt').val())
         let periodo = Number($('#deadline').val())
         let interes = Number($('#interest_percentage').val()) * 0.01
         let date = new Date(`${$('#date-loans').val()} GMT-5`);

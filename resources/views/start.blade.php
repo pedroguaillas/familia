@@ -23,7 +23,7 @@
                     <div class="icon">
                         <i class="ion ion-person-stalker"></i>
                     </div>
-                    <a href="{{url('people')}}" class="small-box-footer">Mas info <i class="fas fa-arrow-circle-right"></i></a>
+                    <a href="{{ url('people') }}" class="small-box-footer">Mas info <i class="fas fa-arrow-circle-right"></i></a>
                 </div>
             </div>
             <!-- ./col -->
@@ -38,7 +38,7 @@
                     <div class="icon">
                         <i class="ion ion-person"></i>
                     </div>
-                    <a href="{{url('loans')}}" class="small-box-footer">Mas info <i class="fas fa-arrow-circle-right"></i></a>
+                    <a href="{{ url('loans') }}" class="small-box-footer">Mas info <i class="fas fa-arrow-circle-right"></i></a>
                 </div>
             </div>
             <!-- ./col -->
@@ -46,7 +46,7 @@
                 <!-- small box -->
                 <div class="small-box bg-warning">
                     <div class="inner">
-                        <h3>{{number_format($total, 2, ',', '.')}}</h3>
+                        <h3>{{ number_format($total, 2, ',', '.') }}</h3>
 
                         <p>Valor de cada acción</p>
                     </div>
@@ -61,7 +61,7 @@
                 <!-- small box -->
                 <div class="small-box bg-danger">
                     <div class="inner">
-                        <h3>{{number_format($total_borrowed, 2, ',', '.')}}</h3>
+                        <h3>{{ number_format($total_borrowed, 2, ',', '.') }}</h3>
 
                         <p>Monto prestado</p>
                     </div>
@@ -72,6 +72,12 @@
                 </div>
             </div>
             <!-- ./col -->
+        </div>
+        <!-- /.row -->
+        <div class="row">
+            <div class="col">
+                <p>Gastos de la caja {{ number_format($spends, 2, ',', '.') }}</p>
+            </div>
         </div>
         <!-- /.row -->
         <div class="row">
@@ -211,28 +217,29 @@
                 // General -----------------------------
 
                 data[0].data = res.general_contributions[0].sum
-                data[1].data = res.general_contributions[1].sum
+                data[1].data = Number(res.general_contributions[1].sum) - res.spend_capital
                 data[2].data = res.general_interest
 
                 loadChart(data, 'donut-chart-general')
 
-                let total = Number(res.general_contributions[0].sum) + Number(res.general_contributions[1].sum) + Number(res.general_interest)
-                $('#general_total').text(formatter.format(total))
-                $('#general_c_months').text(formatter.format(res.general_contributions[1].sum))
+                let total = Number(res.general_contributions[0].sum) + Number(res.general_contributions[1].sum) + Number(res.general_interest) - Number(res.spend_capital)
+                let expenses = total - res.total_borrowed
+                $('#general_total').text(`${formatter.format(total)} Saldo actual en caja ${formatter.format(expenses)}`)
+                $('#general_c_months').text(formatter.format(Number(res.general_contributions[1].sum) - res.spend_capital))
                 $('#general_interest').text(formatter.format(res.general_interest))
                 $('#general_c_year').text(formatter.format(res.general_contributions[0].sum))
 
                 // Current ----------------------------
 
                 data[0].data = res.current_contributions[0].sum
-                data[1].data = res.current_contributions[1].sum
+                data[1].data = Number(res.current_contributions[1].sum) - res.spend_capital
                 data[2].data = res.current_interest
 
                 loadChart(data, 'donut-chart-current')
 
-                let members_total = Number(res.current_contributions[0].sum) + Number(res.current_contributions[1].sum) + Number(res.current_interest)
+                let members_total = Number(res.current_contributions[0].sum) + Number(res.current_contributions[1].sum) + Number(res.current_interest) - Number(res.spend_capital)
                 $('#members_total').text(formatter.format(members_total))
-                $('#members_c_months').text(formatter.format(res.current_contributions[1].sum))
+                $('#members_c_months').text(formatter.format(Number(res.current_contributions[1].sum) - res.spend_capital))
                 $('#members_interest').text(formatter.format(res.current_interest))
                 $('#members_c_year').text(formatter.format(res.current_contributions[0].sum))
             },

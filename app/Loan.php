@@ -8,7 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class Loan extends Model
 {
     protected $fillable = [
-        'person_id', 'guarantor_id', 'interest_percentage', 'amount', 'date', 'state'
+        'person_id', 'guarantor_id', 'interest_percentage',
+        'amount', 'date', 'state', 'type', 'period', 'method'
     ];
 
     public function person()
