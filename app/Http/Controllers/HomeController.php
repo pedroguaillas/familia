@@ -18,7 +18,7 @@ class HomeController extends Controller
 
     public function index()
     {
-        // Cuenta la cantidad accioens de los socios que tiene la caja
+        // Cuenta la cantidad acciones de los socios que tiene la caja
         $countactions = Person::where('state', 'activo')
             ->where('type', 'socio')
             ->sum('actions');
@@ -128,8 +128,12 @@ class HomeController extends Controller
 
         $this->querys($contributions, $interest);
 
-        $actions = Person::where('state', 'activo')->sum('actions');
+        // $actions = Person::where('state', 'activo')->sum('actions');
+        $actions = Person::where('state', 'activo')
+            ->where('type', 'socio')
+            ->sum('actions');
 
+            // $spendCapital = Spend::sum('amount');
         $spendCapital = Spend::where('impact', 'capital')->sum('amount');
 
         $amount_current = $contributions[0]->sum + $contributions[1]->sum + $interest - $spendCapital;

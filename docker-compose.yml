@@ -8,6 +8,7 @@ services:
       context: ./
       dockerfile: Dockerfile.dev
     working_dir: /var/www/
+    container_name: appfamilia
     environment:
       - COMPOSER_MEMORY_LIMIT=-1
     depends_on:
@@ -19,9 +20,12 @@ services:
 
   db:
     image: mysql:5.7
+    container_name: mysql57
     environment:
       MYSQL_DATABASE: ${DB_DATABASE}
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ALLOW_EMPTY_PASSWORD: 1
+      MYSQL_RANDOM_ROOT_PASSWORD: 0
       MYSQL_PASSWORD: ${DB_PASSWORD}
       MYSQL_USER: ${DB_USERNAME}
       SERVICE_TAGS: dev
@@ -31,12 +35,14 @@ services:
       - ./docker-compose/mysql/my.cnf:/etc/mysql/my.cnf
       - ./docker-compose/mysql/init:/docker-entrypoint-initdb.d
     ports:
-      - 3307:3306
+      - 3308:3306
     networks:
       - lahmi
+    platform: linux/amd64  # Important for M1 compatibility
 
   phpmyadmin:
     image: phpmyadmin
+    container_name: phpmyadmin
     restart: always
     ports:
       - ${PHPMYADMIN_PORT_DB:-8080}:80
@@ -50,6 +56,7 @@ services:
 
   nginx:
     image: nginx:alpine
+    container_name: nginxfamilia
     ports:
       - 8005:80
     depends_on:

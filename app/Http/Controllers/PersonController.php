@@ -69,17 +69,19 @@ class PersonController extends Controller
 
         $inputs = $request->except('val_contribution');
         $inputs += ['actions' => 1];
-        $person =  Person::create($inputs);
+        $person = Person::create($inputs);
 
-        $carbon = Carbon::now();
+        if ($request->type === 'socio') {
+            $carbon = Carbon::now();
 
-        $person->contributions()->create([
-            'amount' => $request->val_contribution,
-            'date' => $carbon->format('Y-m-d'),
-            'type' => 'mensual',
-            'state' => 'activo',
-            'observation' => 'Registro de un nuevo socio'
-        ]);
+            $person->contributions()->create([
+                'amount' => $request->val_contribution,
+                'date' => $carbon->format('Y-m-d'),
+                'type' => 'mensual',
+                'state' => 'activo',
+                'observation' => 'Registro de un nuevo socio'
+            ]);
+        }
 
         return redirect()->route('people.index')->with('info', (($request->type === 'socio') ? 'Socio' : 'Persona particular') . ' agregado con éxito.');
     }
@@ -176,7 +178,7 @@ class PersonController extends Controller
             'state' => 'activo'
         ])->get();
 
-        $pdf = PDF::loadView('people.report',  compact('people'));
+        $pdf = PDF::loadView('people.report', compact('people'));
         (new PdfController())->loadTempleate($pdf);
         return $pdf->stream('reporte_socios.pdf');
     }
