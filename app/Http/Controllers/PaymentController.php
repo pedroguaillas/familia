@@ -164,6 +164,9 @@ class PaymentController extends Controller
                     $loan->date = $request->date_start;
                     // De los pagos inactivos solo no elimino el pago a modificar
                     Payment::where('id', '<>', $payment->id)
+                        // El siguiente where clave para eliminar pagos SOLO de este préstamo
+                        ->where('loan_id', $loan->id)
+                        // Pagos inactivos
                         ->where('state', 'inactivo')->delete();
                     // Si el monto es mayo a 0 debe generar la nueva tabla
                     if ($loan->amount) {
@@ -201,7 +204,7 @@ class PaymentController extends Controller
         $interest = 0;
         $payment_id = 0;
 
-        $day = (int)substr($loan->date, 8, 2);
+        $day = (int) substr($loan->date, 8, 2);
 
         // Inicio method Inicio
         if ($loan->method === 'inicio') {
@@ -253,7 +256,7 @@ class PaymentController extends Controller
         $interest = 0;
         $payment_id = 0;
 
-        $day = (int)substr($loan->date, 8, 2);
+        $day = (int) substr($loan->date, 8, 2);
 
         $debt = $loan->amount - Payment::where('state', 'activo')
             ->where('loan_id', $loan->id)->sum('capital');

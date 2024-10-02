@@ -66,7 +66,7 @@
                                 <div class="input-group-prepend">
                                     <span style="width: 10em;" class="input-group-text"><strong>Deuda:</strong>&nbsp; {{ $loan->amount - $pagado }}</span>
                                 </div>
-                                <input type="number" min="0.01" max="20000" class="form-control" name="amount" id="newDebt" onkeyup="keypressAmount(this)" step="0.01" value="{{ old('amount') }}" placeholder="monto" required>
+                                <input type="number" max="20000" class="form-control" name="amount" id="newDebt" onkeyup="keypressAmount(this)" step="0.01" value="{{ old('amount') }}" placeholder="monto" required>
                                 <div class="input-group-append">
                                     <span style="width: 6em;" class="input-group-text text-right" id="amount">{{ $loan->amount - $pagado }}</span>
                                 </div>

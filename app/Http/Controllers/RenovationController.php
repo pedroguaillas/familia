@@ -33,11 +33,11 @@ class RenovationController extends Controller
     {
         // Validar los datos
         $validator = Validator::make($request->all(), [
-            'amount' => 'min:0.01',
+            // 'amount' => 'min:0.01',
             'interest_percentage' => 'min:0.5',
             'period' => 'min:1',
         ], [
-            'amount.min' => 'El monto debe ser mayor a 0',
+            // 'amount.min' => 'El monto debe ser mayor a 0',
             'interest_percentage.min' => 'El interés debe ser mayo a 0.05',
             'period.min' => 'El N° pagos minimo debe ser minimo 1',
         ]);
