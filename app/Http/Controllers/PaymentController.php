@@ -23,14 +23,6 @@ class PaymentController extends Controller
         $person = $loan->person;
         //Se requiere de guarantor para mostrar el nombre en la cabecera
         $guarantor = Person::where('id', $loan->guarantor_id)->get()->first();
-        // $payments = DB::table('payments')
-        //     ->where([
-        //         'loan_id' => $loan->id,
-        //         // 'state' => 'activo'
-        //     ])
-        //     ->orderBy('date', 'DESC')
-        //     // ->orderBy('interest_amount')
-        //     ->get();
 
         $payments = Payment::where('loan_id', $loan->id)
             ->orderBy('date', 'ASC')->get();
@@ -234,8 +226,13 @@ class PaymentController extends Controller
                 $payment_id = $payment->id;
                 $capital = $payment->capital;
                 $debt = $payment->debt;
-                // $day = substr($payment->date, 0, 10);
                 $interest = $payment->interest_amount;
+                // Cuando es el ultimo pago y la cuota FIJA
+                // Puede el capita ser mas de lo debe y se ajusta en el INTERES
+                if ($payments->count() === 1 && $capital > $debt) {
+                    $interest = round($payment->interest_amount + $capital - $debt, 2);
+                    $capital = $debt;
+                }
             }
 
             // Fin amortizacion
