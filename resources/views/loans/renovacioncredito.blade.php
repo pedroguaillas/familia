@@ -76,7 +76,7 @@
                                 <div class="input-group-prepend">
                                     <span style="width: 10em;" class="input-group-text"><strong>Interes:</strong>&nbsp; {{ ' ' . $loan->interest_percentage . '%' }}</span>
                                 </div>
-                                <input type="number" min="0.5" max="3.0" class="form-control" id="interest_percentage" name="interest_percentage" step="0.01" value="{{ $loan->interest_percentage }}" required>
+                                <input type="number" min="0.5" max="20.0" class="form-control" id="interest_percentage" name="interest_percentage" step="0.01" value="{{ $loan->interest_percentage }}" required>
                             </div>
 
                             <div class="input-group input-group-md mt-3">
