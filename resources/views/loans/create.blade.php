@@ -84,13 +84,7 @@
                                 <div class="input-group-prepend">
                                     <span style="width: 6em;" class="input-group-text">Interes (%)</span>
                                 </div>
-                                <input type="number" min="0.5" max="3.0" class="form-control" id="interest_percentage" name="interest_percentage" step="0.01" value="{{ old('interest_percentage') }}" required>
-                                <!-- <select class="custom-select form-control" id="interest_percentage" name="interest_percentage" required>
-                                        <option>Seleccione</option>
-                                        <option value="0.9">0.9%</option>
-                                        <option value="1">1%</option>
-                                        <option value="2">2%</option>
-                                    </select> -->
+                                <input type="number" min="0.5" max="20.0" class="form-control" id="interest_percentage" name="interest_percentage" step="0.01" value="{{ old('interest_percentage') }}" required>
                             </div>
 
                             <div class="input-group input-group-md mt-3">
