@@ -44,7 +44,7 @@ class HomeController extends Controller
                 $query->on('loan_id', 'loans.id')
                     ->where('p.state', 'activo');
             })->where('loans.state', 'activo')
-            ->groupBy('loans.id')->get();
+            ->groupBy('loans.id', 'loans.amount')->get();
 
         // Sumador de la deuda
         $total_borrowed = 0;
@@ -104,7 +104,7 @@ class HomeController extends Controller
                 $query->on('loan_id', 'loans.id')
                     ->where('p.state', 'activo');
             })->where('loans.state', 'activo')
-            ->groupBy('loans.id')->get();
+            ->groupBy('loans.id', 'loans.amount')->get();
 
         $amounts_borrowed = json_decode(json_encode($amounts_borrowed));
 

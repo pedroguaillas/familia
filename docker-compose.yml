@@ -20,7 +20,7 @@ services:
 
   db:
     image: mysql:5.7
-    container_name: mysql57
+    container_name: mysql57familia
     environment:
       MYSQL_DATABASE: ${DB_DATABASE}
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
@@ -42,7 +42,7 @@ services:
 
   phpmyadmin:
     image: phpmyadmin
-    container_name: phpmyadmin
+    container_name: phpmyadminfamilia
     restart: always
     ports:
       - ${PHPMYADMIN_PORT_DB:-8080}:80
