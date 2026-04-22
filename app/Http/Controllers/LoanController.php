@@ -24,21 +24,15 @@ class LoanController extends Controller
 
         $loans = Loan::selectRaw('loans.id,amount,interest_percentage,loans.date,method,first_name,last_name, SUM(payments.capital) AS sum_capital_paid')
             ->join('people', 'people.id', 'person_id')
-            // ->leftJoin('payments', 'loan_id', 'loans.id')
             ->leftJoin('payments', function ($join) {
                 $join->on('loans.id', 'loan_id')
                     // Le suma los pagos activos los inactivos son los que solo se usan para la tabla de amortización
                     ->where('payments.state', 'activo');
             })
-            ->groupBy('loans.id', 'amount', 'interest_percentage', 'loans.date', 'method')
+            ->groupBy('loans.id', 'amount', 'interest_percentage', 'loans.date', 'method', 'first_name', 'last_name')
             ->where('loans.state', 'activo')
-            // ->where(function ($query) use ($date) {
-            //     $query->whereDate('loans.date', ' < ', 'DATE(2022-04-25)')
-            //         ->orWhere('loans.state', 'activo');
-            // })
             // Nueva restrincion para mostrar solo los prestamos que falta concluir los pagos
             ->havingRaw('sum_capital_paid IS NULL OR sum_capital_paid < amount')
-            // ->orHavingRaw($date->toDateString() . ' < DATE(updated_at)')
             ->orderBy('loans.date')->get();
 
         return view('loans.index', compact('loans'));
@@ -53,7 +47,7 @@ class LoanController extends Controller
                 $join->on('loans.id', 'loan_id')
                     ->where('payments.state', 'activo');
             })
-            ->groupBy('loans.id', 'loans.amount', 'loans.interest_percentage', 'loans.date', 'people.first_name', 'people.last_name')
+            ->groupBy('loans.id', 'loans.amount', 'loans.interest_percentage', 'loans.date', 'method', 'people.first_name', 'people.last_name')
             ->where('loans.state', 'activo')
             ->orderBy('loans.date')->get();
 
